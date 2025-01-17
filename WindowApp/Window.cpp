@@ -90,7 +90,25 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
     switch (msg) {
         case WM_CLOSE:
             PostQuitMessage(EXIT_SUCCESS);
-            return 0;
+            break;
+        case WM_KILLFOCUS:
+            kbd.ClearState();
+            break;
+        /*********** KEYBOARD MESSAGES ***********/
+        case WM_SYSKEYDOWN:
+        case WM_KEYDOWN:
+            if (!AUTOREPEAT || kbd.autorepeatEnabled) {
+                kbd.OnKeyPressed(wParam);
+            }
+            break;
+        case WM_SYSKEYUP:
+        case WM_KEYUP:
+            kbd.OnKeyReleased(wParam);
+            break;
+        case WM_CHAR:
+            kbd.OnChar(static_cast<char>(wParam));
+            break;
+        /*********** END KEYBOARD MESSAGES ***********/
         default: DefWindowProc(hWnd, msg, wParam, lParam);
     }
     return DefWindowProc(hWnd, msg, wParam, lParam);

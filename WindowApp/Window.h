@@ -2,6 +2,7 @@
 #include <string>
 #include <Windows.h>
 
+#include "../Core/Input/Keyboard.h"
 #include "../Core/Util/SiriusException.h"
 
 class Window
@@ -39,6 +40,8 @@ public:
 	~Window();
 	Window(const Window&) = delete;
 	Window& operator=(const Window&) = delete;
+
+	Keyboard kbd;
 private:
 	static LRESULT CALLBACK HandleMsgSetup( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept;
 	static LRESULT CALLBACK HandleMsgThunk( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept;
@@ -48,4 +51,6 @@ private:
 	int height;
 	HWND hWnd;
 };
+
+#define AUTOREPEAT (lParam & 0x40000000)
 
