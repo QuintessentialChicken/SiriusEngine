@@ -35,13 +35,17 @@ HINSTANCE Window::WindowClass::GetInstance() noexcept {
     return wndClass.hInstance;
 }
 
-Window::Window(int width, int height, const char *title) noexcept : width{width}, height{height} {
+
+
+Window::Window(int width, int height, const char *title) : width{width}, height{height} {
     RECT wr;
     wr.left = 100;
     wr.right = wr.left + width;
     wr.top = 100;
     wr.bottom = wr.top + height;
-    AdjustWindowRectEx(&wr, WS_OVERLAPPEDWINDOW, false, false);
+    if (AdjustWindowRect(&wr, WS_OVERLAPPEDWINDOW, false) == 0) {
+        throw CHWND_LAST_EXCEPT();
+    }
     hWnd = CreateWindow(
         WindowClass::GetName(),
         title,
@@ -60,6 +64,12 @@ Window::Window(int width, int height, const char *title) noexcept : width{width}
 
 Window::~Window() {
     DestroyWindow(hWnd);
+}
+
+void Window::SetTitle(const std::string &title) const {
+    if (SetWindowText(hWnd, title.c_str()) == 0) {
+        throw CHWND_LAST_EXCEPT();
+    }
 }
 
 LRESULT Window::HandleMsgSetup(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept {
@@ -109,6 +119,42 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
             kbd.OnChar(static_cast<char>(wParam));
             break;
         /*********** END KEYBOARD MESSAGES ***********/
+        /************** MOUSE MESSAGES ***************/
+        case WM_MOUSEMOVE: {
+            const auto [x, y]{MAKEPOINTS(lParam)};
+            mouse.OnMouseMove(x, y);
+            break;
+        }
+        case WM_LBUTTONDOWN: {
+            const auto [x, y]{MAKEPOINTS(lParam)};
+            mouse.OnLeftPressed(x, y);
+            break;
+        }
+        case WM_LBUTTONUP: {
+            const auto [x, y]{MAKEPOINTS(lParam)};
+            mouse.OnLeftReleased(x, y);
+            break;
+        }
+        case WM_RBUTTONDOWN: {
+            const auto [x, y]{MAKEPOINTS(lParam)};
+            mouse.OnRightPressed(x, y);
+            break;
+        }
+        case WM_RBUTTONUP: {
+            const auto [x, y]{MAKEPOINTS(lParam)};
+            mouse.OnRightReleased(x, y);
+            break;
+        }
+        case WM_MOUSEWHEEL: {
+            const auto [x, y]{MAKEPOINTS(lParam)};
+            if (GET_WHEEL_DELTA_WPARAM(wParam) > 0) {
+                mouse.OnWheelUp(x, y);
+            } else if (GET_WHEEL_DELTA_WPARAM(wParam) < 0) {
+                mouse.OnWheelDown(x, y);
+            }
+            break;
+        }
+        /************ END MOUSE MESSAGES *************/
         default: DefWindowProc(hWnd, msg, wParam, lParam);
     }
     return DefWindowProc(hWnd, msg, wParam, lParam);

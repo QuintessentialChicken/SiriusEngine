@@ -2,8 +2,9 @@
 #include <string>
 #include <Windows.h>
 
-#include "../Core/Input/Keyboard.h"
-#include "../Core/Util/SiriusException.h"
+#include "Input/Keyboard.h"
+#include "Input/Mouse.h"
+#include "Util/SiriusException.h"
 
 class Window
 {
@@ -36,12 +37,14 @@ private:
 		HINSTANCE hInstance;
 	};
 public:
-	Window(int width, int height, const char* title) noexcept;
+	Window(int width, int height, const char* title);
 	~Window();
 	Window(const Window&) = delete;
 	Window& operator=(const Window&) = delete;
+	void SetTitle(const std::string& title) const;
 
 	Keyboard kbd;
+	Mouse mouse;
 private:
 	static LRESULT CALLBACK HandleMsgSetup( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept;
 	static LRESULT CALLBACK HandleMsgThunk( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept;
@@ -53,4 +56,6 @@ private:
 };
 
 #define AUTOREPEAT (lParam & 0x40000000)
+#define CHWND_EXCEPT( hr ) Window::Exception( __LINE__,__FILE__,hr )
+#define CHWND_LAST_EXCEPT() Window::Exception( __LINE__,__FILE__,GetLastError() )
 
