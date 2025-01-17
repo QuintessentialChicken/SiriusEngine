@@ -1,4 +1,6 @@
 #include "Window.h"
+
+#include <iostream>
 #include <sstream>
 
 #include "../resource.h"
@@ -121,8 +123,29 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
         /*********** END KEYBOARD MESSAGES ***********/
         /************** MOUSE MESSAGES ***************/
         case WM_MOUSEMOVE: {
-            const auto [x, y]{MAKEPOINTS(lParam)};
-            mouse.OnMouseMove(x, y);
+            if(const auto [x, y] = MAKEPOINTS( lParam ); x >= 0 && x < width && y >= 0 && y < height )
+            {
+                mouse.OnMouseMove( x,y );
+                if( !mouse.IsInWindow() )
+                {
+                    SetCapture( hWnd );
+                    mouse.OnMouseEnter();
+                }
+            }
+            // not in client -> log move / maintain capture if button down
+            else
+            {
+                if( wParam & (MK_LBUTTON | MK_RBUTTON) )
+                {
+                    mouse.OnMouseMove( x,y );
+                }
+                // button up -> release capture / log event for leaving
+                else
+                {
+                    ReleaseCapture();
+                    mouse.OnMouseLeave();
+                }
+            }
             break;
         }
         case WM_LBUTTONDOWN: {
@@ -146,12 +169,9 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
             break;
         }
         case WM_MOUSEWHEEL: {
-            const auto [x, y]{MAKEPOINTS(lParam)};
-            if (GET_WHEEL_DELTA_WPARAM(wParam) > 0) {
-                mouse.OnWheelUp(x, y);
-            } else if (GET_WHEEL_DELTA_WPARAM(wParam) < 0) {
-                mouse.OnWheelDown(x, y);
-            }
+            const auto [x, y] = MAKEPOINTS( lParam );
+            const int delta = GET_WHEEL_DELTA_WPARAM( wParam );
+            mouse.OnWheelDelta( x,y,delta );
             break;
         }
         /************ END MOUSE MESSAGES *************/

@@ -19,11 +19,24 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
                 MessageBox(nullptr, "Hello there", "Space key was pressed", MB_OK);
             }
             while (!wnd.mouse.IsEmpty()) {
-                if (const auto event{wnd.mouse.Read()}; event.GetType() == Mouse::Event::Type::Move) {
-                    std::ostringstream oss;
-                    oss << "Mouse position: (" << event.GetPosX() << ", " << event.GetPosY() << ")";
-                    wnd.SetTitle(oss.str());
+                const auto e = wnd.mouse.Read();
+                switch (e.GetType()) {
+                    case Mouse::Event::Type::Leave:
+                        wnd.SetTitle("Gone!");
+                        break;
+                    case Mouse::Event::Type::Move:
+                        std::ostringstream oss;
+                        oss << "Mouse position: (" << e.GetPosX() << ", " << e.GetPosY() << ")";
+                        wnd.SetTitle(oss.str());
+                        break;
                 }
+
+
+                // if (const auto event{wnd.mouse.Read()}; event.GetType() == Mouse::Event::Type::Move) {
+                //     std::ostringstream oss;
+                //     oss << "Mouse position: (" << event.GetPosX() << ", " << event.GetPosY() << ")";
+                //     wnd.SetTitle(oss.str());
+                // }
             }
         }
 
