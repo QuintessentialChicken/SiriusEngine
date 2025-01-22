@@ -74,6 +74,18 @@ void Window::SetTitle(const std::string &title) const {
     }
 }
 
+std::optional<int> Window::ProcessMessage() {
+    MSG message;
+    if (PeekMessage(&message, nullptr, 0, 0, PM_REMOVE)) {
+        if (message.message == WM_QUIT) {
+            return message.wParam;
+        }
+        TranslateMessage(&message);
+        DispatchMessage(&message);
+    }
+    return {};
+}
+
 LRESULT Window::HandleMsgSetup(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept {
     if (msg == WM_NCCREATE) {
         // Get the CREATESTRUCT we passed using lparam in CreateWindow() containing the initialization parameters of our window

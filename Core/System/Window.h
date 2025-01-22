@@ -2,9 +2,9 @@
 #include <string>
 #include <Windows.h>
 
+#include "SiriusException.h"
 #include "Input/Keyboard.h"
 #include "Input/Mouse.h"
-#include "Util/SiriusException.h"
 
 class Window
 {
@@ -43,6 +43,7 @@ public:
 	Window& operator=(const Window&) = delete;
 	void SetTitle(const std::string& title) const;
 
+	static std::optional<int> ProcessMessage();
 	Keyboard kbd;
 	Mouse mouse;
 private:
