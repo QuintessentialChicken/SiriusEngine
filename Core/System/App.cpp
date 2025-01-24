@@ -2,9 +2,8 @@
 // Created by Leon on 21/01/2025.
 //
 
+#include <thread>
 #include "App.h"
-
-
 #include "Window.h"
 
 App::App(): wnd{800, 600, "Default Window"} {
@@ -21,8 +20,8 @@ App::App(): wnd{800, 600, "Default Window"} {
 }
 
 void App::DoFrame() {
-    const float t = timer.Peek();
-    std::ostringstream ss;
-    ss << t << "\n";
-    wnd.SetTitle(ss.str());
+    const float c = sin(timer.Peek()) / 2.0f + 0.5f;
+    wnd.GetGraphics().ClearBuffer(c, c, 1.0f);
+    wnd.GetGraphics().EndFrame();
+
 }

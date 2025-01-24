@@ -1,8 +1,6 @@
-#include "Window.h"
-
-#include <iostream>
 #include <sstream>
 
+#include "Window.h"
 #include "../resource.h"
 
 Window::WindowClass Window::WindowClass::wndClass;
@@ -37,8 +35,6 @@ HINSTANCE Window::WindowClass::GetInstance() noexcept {
     return wndClass.hInstance;
 }
 
-
-
 Window::Window(int width, int height, const char *title) : width{width}, height{height} {
     RECT wr;
     wr.left = 100;
@@ -62,6 +58,8 @@ Window::Window(int width, int height, const char *title) : width{width}, height{
         this
     );
     ShowWindow(hWnd, SW_SHOW);
+
+    gfx = std::make_unique<Graphics>(hWnd);
 }
 
 Window::~Window() {
@@ -84,6 +82,10 @@ std::optional<int> Window::ProcessMessage() {
         DispatchMessage(&message);
     }
     return {};
+}
+
+Graphics & Window::GetGraphics() const {
+    return *gfx;
 }
 
 LRESULT Window::HandleMsgSetup(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept {
