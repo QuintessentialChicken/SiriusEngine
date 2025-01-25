@@ -6,7 +6,7 @@
 #include "App.h"
 #include "Window.h"
 
-App::App(): wnd{800, 600, "Default Window"} {
+App::App(): wnd{800, 600, "Sirius Game Engine"} {
 }
 
 [[noreturn]] int App::Run() {
