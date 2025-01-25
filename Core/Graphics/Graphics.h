@@ -38,7 +38,16 @@ public:
         HRESULT hr;
         std::string info;
     };
-
+    class InfoException : public Exception
+    {
+    public:
+        InfoException( int line,const char* file,const std::vector<std::string>& infoMsgs ) noexcept;
+        const char* what() const noexcept override;
+        const char* GetType() const noexcept override;
+        std::string GetErrorInfo() const noexcept;
+    private:
+        std::string info;
+    };
     class DeviceRemovedException : public HrException {
         using HrException::HrException;
 
@@ -51,8 +60,6 @@ public:
 
     explicit Graphics(HWND hWnd);
 
-    ~Graphics() = delete;
-
     Graphics(const Graphics &) = delete;
 
     Graphics &operator=(Graphics &) = delete;
@@ -60,6 +67,8 @@ public:
     void EndFrame();
 
     void ClearBuffer(float r, float g, float b) noexcept;
+
+    void DrawTestTriangle();
 
 private:
 #ifndef NDEBUG

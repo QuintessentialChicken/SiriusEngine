@@ -73,7 +73,7 @@ public:
 
     static std::optional<int> ProcessMessage();
 
-    Graphics &GetGraphics() const;
+    [[nodiscard]] Graphics &GetGraphics() const;
 
     Keyboard kbd;
     Mouse mouse;

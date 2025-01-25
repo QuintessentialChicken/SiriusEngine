@@ -2,14 +2,13 @@
 // Created by Lms on 24/01/2025.
 //
 
-#include "Graphics.h"
 
 #include <array>
-#include <iostream>
 #include <sstream>
+#include <d3dcompiler.h>
 
+#include "Graphics.h"
 #include "System/dxerr.h"
-
 namespace wrl = Microsoft::WRL;
 
 // graphics exception checking/throwing macros (some with dxgi infos)
@@ -20,14 +19,15 @@ namespace wrl = Microsoft::WRL;
 #define GFX_EXCEPT(hr) Graphics::HrException( __LINE__,__FILE__,(hr),infoManager.GetMessages() )
 #define GFX_THROW_INFO(hrcall) infoManager.Set(); if( FAILED( hr = (hrcall) ) ) throw GFX_EXCEPT(hr)
 #define GFX_DEVICE_REMOVED_EXCEPT(hr) Graphics::DeviceRemovedException( __LINE__,__FILE__,(hr),infoManager.GetMessages() )
+#define GFX_THROW_INFO_ONLY(call) infoManager.Set(); (call); {auto v = infoManager.GetMessages(); if(!v.empty()) {throw Graphics::InfoException( __LINE__,__FILE__,v);}}
 #else
 #define GFX_EXCEPT(hr) Graphics::HrException( __LINE__,__FILE__,(hr) )
 #define GFX_THROW_INFO(hrcall) GFX_THROW_NOINFO(hrcall)
 #define GFX_DEVICE_REMOVED_EXCEPT(hr) Graphics::DeviceRemovedException( __LINE__,__FILE__,(hr) )
+#define GFX_THROW_INFO_ONLY(call) (call)
 #endif
 
-Graphics::HrException::HrException(int line, const char* file, HRESULT hr,
-                                   const std::vector<std::string>& infoMsgs) noexcept : Exception{line, file}, hr{hr} {
+Graphics::HrException::HrException(int line, const char* file, HRESULT hr, const std::vector<std::string>& infoMsgs) noexcept : Exception{line, file}, hr{hr} {
     // join all info messages with newlines into single string
     for (const auto& m: infoMsgs) {
         info += m;
@@ -46,9 +46,9 @@ const char* Graphics::HrException::what() const noexcept {
             << std::dec << " (" << static_cast<unsigned long>(GetErrorCode()) << ")" << std::endl
             << "[Error String] " << GetErrorString() << std::endl
             << "[Description] " << GetErrorDescription() << std::endl;
-    if (!info.empty()) {
-        oss << "\n[Error Info]\n" << GetErrorInfo() << std::endl << std::endl;
-    }
+    // if (!info.empty()) {
+    //     oss << "\n[Error Info]\n" << GetErrorInfo() << std::endl << std::endl;
+    // }
     oss << GetOriginString();
     whatBuffer = oss.str();
     return whatBuffer.c_str();
@@ -73,6 +73,35 @@ std::string Graphics::HrException::GetErrorDescription() const noexcept {
 }
 
 std::string Graphics::HrException::GetErrorInfo() const noexcept {
+    return info;
+}
+
+Graphics::InfoException::InfoException(int line, const char* file, const std::vector<std::string>& infoMsgs) noexcept : Exception{line, file} {
+    // join all info messages with newlines into single string
+    for (const auto& m: infoMsgs) {
+        info += m;
+        info.push_back('\n');
+    }
+    // remove final newline if exists
+    if (!info.empty()) {
+        info.pop_back();
+    }
+}
+
+const char* Graphics::InfoException::what() const noexcept {
+    std::ostringstream oss;
+    oss << GetType() << std::endl
+        << "\n[Error Info]\n" << GetErrorInfo() << std::endl << std::endl;
+    oss << GetOriginString();
+    whatBuffer = oss.str();
+    return whatBuffer.c_str();
+}
+
+const char* Graphics::InfoException::GetType() const noexcept {
+    return "Sirius Graphics Info Exception";
+}
+
+std::string Graphics::InfoException::GetErrorInfo() const noexcept {
     return info;
 }
 
@@ -120,8 +149,7 @@ Graphics::Graphics(HWND hWnd) {
 
     wrl::ComPtr<ID3D11Resource> backBuffer = nullptr;
     GFX_THROW_INFO(swapChain->GetBuffer(0, __uuidof(ID3D11Resource), &backBuffer));
-    GFX_THROW_INFO(device->CreateRenderTargetView(backBuffer.Get(), nullptr, &target)); //TODO Doesn't throw GFX if buffer is nullptr, reads at 0x0 instead
-    backBuffer->Release();
+    GFX_THROW_INFO(device->CreateRenderTargetView(backBuffer.Get(), nullptr, &target)); // Doesn't catch Access violation reading location when given a nullptr as resource
 }
 
 void Graphics::EndFrame() {
@@ -140,4 +168,80 @@ void Graphics::EndFrame() {
 void Graphics::ClearBuffer(float r, float g, float b) noexcept {
     std::array<const float, 4> color = {r, g, b, 1.0f};
     context->ClearRenderTargetView(target.Get(), color.data());
+}
+
+void Graphics::DrawTestTriangle() {
+    HRESULT hr;
+
+    struct Vertex {
+        float x, y;
+    };
+
+    constexpr Vertex vertices[] = {
+        {0.0f, 0.5f},
+        {0.5f, -0.5f},
+        {-0.5f, -0.5f}
+    };
+
+    wrl::ComPtr<ID3D11Buffer> vertexBuffer = nullptr;
+    D3D11_BUFFER_DESC bd = {};
+    bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+    bd.Usage = D3D11_USAGE_DEFAULT;
+    bd.ByteWidth = sizeof(vertices);
+    bd.CPUAccessFlags = 0;
+    bd.MiscFlags = 0;
+    bd.StructureByteStride = sizeof(Vertex);
+    D3D11_SUBRESOURCE_DATA sd = {};
+    sd.pSysMem = vertices;
+    GFX_THROW_INFO(device->CreateBuffer(&bd, &sd, &vertexBuffer));
+    constexpr UINT stride = sizeof(Vertex);
+    constexpr UINT offset = 0;
+    context->IASetVertexBuffers(0, 1, vertexBuffer.GetAddressOf(), &stride, &offset);
+
+
+    // Create PixelShader
+    wrl::ComPtr<ID3D11PixelShader> pixelShader;
+    wrl::ComPtr<ID3DBlob> blob;
+    GFX_THROW_INFO(D3DReadFileToBlob(L"PixelShader.cso", &blob));
+    GFX_THROW_INFO(device->CreatePixelShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, &pixelShader));
+    // Bind PixelShader
+    context->PSSetShader(pixelShader.Get(), nullptr, 0);
+
+    // Create VertexShader
+    wrl::ComPtr<ID3D11VertexShader> vertexShader;
+    GFX_THROW_INFO(D3DReadFileToBlob(L"VertexShader.cso", &blob));
+    GFX_THROW_INFO(device->CreateVertexShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, &vertexShader));
+    // Bind VertexShader
+    context->VSSetShader(vertexShader.Get(), nullptr, 0);
+
+
+    wrl::ComPtr<ID3D11InputLayout> inputLayout;
+    constexpr D3D11_INPUT_ELEMENT_DESC ied[] = {
+        {"Position", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0}
+    };
+    GFX_THROW_INFO(device->CreateInputLayout(
+        ied,
+        std::size(ied),
+        blob->GetBufferPointer(),
+        blob->GetBufferSize(),
+        &inputLayout
+    ));
+
+    context->IASetInputLayout(inputLayout.Get());
+
+    context->OMSetRenderTargets(1, target.GetAddressOf(), nullptr);
+
+    context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+    D3D11_VIEWPORT vp;
+    vp.Width = 800;
+    vp.Height = 600;
+    vp.MinDepth = 0;
+    vp.MaxDepth = 1;
+    vp.TopLeftX = 0;
+    vp.TopLeftY = 0;
+    context->RSSetViewports(1, &vp);
+
+
+    GFX_THROW_INFO_ONLY(context->Draw(std::size(vertices), 0));
 }
