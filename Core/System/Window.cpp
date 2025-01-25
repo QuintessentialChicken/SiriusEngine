@@ -76,7 +76,7 @@ std::optional<int> Window::ProcessMessage() {
     MSG message;
     if (PeekMessage(&message, nullptr, 0, 0, PM_REMOVE)) {
         if (message.message == WM_QUIT) {
-            return message.wParam;
+            return static_cast<int>(message.wParam);
         }
         TranslateMessage(&message);
         DispatchMessage(&message);
@@ -236,7 +236,7 @@ const char* Window::HrException::what() const noexcept
 
 const char* Window::HrException::GetType() const noexcept
 {
-    return "Chili Window Exception";
+    return "Sirius Window Exception";
 }
 
 HRESULT Window::HrException::GetErrorCode() const noexcept
@@ -252,5 +252,5 @@ std::string Window::HrException::GetErrorDescription() const noexcept
 
 const char* Window::NoGfxException::GetType() const noexcept
 {
-    return "Chili Window Exception [No Graphics]";
+    return "Sirius Window Exception [No Graphics]";
 }

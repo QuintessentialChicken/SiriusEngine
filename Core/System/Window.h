@@ -9,29 +9,36 @@
 
 class Window {
 public:
-	class Exception : public ChiliException
-	{
-		using ChiliException::ChiliException;
-	public:
-		static std::string TranslateErrorCode( HRESULT hr ) noexcept;
-	};
-	class HrException : public Exception
-	{
-	public:
-		HrException( int line,const char* file,HRESULT hr ) noexcept;
-		const char* what() const noexcept override;
-		const char* GetType() const noexcept override;
-		HRESULT GetErrorCode() const noexcept;
-		std::string GetErrorDescription() const noexcept;
-	private:
-		HRESULT hr;
-	};
-	class NoGfxException : public Exception
-	{
-	public:
-		using Exception::Exception;
-		const char* GetType() const noexcept override;
-	};
+    class Exception : public SiriusException {
+        using SiriusException::SiriusException;
+
+    public:
+        static std::string TranslateErrorCode(HRESULT hr) noexcept;
+    };
+
+    class HrException : public Exception {
+    public:
+        HrException(int line, const char *file, HRESULT hr) noexcept;
+
+        const char *what() const noexcept override;
+
+        const char *GetType() const noexcept override;
+
+        HRESULT GetErrorCode() const noexcept;
+
+        std::string GetErrorDescription() const noexcept;
+
+    private:
+        HRESULT hr;
+    };
+
+    class NoGfxException : public Exception {
+    public:
+        using Exception::Exception;
+
+        const char *GetType() const noexcept override;
+    };
+
 private:
     class WindowClass {
     public:
@@ -66,7 +73,7 @@ public:
 
     static std::optional<int> ProcessMessage();
 
-    Graphics& GetGraphics() const;
+    Graphics &GetGraphics() const;
 
     Keyboard kbd;
     Mouse mouse;
@@ -85,5 +92,6 @@ private:
 };
 
 #define AUTOREPEAT (lParam & 0x40000000)
-#define CHWND_EXCEPT( hr ) Window::Exception( __LINE__,__FILE__,hr )
-#define CHWND_LAST_EXCEPT() Window::Exception( __LINE__,__FILE__,GetLastError() )
+#define CHWND_EXCEPT( hr ) Window::HrException( __LINE__,__FILE__,hr )
+#define CHWND_LAST_EXCEPT() Window::HrException( __LINE__,__FILE__,GetLastError() )
+#define CHWND_NOGFX_EXCEPT() Window::NoGfxHrException( __LINE__,__FILE__ )
