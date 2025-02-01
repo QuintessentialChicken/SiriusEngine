@@ -6,10 +6,16 @@
 #include <array>
 #include <sstream>
 #include <d3dcompiler.h>
+#include <DirectXMath.h>
 
 #include "Graphics.h"
+
+#include <algorithm>
+#include <ranges>
+
 #include "System/dxerr.h"
 namespace wrl = Microsoft::WRL;
+namespace dx = DirectX;
 
 // graphics exception checking/throwing macros (some with dxgi infos)
 #define GFX_EXCEPT_NOINFO(hr) Graphics::HrException( __LINE__,__FILE__,(hr) )
@@ -91,7 +97,7 @@ Graphics::InfoException::InfoException(int line, const char* file, const std::ve
 const char* Graphics::InfoException::what() const noexcept {
     std::ostringstream oss;
     oss << GetType() << std::endl
-        << "\n[Error Info]\n" << GetErrorInfo() << std::endl << std::endl;
+            << "\n[Error Info]\n" << GetErrorInfo() << std::endl << std::endl;
     oss << GetOriginString();
     whatBuffer = oss.str();
     return whatBuffer.c_str();
@@ -171,7 +177,7 @@ void Graphics::ClearBuffer(float r, float g, float b) noexcept {
     context->ClearRenderTargetView(target.Get(), color.data());
 }
 
-void Graphics::DrawTestTriangle(float angle) {
+void Graphics::DrawTestTriangle(float angle, float x, float y) {
     HRESULT hr;
 
     struct Vertex {
@@ -182,7 +188,6 @@ void Graphics::DrawTestTriangle(float angle) {
         struct {
             unsigned char r, g, b, a;
         } color;
-
     };
 
     constexpr Vertex vertices[] = {
@@ -232,16 +237,17 @@ void Graphics::DrawTestTriangle(float angle) {
 
     // Create Constant Buffer for Transformation Matrix
     struct ConstantBuffer {
-        struct {
-            float element[4][4];
-        } transformation;
+        dx::XMMATRIX transform;
     };
     const ConstantBuffer cb = {
-        std::cos(angle), std::sin(angle), 0.0f, 0.0f,
-        -std::sin(angle), std::cos(angle), 0.0f, 0.0f,
-        0.0f, 0.0f, 1.0f, 0.0f,
-        0.0f, 0.0f, 0.0f, 1.0f
+        dx::XMMatrixTranspose(
+            dx::XMMatrixRotationZ(angle) *
+            dx::XMMatrixScaling(3.0f / 4.0f, 1.0f, 1.0f) *
+            dx::XMMatrixTranslation(x, y, 0.0f)
+        )
+
     };
+
     wrl::ComPtr<ID3D11Buffer> constantBuffer = nullptr;
     D3D11_BUFFER_DESC cbd;
     cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
