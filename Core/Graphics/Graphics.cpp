@@ -171,7 +171,7 @@ void Graphics::ClearBuffer(float r, float g, float b) noexcept {
     context->ClearRenderTargetView(target.Get(), color.data());
 }
 
-void Graphics::DrawTestTriangle() {
+void Graphics::DrawTestTriangle(float angle) {
     HRESULT hr;
 
     struct Vertex {
@@ -205,6 +205,9 @@ void Graphics::DrawTestTriangle() {
     D3D11_SUBRESOURCE_DATA sd = {};
     sd.pSysMem = vertices;
     GFX_THROW_INFO(device->CreateBuffer(&bd, &sd, &vertexBuffer));
+    constexpr UINT stride = sizeof(Vertex);
+    constexpr UINT offset = 0;
+    context->IASetVertexBuffers(0, 1, vertexBuffer.GetAddressOf(), &stride, &offset);
 
     // Create Index Buffer
     const unsigned short indices[] = {
@@ -227,9 +230,32 @@ void Graphics::DrawTestTriangle() {
     // Bind Index Buffer
     context->IASetIndexBuffer(indexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0);
 
-    constexpr UINT stride = sizeof(Vertex);
-    constexpr UINT offset = 0;
-    context->IASetVertexBuffers(0, 1, vertexBuffer.GetAddressOf(), &stride, &offset);
+    // Create Constant Buffer for Transformation Matrix
+    struct ConstantBuffer {
+        struct {
+            float element[4][4];
+        } transformation;
+    };
+    const ConstantBuffer cb = {
+        std::cos(angle), std::sin(angle), 0.0f, 0.0f,
+        -std::sin(angle), std::cos(angle), 0.0f, 0.0f,
+        0.0f, 0.0f, 1.0f, 0.0f,
+        0.0f, 0.0f, 0.0f, 1.0f
+    };
+    wrl::ComPtr<ID3D11Buffer> constantBuffer = nullptr;
+    D3D11_BUFFER_DESC cbd;
+    cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+    cbd.Usage = D3D11_USAGE_DYNAMIC;
+    cbd.ByteWidth = sizeof(cb);
+    cbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+    cbd.MiscFlags = 0;
+    cbd.StructureByteStride = 0;
+    D3D11_SUBRESOURCE_DATA csd = {};
+    csd.pSysMem = &cb;
+    GFX_THROW_INFO(device->CreateBuffer(&cbd, &csd, &constantBuffer));
+
+    //Bind Constant Buffer to Vertex Shader
+    context->VSSetConstantBuffers(0, 1, constantBuffer.GetAddressOf());
 
     // Create PixelShader
     wrl::ComPtr<ID3D11PixelShader> pixelShader;
