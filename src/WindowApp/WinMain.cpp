@@ -4,8 +4,8 @@
 #include <sstream>
 #include <Windows.h>
 
-#include "System/App.h"
-#include "System/SiriusException.h"
+#include "Core/App.h"
+#include "Core/SiriusException.h"
 
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
     try {

@@ -1,5 +1,21 @@
-file(GLOB_RECURSE SOURCES *.cpp *.h)
-
-add_library(Core ${SOURCES})
+add_library(Core
+        App.cpp
+        App.h
+        CMakeLists.txt
+        dxerr.cpp
+        dxerr.h
+        DXGetErrorDescription.inl
+        DXGetErrorString.inl
+        DxgiInfoManager.cpp
+        DxgiInfoManager.h
+        DXTrace.inl
+        GraphicsThrowMacros.h
+        SiriusException.cpp
+        SiriusException.h
+        Timer.cpp
+        Timer.h
+        Window.cpp
+        Window.h
+        WindowsThrowMacros.h
+)
 target_link_libraries(Core PRIVATE d3d11.lib dxguid.lib D3DCompiler.lib)
-target_include_directories(Core PUBLIC .)

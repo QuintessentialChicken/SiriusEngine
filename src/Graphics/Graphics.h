@@ -8,16 +8,38 @@
 #include <vector>
 #include <wrl.h>
 
-#include "System/SiriusException.h"
-#include "System/DxgiInfoManager.h"
+#include "Core/SiriusException.h"
+#include "Core/DxgiInfoManager.h"
 
 
 class Graphics {
 public:
+    explicit Graphics(HWND hWnd);
+
+    Graphics(const Graphics &) = delete;
+
+    Graphics &operator=(Graphics &) = delete;
+
+    void EndFrame();
+
+    void ClearBuffer(float r, float g, float b) noexcept;
+
+    void DrawTestTriangle(float angle, float x, float y);
+
+private:
+#ifndef NDEBUG
+    DxgiInfoManager infoManager;
+#endif
+    Microsoft::WRL::ComPtr<ID3D11Device> device;
+    Microsoft::WRL::ComPtr<IDXGISwapChain> swapChain;
+    Microsoft::WRL::ComPtr<ID3D11DeviceContext> context;
+    Microsoft::WRL::ComPtr<ID3D11RenderTargetView> target;
+    Microsoft::WRL::ComPtr<ID3D11DepthStencilView> DSV;
+
+public:
     class Exception : public SiriusException {
         using SiriusException::SiriusException;
     };
-
     class HrException : public Exception {
     public:
         HrException(int line, const char *file, HRESULT hr, const std::vector<std::string>& infoMsgs = {}) noexcept;
@@ -57,28 +79,6 @@ public:
     private:
         std::string reason;
     };
-
-    explicit Graphics(HWND hWnd);
-
-    Graphics(const Graphics &) = delete;
-
-    Graphics &operator=(Graphics &) = delete;
-
-    void EndFrame();
-
-    void ClearBuffer(float r, float g, float b) noexcept;
-
-    void DrawTestTriangle(float angle, float x, float y);
-
-private:
-#ifndef NDEBUG
-    DxgiInfoManager infoManager;
-#endif
-    Microsoft::WRL::ComPtr<ID3D11Device> device;
-    Microsoft::WRL::ComPtr<IDXGISwapChain> swapChain;
-    Microsoft::WRL::ComPtr<ID3D11DeviceContext> context;
-    Microsoft::WRL::ComPtr<ID3D11RenderTargetView> target;
-    Microsoft::WRL::ComPtr<ID3D11DepthStencilView> DSV;
 };
 
 

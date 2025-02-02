@@ -7,102 +7,13 @@
 #include <sstream>
 #include <d3dcompiler.h>
 #include <DirectXMath.h>
-
-#include "Graphics.h"
-
-#include <algorithm>
 #include <ranges>
 
-#include "System/dxerr.h"
-#include "System/GraphicsThrowMacros.h"
+#include "Graphics.h"
+#include "Core/dxerr.h"
+#include "Core/GraphicsThrowMacros.h"
 namespace wrl = Microsoft::WRL;
 namespace dx = DirectX;
-
-// graphics exception checking/throwing macros (some with dxgi infos)
-
-
-Graphics::HrException::HrException(int line, const char* file, HRESULT hr, const std::vector<std::string>& infoMsgs) noexcept : Exception{line, file}, hr{hr} {
-    // join all info messages with newlines into single string
-    for (const auto& m: infoMsgs) {
-        info += m;
-        info.push_back('\n');
-    }
-    // remove final newline if exists
-    if (!info.empty()) {
-        info.pop_back();
-    }
-}
-
-const char* Graphics::HrException::what() const noexcept {
-    std::ostringstream oss;
-    oss << GetType() << std::endl
-            << "[Error Code] 0x" << std::hex << std::uppercase << GetErrorCode()
-            << std::dec << " (" << static_cast<unsigned long>(GetErrorCode()) << ")" << std::endl
-            << "[Error String] " << GetErrorString() << std::endl
-            << "[Description] " << GetErrorDescription() << std::endl;
-    if (!info.empty()) {
-        oss << "\n[Error Info]\n" << GetErrorInfo() << std::endl << std::endl;
-    }
-    oss << GetOriginString();
-    whatBuffer = oss.str();
-    return whatBuffer.c_str();
-}
-
-const char* Graphics::HrException::GetType() const noexcept {
-    return "Sirius Graphics Exception";
-}
-
-HRESULT Graphics::HrException::GetErrorCode() const noexcept {
-    return hr;
-}
-
-std::string Graphics::HrException::GetErrorString() const noexcept {
-    return DXGetErrorString(hr);
-}
-
-std::string Graphics::HrException::GetErrorDescription() const noexcept {
-    char buf[512];
-    DXGetErrorDescription(hr, buf, sizeof(buf));
-    return buf;
-}
-
-std::string Graphics::HrException::GetErrorInfo() const noexcept {
-    return info;
-}
-
-Graphics::InfoException::InfoException(int line, const char* file, const std::vector<std::string>& infoMsgs) noexcept : Exception{line, file} {
-    // join all info messages with newlines into single string
-    for (const auto& m: infoMsgs) {
-        info += m;
-        info.push_back('\n');
-    }
-    // remove final newline if exists
-    if (!info.empty()) {
-        info.pop_back();
-    }
-}
-
-const char* Graphics::InfoException::what() const noexcept {
-    std::ostringstream oss;
-    oss << GetType() << std::endl
-            << "\n[Error Info]\n" << GetErrorInfo() << std::endl << std::endl;
-    oss << GetOriginString();
-    whatBuffer = oss.str();
-    return whatBuffer.c_str();
-}
-
-const char* Graphics::InfoException::GetType() const noexcept {
-    return "Sirius Graphics Info Exception";
-}
-
-std::string Graphics::InfoException::GetErrorInfo() const noexcept {
-    return info;
-}
-
-
-const char* Graphics::DeviceRemovedException::GetType() const noexcept {
-    return "Sirius Graphics Exception [Device Removed] (DXGI_ERROR_DEVICE_REMOVED)";
-}
 
 Graphics::Graphics(HWND hWnd) {
     DXGI_SWAP_CHAIN_DESC sd;
@@ -355,4 +266,86 @@ void Graphics::DrawTestTriangle(float angle, float x, float z) {
 
 
     GFX_THROW_INFO_ONLY(context->DrawIndexed(std::size(indices), 0, 0));
+}
+
+Graphics::HrException::HrException(int line, const char* file, HRESULT hr, const std::vector<std::string>& infoMsgs) noexcept : Exception{line, file}, hr{hr} {
+    // join all info messages with newlines into single string
+    for (const auto& m: infoMsgs) {
+        info += m;
+        info.push_back('\n');
+    }
+    // remove final newline if exists
+    if (!info.empty()) {
+        info.pop_back();
+    }
+}
+
+const char* Graphics::HrException::what() const noexcept {
+    std::ostringstream oss;
+    oss << GetType() << std::endl
+            << "[Error Code] 0x" << std::hex << std::uppercase << GetErrorCode()
+            << std::dec << " (" << static_cast<unsigned long>(GetErrorCode()) << ")" << std::endl
+            << "[Error String] " << GetErrorString() << std::endl
+            << "[Description] " << GetErrorDescription() << std::endl;
+    if (!info.empty()) {
+        oss << "\n[Error Info]\n" << GetErrorInfo() << std::endl << std::endl;
+    }
+    oss << GetOriginString();
+    whatBuffer = oss.str();
+    return whatBuffer.c_str();
+}
+
+const char* Graphics::HrException::GetType() const noexcept {
+    return "Sirius Graphics Exception";
+}
+
+HRESULT Graphics::HrException::GetErrorCode() const noexcept {
+    return hr;
+}
+
+std::string Graphics::HrException::GetErrorString() const noexcept {
+    return DXGetErrorString(hr);
+}
+
+std::string Graphics::HrException::GetErrorDescription() const noexcept {
+    char buf[512];
+    DXGetErrorDescription(hr, buf, sizeof(buf));
+    return buf;
+}
+
+std::string Graphics::HrException::GetErrorInfo() const noexcept {
+    return info;
+}
+
+Graphics::InfoException::InfoException(int line, const char* file, const std::vector<std::string>& infoMsgs) noexcept : Exception{line, file} {
+    // join all info messages with newlines into single string
+    for (const auto& m: infoMsgs) {
+        info += m;
+        info.push_back('\n');
+    }
+    // remove final newline if exists
+    if (!info.empty()) {
+        info.pop_back();
+    }
+}
+
+const char* Graphics::InfoException::what() const noexcept {
+    std::ostringstream oss;
+    oss << GetType() << std::endl
+            << "\n[Error Info]\n" << GetErrorInfo() << std::endl << std::endl;
+    oss << GetOriginString();
+    whatBuffer = oss.str();
+    return whatBuffer.c_str();
+}
+
+const char* Graphics::InfoException::GetType() const noexcept {
+    return "Sirius Graphics Info Exception";
+}
+
+std::string Graphics::InfoException::GetErrorInfo() const noexcept {
+    return info;
+}
+
+const char* Graphics::DeviceRemovedException::GetType() const noexcept {
+    return "Sirius Graphics Exception [Device Removed] (DXGI_ERROR_DEVICE_REMOVED)";
 }

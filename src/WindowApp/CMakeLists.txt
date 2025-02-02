@@ -1,6 +1,9 @@
 project(WindowApp)
 
-file(GLOB_RECURSE SOURCES *.cpp *.h ${CMAKE_SOURCE_DIR}/sirius.rc)
-add_executable(WindowApp WIN32 ${SOURCES})
-add_dependencies(${PROJECT_NAME} shaders)
-target_link_libraries(WindowApp PRIVATE Core)
+add_executable(WindowApp WIN32 WinMain.cpp ${CMAKE_SOURCE_DIR}/sirius.rc)
+add_dependencies(WindowApp Shaders)
+target_link_libraries(WindowApp PRIVATE
+        Core
+        Graphics
+        Input
+)
