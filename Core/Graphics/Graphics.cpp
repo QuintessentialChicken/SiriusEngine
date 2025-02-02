@@ -52,9 +52,9 @@ const char* Graphics::HrException::what() const noexcept {
             << std::dec << " (" << static_cast<unsigned long>(GetErrorCode()) << ")" << std::endl
             << "[Error String] " << GetErrorString() << std::endl
             << "[Description] " << GetErrorDescription() << std::endl;
-    // if (!info.empty()) {
-    //     oss << "\n[Error Info]\n" << GetErrorInfo() << std::endl << std::endl;
-    // }
+    if (!info.empty()) {
+        oss << "\n[Error Info]\n" << GetErrorInfo() << std::endl << std::endl;
+    }
     oss << GetOriginString();
     whatBuffer = oss.str();
     return whatBuffer.c_str();
@@ -157,6 +157,35 @@ Graphics::Graphics(HWND hWnd) {
     wrl::ComPtr<ID3D11Resource> backBuffer = nullptr;
     GFX_THROW_INFO(swapChain->GetBuffer(0, __uuidof(ID3D11Resource), &backBuffer));
     GFX_THROW_INFO(device->CreateRenderTargetView(backBuffer.Get(), nullptr, &target)); // Doesn't catch Access violation reading location when given a nullptr as resource
+
+    D3D11_DEPTH_STENCIL_DESC dsDesc = {};
+    dsDesc.DepthEnable = TRUE;
+    dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+    dsDesc.DepthFunc = D3D11_COMPARISON_LESS;
+    wrl::ComPtr<ID3D11DepthStencilState> DSState;
+    GFX_THROW_INFO(device->CreateDepthStencilState(&dsDesc, &DSState));
+    context->OMSetDepthStencilState(DSState.Get(), 0);
+
+    wrl::ComPtr<ID3D11Texture2D> depthStencil = nullptr;
+    D3D11_TEXTURE2D_DESC dDesc = {};
+    dDesc.Width = 800;
+    dDesc.Height = 600;
+    dDesc.MipLevels = 1;
+    dDesc.ArraySize = 1;
+    dDesc.Format = DXGI_FORMAT_D32_FLOAT;
+    dDesc.SampleDesc.Count = 1;
+    dDesc.SampleDesc.Quality = 0;
+    dDesc.Usage = D3D11_USAGE_DEFAULT;
+    dDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+    GFX_THROW_INFO(device->CreateTexture2D(&dDesc, nullptr, &depthStencil));
+
+    D3D11_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
+    dsvDesc.Format = DXGI_FORMAT_D32_FLOAT;
+    dsvDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+    dsvDesc.Texture2D.MipSlice = 0;
+    GFX_THROW_INFO(device->CreateDepthStencilView(depthStencil.Get(), &dsvDesc, &DSV));
+
+    context->OMSetRenderTargets(1, target.GetAddressOf(), DSV.Get());
 }
 
 void Graphics::EndFrame() {
@@ -175,9 +204,10 @@ void Graphics::EndFrame() {
 void Graphics::ClearBuffer(float r, float g, float b) noexcept {
     std::array<const float, 4> color = {r, g, b, 1.0f};
     context->ClearRenderTargetView(target.Get(), color.data());
+    context->ClearDepthStencilView(DSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 }
 
-void Graphics::DrawTestTriangle(float angle, float x, float y) {
+void Graphics::DrawTestTriangle(float angle, float x, float z) {
     HRESULT hr;
 
     struct Vertex {
@@ -243,7 +273,7 @@ void Graphics::DrawTestTriangle(float angle, float x, float y) {
         dx::XMMatrixTranspose(
             dx::XMMatrixRotationZ(angle) *
             dx::XMMatrixRotationX(angle) *
-            dx::XMMatrixTranslation(x, y, 4.0f) *
+            dx::XMMatrixTranslation(x, 0.0f, z + 4.0f) *
             dx::XMMatrixPerspectiveLH(1.0f, 3.0f / 4.0f, 0.5f, 10.0f)
         )
 
@@ -264,6 +294,7 @@ void Graphics::DrawTestTriangle(float angle, float x, float y) {
     //Bind Constant Buffer to Vertex Shader
     context->VSSetConstantBuffers(0, 1, constantBuffer.GetAddressOf());
 
+    // Color lookup for cube faces
     struct ConstantBuffer2 {
         struct {
             float r, g, b, a;
@@ -322,8 +353,6 @@ void Graphics::DrawTestTriangle(float angle, float x, float y) {
     ));
 
     context->IASetInputLayout(inputLayout.Get());
-
-    context->OMSetRenderTargets(1, target.GetAddressOf(), nullptr);
 
     context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
