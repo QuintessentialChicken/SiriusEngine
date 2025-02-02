@@ -1,7 +1,6 @@
 add_library(Core
         App.cpp
         App.h
-        CMakeLists.txt
         dxerr.cpp
         dxerr.h
         DXGetErrorDescription.inl
@@ -9,7 +8,6 @@ add_library(Core
         DxgiInfoManager.cpp
         DxgiInfoManager.h
         DXTrace.inl
-        GraphicsThrowMacros.h
         SiriusException.cpp
         SiriusException.h
         Timer.cpp

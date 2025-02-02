@@ -1,4 +1,28 @@
-add_library(Graphics
+add_library(Graphics STATIC
+        Bindable.cpp
+        Bindable.h
+        Box.cpp
+        Box.h
+        ConstantBuffer.h
+        Cube.h
+        Drawable.cpp
+        Drawable.h
+        DrawableBase.h
         Graphics.cpp
         Graphics.h
+        GraphicsThrowMacros.h
+        IndexBuffer.cpp
+        IndexBuffer.h
+        IndexedTriangleList.h
+        InputLayout.cpp
+        InputLayout.h
+        PixelShader.cpp
+        PixelShader.h
+        Topology.cpp
+        Topology.h
+        TransformCBuf.cpp
+        TransformCBuf.h
+        VertexBuffer.h
+        VertexShader.cpp
+        VertexShader.h
 )

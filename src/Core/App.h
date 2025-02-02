@@ -6,6 +6,7 @@
 #define APP_H
 #include "Timer.h"
 #include "Window.h"
+#include "Graphics/Box.h"
 
 
 class App {
@@ -19,6 +20,7 @@ private:
 
     Window wnd;
     Timer timer;
+    std::vector<std::unique_ptr<Box>> boxes;
 };
 
 
