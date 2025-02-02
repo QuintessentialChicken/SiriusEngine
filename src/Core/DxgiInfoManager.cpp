@@ -7,6 +7,7 @@
 
 #include "DxgiInfoManager.h"
 #include "Window.h"
+#include "WindowsThrowMacros.h"
 #include "Graphics/Graphics.h"
 
 #define GFX_THROW_NOINFO(hrcall) if( FAILED( hr = (hrcall) ) ) throw Graphics::HrException( __LINE__,__FILE__,hr )

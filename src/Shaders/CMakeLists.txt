@@ -14,6 +14,6 @@ foreach(FILE ${HLSL_SHADER_FILES})
             COMMAND fxc.exe /nologo /Emain /T${shadertype}_${shadermodel} $<IF:$<CONFIG:DEBUG>,/Od,/O1> /Zi /Fo ${CMAKE_BINARY_DIR}/WindowApp/${FILE_WE}.cso /Fd ${CMAKE_BINARY_DIR}/WindowApp/${FILE_WE}.pdb ${FILE}
             MAIN_DEPENDENCY ${FILE}
             COMMENT "HLSL ${FILE}"
-            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+            WORKING_DIRECTORY .
             VERBATIM)
 endforeach(FILE)

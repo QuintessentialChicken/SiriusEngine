@@ -22,7 +22,7 @@ App::App(): wnd{800, 600, "Sirius Game Engine"} {
 void App::DoFrame() {
     wnd.GetGraphics().ClearBuffer(1, 1, 1);
     wnd.GetGraphics().DrawTestTriangle(45, wnd.mouse.GetPosX() / 400.0f - 1.0f, -wnd.mouse.GetPosY() / 300.0f + 1.0f);
-    wnd.GetGraphics().DrawTestTriangle(45, 0.0f, 0.0f);
+    wnd.GetGraphics().DrawTestTriangle(15, 0.0f, 0.0f);
     wnd.GetGraphics().EndFrame();
     
 }
