@@ -184,21 +184,17 @@ void Graphics::DrawTestTriangle(float angle, float x, float y) {
         struct {
             float x, y, z;
         } pos;
-
-        struct {
-            unsigned char r, g, b, a;
-        } color;
     };
 
     constexpr Vertex vertices[] = {
-        {1.0f, 1.0f, -1.0f, 255, 0, 0, 0},
-        {-1.0f, 1.0f, -1.0f, 0, 255, 0, 0},
-        {1.0f, -1.0f, -1.0f, 0, 0, 255, 0},
-        {-1.0f, -1.0f, -1.0f, 255, 255, 0, 0},
-        {1.0f, 1.0f, 1.0f, 255, 0, 255, 0},
-        {-1.0f, 1.0f, 1.0f, 0, 255, 255, 0},
-        {1.0f, -1.0f, 1.0f, 0, 0, 0, 0},
-        {-1.0f, -1.0f, 1.0f, 255, 255, 255, 0}
+        {1.0f, 1.0f, -1.0f},
+        {-1.0f, 1.0f, -1.0f},
+        {1.0f, -1.0f, -1.0f},
+        {-1.0f, -1.0f, -1.0},
+        {1.0f, 1.0f, 1.0f},
+        {-1.0f, 1.0f, 1.0f},
+        {1.0f, -1.0f, 1.0f},
+        {-1.0f, -1.0f, 1.0f}
     };
 
     wrl::ComPtr<ID3D11Buffer> vertexBuffer = nullptr;
@@ -268,6 +264,35 @@ void Graphics::DrawTestTriangle(float angle, float x, float y) {
     //Bind Constant Buffer to Vertex Shader
     context->VSSetConstantBuffers(0, 1, constantBuffer.GetAddressOf());
 
+    struct ConstantBuffer2 {
+        struct {
+            float r, g, b, a;
+        } face_colors[6];
+    };
+
+    const ConstantBuffer2 cb2 = {
+        {
+            {1.0f, 0.0f, 1.0f},
+            {1.0f, 0.0f, 0.0f},
+            {0.0f, 1.0f, 0.0f},
+            {0.0f, 0.0f, 1.0f},
+            {1.0f, 1.0f, 0.0f},
+            {0.0f, 1.0f, 1.0f},
+        }
+    };
+    wrl::ComPtr<ID3D11Buffer> constantBuffer2 = nullptr;
+    D3D11_BUFFER_DESC cbd2;
+    cbd2.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+    cbd2.Usage = D3D11_USAGE_DEFAULT;
+    cbd2.CPUAccessFlags = 0;
+    cbd2.MiscFlags = 0;
+    cbd2.ByteWidth = sizeof(cb2);
+    cbd2.StructureByteStride = 0;
+    D3D11_SUBRESOURCE_DATA csd2 = {};
+    csd2.pSysMem = &cb2;
+    GFX_THROW_INFO(device->CreateBuffer(&cbd2, &csd2, &constantBuffer2));
+    context->PSSetConstantBuffers(0, 1, constantBuffer2.GetAddressOf());
+
     // Create PixelShader
     wrl::ComPtr<ID3D11PixelShader> pixelShader;
     wrl::ComPtr<ID3DBlob> blob;
@@ -286,8 +311,7 @@ void Graphics::DrawTestTriangle(float angle, float x, float y) {
 
     wrl::ComPtr<ID3D11InputLayout> inputLayout;
     constexpr D3D11_INPUT_ELEMENT_DESC ied[] = {
-        {"Position", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-        {"Color", 0, DXGI_FORMAT_R8G8B8A8_UNORM, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0}
+        {"Position", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0}
     };
     GFX_THROW_INFO(device->CreateInputLayout(
         ied,
