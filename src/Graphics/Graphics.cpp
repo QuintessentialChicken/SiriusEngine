@@ -16,88 +16,86 @@ namespace wrl = Microsoft::WRL;
 namespace dx = DirectX;
 
 Graphics::Graphics(HWND hWnd) {
-	DXGI_SWAP_CHAIN_DESC sd = {};
-	sd.BufferDesc.Width = 0;
-	sd.BufferDesc.Height = 0;
-	sd.BufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
-	sd.BufferDesc.RefreshRate.Numerator = 0;
-	sd.BufferDesc.RefreshRate.Denominator = 0;
-	sd.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
-	sd.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
-	sd.SampleDesc.Count = 1;
-	sd.SampleDesc.Quality = 0;
-	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-	sd.BufferCount = 1;
-	sd.OutputWindow = hWnd;
-	sd.Windowed = TRUE;
-	sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
-	sd.Flags = 0;
+    DXGI_SWAP_CHAIN_DESC sd = {};
+    sd.BufferDesc.Width = 0;
+    sd.BufferDesc.Height = 0;
+    sd.BufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+    sd.BufferDesc.RefreshRate.Numerator = 0;
+    sd.BufferDesc.RefreshRate.Denominator = 0;
+    sd.BufferDesc.Scaling = DXGI_MODE_SCALING_UNSPECIFIED;
+    sd.BufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
+    sd.SampleDesc.Count = 1;
+    sd.SampleDesc.Quality = 0;
+    sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+    sd.BufferCount = 1;
+    sd.OutputWindow = hWnd;
+    sd.Windowed = TRUE;
+    sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
+    sd.Flags = 0;
 
-	UINT swapCreateFlags = 0u;
+    UINT swapCreateFlags = 0u;
 #ifndef NDEBUG
-	swapCreateFlags |= D3D11_CREATE_DEVICE_DEBUG;
+    swapCreateFlags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif
 
-	// for checking results of d3d functions
-	HRESULT hr;
+    // for checking results of d3d functions
+    HRESULT hr;
 
-	// create device and front/back buffers, and swap chain and rendering context
-	GFX_THROW_INFO( D3D11CreateDeviceAndSwapChain(
-		nullptr,
-		D3D_DRIVER_TYPE_HARDWARE,
-		nullptr,
-		swapCreateFlags,
-		nullptr,
-		0,
-		D3D11_SDK_VERSION,
-		&sd,
-		&swapChain,
-		&device,
-		nullptr,
-		&context
-	) );
+    // create device and front/back buffers, and swap chain and rendering context
+    GFX_THROW_INFO(D3D11CreateDeviceAndSwapChain(
+        nullptr,
+        D3D_DRIVER_TYPE_HARDWARE,
+        nullptr,
+        swapCreateFlags,
+        nullptr,
+        0,
+        D3D11_SDK_VERSION,
+        &sd,
+        &swapChain,
+        &device,
+        nullptr,
+        &context
+    ));
 
-	// gain access to texture subresource in swap chain (back buffer)
-	wrl::ComPtr<ID3D11Resource> pBackBuffer;
-	GFX_THROW_INFO( swapChain->GetBuffer( 0,__uuidof(ID3D11Resource),&pBackBuffer ) );
-	GFX_THROW_INFO( device->CreateRenderTargetView( pBackBuffer.Get(),nullptr,&target ) );
+    // gain access to texture subresource in swap chain (back buffer)
+    wrl::ComPtr<ID3D11Resource> backBuffer;
+    GFX_THROW_INFO(swapChain->GetBuffer( 0,__uuidof(ID3D11Resource),&backBuffer ));
+    GFX_THROW_INFO(device->CreateRenderTargetView( backBuffer.Get(),nullptr,&target ));
 
-	// create depth stensil state
-	D3D11_DEPTH_STENCIL_DESC dsDesc = {};
-	dsDesc.DepthEnable = TRUE;
-	dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-	dsDesc.DepthFunc = D3D11_COMPARISON_LESS;
-	wrl::ComPtr<ID3D11DepthStencilState> pDSState;
-	GFX_THROW_INFO( device->CreateDepthStencilState( &dsDesc,&pDSState ) );
+    // create depth stensil state
+    D3D11_DEPTH_STENCIL_DESC dsDesc = {};
+    dsDesc.DepthEnable = TRUE;
+    dsDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+    dsDesc.DepthFunc = D3D11_COMPARISON_LESS;
+    wrl::ComPtr<ID3D11DepthStencilState> DSState;
+    GFX_THROW_INFO(device->CreateDepthStencilState( &dsDesc,&DSState ));
 
-	// bind depth state
-	context->OMSetDepthStencilState( pDSState.Get(),1u );
+    // bind depth state
+    context->OMSetDepthStencilState(DSState.Get(), 1u);
 
-	// create depth stensil texture
-	wrl::ComPtr<ID3D11Texture2D> pDepthStencil;
-	D3D11_TEXTURE2D_DESC descDepth = {};
-	descDepth.Width = 800u;
-	descDepth.Height = 600u;
-	descDepth.MipLevels = 1u;
-	descDepth.ArraySize = 1u;
-	descDepth.Format = DXGI_FORMAT_D32_FLOAT;
-	descDepth.SampleDesc.Count = 1u;
-	descDepth.SampleDesc.Quality = 0u;
-	descDepth.Usage = D3D11_USAGE_DEFAULT;
-	descDepth.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-	GFX_THROW_INFO( device->CreateTexture2D( &descDepth,nullptr,&pDepthStencil ) );
+    // create depth stensil texture
+    wrl::ComPtr<ID3D11Texture2D> depthStencil;
+    D3D11_TEXTURE2D_DESC depthDesc = {};
+    depthDesc.Width = 800u;
+    depthDesc.Height = 600u;
+    depthDesc.MipLevels = 1u;
+    depthDesc.ArraySize = 1u;
+    depthDesc.Format = DXGI_FORMAT_D32_FLOAT;
+    depthDesc.SampleDesc.Count = 1u;
+    depthDesc.SampleDesc.Quality = 0u;
+    depthDesc.Usage = D3D11_USAGE_DEFAULT;
+    depthDesc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+    GFX_THROW_INFO(device->CreateTexture2D( &depthDesc,nullptr,&depthStencil ));
 
-	// create view of depth stensil texture
-	D3D11_DEPTH_STENCIL_VIEW_DESC descDSV = {};
-	descDSV.Format = DXGI_FORMAT_D32_FLOAT;
-	descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-	descDSV.Texture2D.MipSlice = 0u;
-	GFX_THROW_INFO( device->CreateDepthStencilView(
-		pDepthStencil.Get(),&descDSV,&DSV
-	) );
+    // create view of depth stensil texture
+    D3D11_DEPTH_STENCIL_VIEW_DESC DSVDesc = {};
+    DSVDesc.Format = DXGI_FORMAT_D32_FLOAT;
+    DSVDesc.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
+    DSVDesc.Texture2D.MipSlice = 0u;
+    GFX_THROW_INFO(device->CreateDepthStencilView(depthStencil.Get(),&DSVDesc,&DSV));
 
-	// bind depth stensil view to OM
-	context->OMSetRenderTargets( 1u,target.GetAddressOf(),DSV.Get() );
+    // bind depth stensil view to OM
+    context->OMSetRenderTargets(1u, target.GetAddressOf(), DSV.Get());
 
     D3D11_VIEWPORT vp;
     vp.Width = 800;
@@ -130,134 +128,6 @@ void Graphics::ClearBuffer(float r, float g, float b) noexcept {
 
 void Graphics::DrawIndexed(const UINT count) {
     GFX_THROW_INFO_ONLY(context->DrawIndexed(count, 0, 0));
-}
-
-void Graphics::DrawTestTriangle(float angle, float x, float z) {
-    HRESULT hr;
-
-    struct Vertex {
-        struct {
-            float x, y, z;
-        } pos;
-    };
-
-    constexpr Vertex vertices[] = {
-        {1.0f, 1.0f, -1.0f},
-        {-1.0f, 1.0f, -1.0f},
-        {1.0f, -1.0f, -1.0f},
-        {-1.0f, -1.0f, -1.0},
-        {1.0f, 1.0f, 1.0f},
-        {-1.0f, 1.0f, 1.0f},
-        {1.0f, -1.0f, 1.0f},
-        {-1.0f, -1.0f, 1.0f}
-    };
-
-
-
-
-    // Create Index Buffer
-    const unsigned short indices[] = {
-        0, 2, 1,  2, 3, 1,
-        1, 3, 5,  3, 7, 5,
-        2, 6, 3,  3, 6, 7,
-        4, 5, 7,  4, 7, 6,
-        0, 4, 2,  2, 4, 6,
-        0, 1, 4,  1, 5, 4
-    };
-
-
-    // Create Constant Buffer for Transformation Matrix
-    struct ConstantBuffer {
-        dx::XMMATRIX transform;
-    };
-    const ConstantBuffer cb = {
-        dx::XMMatrixTranspose(
-            dx::XMMatrixRotationZ(angle) *
-            dx::XMMatrixRotationX(angle) *
-            dx::XMMatrixTranslation(x, 0.0f, z + 4.0f) *
-            dx::XMMatrixPerspectiveLH(1.0f, 3.0f / 4.0f, 0.5f, 10.0f)
-        )
-
-    };
-
-    wrl::ComPtr<ID3D11Buffer> constantBuffer = nullptr;
-    D3D11_BUFFER_DESC cbd;
-    cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-    cbd.Usage = D3D11_USAGE_DYNAMIC;
-    cbd.ByteWidth = sizeof(cb);
-    cbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-    cbd.MiscFlags = 0;
-    cbd.StructureByteStride = 0;
-    D3D11_SUBRESOURCE_DATA csd = {};
-    csd.pSysMem = &cb;
-    GFX_THROW_INFO(device->CreateBuffer(&cbd, &csd, &constantBuffer));
-
-    //Bind Constant Buffer to Vertex Shader
-    context->VSSetConstantBuffers(0, 1, constantBuffer.GetAddressOf());
-
-    // Color lookup for cube faces
-    struct ConstantBuffer2 {
-        struct {
-            float r, g, b, a;
-        } face_colors[6];
-    };
-
-    const ConstantBuffer2 cb2 = {
-        {
-            {1.0f, 0.0f, 1.0f},
-            {1.0f, 0.0f, 0.0f},
-            {0.0f, 1.0f, 0.0f},
-            {0.0f, 0.0f, 1.0f},
-            {1.0f, 1.0f, 0.0f},
-            {0.0f, 1.0f, 1.0f},
-        }
-    };
-    wrl::ComPtr<ID3D11Buffer> constantBuffer2 = nullptr;
-    D3D11_BUFFER_DESC cbd2;
-    cbd2.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-    cbd2.Usage = D3D11_USAGE_DEFAULT;
-    cbd2.CPUAccessFlags = 0;
-    cbd2.MiscFlags = 0;
-    cbd2.ByteWidth = sizeof(cb2);
-    cbd2.StructureByteStride = 0;
-    D3D11_SUBRESOURCE_DATA csd2 = {};
-    csd2.pSysMem = &cb2;
-    GFX_THROW_INFO(device->CreateBuffer(&cbd2, &csd2, &constantBuffer2));
-    context->PSSetConstantBuffers(0, 1, constantBuffer2.GetAddressOf());
-
-    // Create PixelShader
-    wrl::ComPtr<ID3D11PixelShader> pixelShader;
-    wrl::ComPtr<ID3DBlob> blob;
-    GFX_THROW_INFO(D3DReadFileToBlob(L"PixelShader.cso", &blob));
-    GFX_THROW_INFO(device->CreatePixelShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, &pixelShader));
-    // Bind PixelShader
-    context->PSSetShader(pixelShader.Get(), nullptr, 0);
-
-    // Create VertexShader
-    wrl::ComPtr<ID3D11VertexShader> vertexShader;
-    GFX_THROW_INFO(D3DReadFileToBlob(L"VertexShader.cso", &blob));
-    GFX_THROW_INFO(device->CreateVertexShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, &vertexShader));
-    // Bind VertexShader
-    context->VSSetShader(vertexShader.Get(), nullptr, 0);
-
-
-    wrl::ComPtr<ID3D11InputLayout> inputLayout;
-    constexpr D3D11_INPUT_ELEMENT_DESC ied[] = {
-        {"Position", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0}
-    };
-    GFX_THROW_INFO(device->CreateInputLayout(
-        ied,
-        std::size(ied),
-        blob->GetBufferPointer(),
-        blob->GetBufferSize(),
-        &inputLayout
-    ));
-
-    context->IASetInputLayout(inputLayout.Get());
-
-    context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-
 }
 
 void Graphics::SetProjection(DirectX::FXMMATRIX proj) noexcept {

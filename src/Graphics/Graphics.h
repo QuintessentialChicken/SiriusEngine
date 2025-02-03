@@ -28,8 +28,6 @@ public:
 
     void DrawIndexed(UINT count);
 
-    void DrawTestTriangle(float angle, float x, float y);
-
     void SetProjection(DirectX::FXMMATRIX proj) noexcept;
 
     [[nodiscard]] DirectX::XMMATRIX GetProjection() const noexcept;

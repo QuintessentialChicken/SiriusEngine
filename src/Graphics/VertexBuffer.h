@@ -16,7 +16,7 @@ public:
         D3D11_BUFFER_DESC bd = {};
         bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
         bd.Usage = D3D11_USAGE_DEFAULT;
-        bd.ByteWidth = sizeof(vertices);
+        bd.ByteWidth = sizeof(vertices) * vertices.size();
         bd.CPUAccessFlags = 0;
         bd.MiscFlags = 0;
         bd.StructureByteStride = sizeof(V);

@@ -18,8 +18,7 @@ Box::Box(
     std::uniform_real_distribution<float>& adist,
     std::uniform_real_distribution<float>& ddist,
     std::uniform_real_distribution<float>& odist,
-    std::uniform_real_distribution<float>& rdist,
-    std::uniform_real_distribution<float>& bdist)
+    std::uniform_real_distribution<float>& rdist)
     : r(rdist(rng)),
       theta(adist(rng)),
       phi(adist(rng)),
@@ -35,19 +34,44 @@ Box::Box(
 
     if (!IsStaticInitialized()) {
         struct Vertex {
-            dx::XMFLOAT3 pos;
+            struct
+            {
+                float x;
+                float y;
+                float z;
+            } pos;
         };
-        const auto model = Cube::Make<Vertex>();
+        const std::vector<Vertex> vertices =
+        {
+            { -1.0f,-1.0f,-1.0f },
+            { 1.0f,-1.0f,-1.0f },
+            { -1.0f,1.0f,-1.0f },
+            { 1.0f,1.0f,-1.0f },
+            { -1.0f,-1.0f,1.0f },
+            { 1.0f,-1.0f,1.0f },
+            { -1.0f,1.0f,1.0f },
+            { 1.0f,1.0f,1.0f },
+        };
 
-        AddStaticBind(std::make_unique<VertexBuffer>(gfx, model.vertices));
+        AddStaticBind(std::make_unique<VertexBuffer>(gfx, vertices));
 
-        auto pvs = std::make_unique<VertexShader>(gfx, L"VertexShader.cso");
-        auto pvsbc = pvs->GetBytecode();
-        AddStaticBind(std::move(pvs));
+        auto vs = std::make_unique<VertexShader>(gfx, L"VertexShader.cso");
+        auto vsbc = vs->GetBytecode();
+
+        AddStaticBind(std::move(vs));
 
         AddStaticBind(std::make_unique<PixelShader>(gfx, L"PixelShader.cso"));
 
-        AddStaticIndexBuffer(std::make_unique<IndexBuffer>(gfx, model.indices));
+        const std::vector<unsigned short> indices =
+        {
+            0,2,1, 2,3,1,
+            1,3,5, 3,7,5,
+            2,6,3, 3,6,7,
+            4,5,7, 4,7,6,
+            0,4,2, 2,4,6,
+            0,1,4, 1,5,4
+        };
+        AddStaticIndexBuffer(std::make_unique<IndexBuffer>(gfx, indices));
 
         struct PixelShaderConstants {
             struct {
@@ -55,28 +79,26 @@ Box::Box(
                 float g;
                 float b;
                 float a;
-            } face_colors[8];
+            } face_colors[6];
         };
-        const PixelShaderConstants cb2 =
+        const PixelShaderConstants colorBuffer =
         {
             {
-                {1.0f, 1.0f, 1.0f},
-                {1.0f, 0.0f, 0.0f},
-                {0.0f, 1.0f, 0.0f},
-                {1.0f, 1.0f, 0.0f},
-                {0.0f, 0.0f, 1.0f},
-                {1.0f, 0.0f, 1.0f},
-                {0.0f, 1.0f, 1.0f},
-                {0.0f, 0.0f, 0.0f},
+                { 1.0f,0.0f,1.0f },
+                { 1.0f,0.0f,0.0f },
+                { 0.0f,1.0f,0.0f },
+                { 0.0f,0.0f,1.0f },
+                { 1.0f,1.0f,0.0f },
+                { 0.0f,1.0f,1.0f },
             }
         };
-        AddStaticBind(std::make_unique<PixelConstantBuffer<PixelShaderConstants> >(gfx, cb2));
+        AddStaticBind(std::make_unique<PixelConstantBuffer<PixelShaderConstants> >(gfx, colorBuffer));
 
         const std::vector<D3D11_INPUT_ELEMENT_DESC> ied =
         {
             {"Position", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
         };
-        AddStaticBind(std::make_unique<InputLayout>(gfx, ied, pvsbc));
+        AddStaticBind(std::make_unique<InputLayout>(gfx, ied, vsbc));
 
         AddStaticBind(std::make_unique<Topology>(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
     } else {
@@ -86,7 +108,7 @@ Box::Box(
     AddBind(std::make_unique<TransformCBuf>(gfx, *this));
 
     // model deformation transform (per instance, not stored as bind)
-    XMStoreFloat3x3(&mt, dx::XMMatrixScaling(1.0f, 1.0f, bdist(rng)));
+    // XMStoreFloat3x3(&mt, dx::XMMatrixScaling(1.0f, 1.0f, bdist(rng)));
 }
 
 void Box::Update(const float dt) noexcept {
@@ -100,8 +122,7 @@ void Box::Update(const float dt) noexcept {
 
 DirectX::XMMATRIX Box::GetTransformXM() const noexcept {
     namespace dx = DirectX;
-    return XMLoadFloat3x3(&mt) *
-           dx::XMMatrixRotationRollPitchYaw(pitch, yaw, roll) *
+    return dx::XMMatrixRotationRollPitchYaw(pitch, yaw, roll) *
            dx::XMMatrixTranslation(r, 0.0f, 0.0f) *
            dx::XMMatrixRotationRollPitchYaw(theta, phi, chi) *
            dx::XMMatrixTranslation(0.0f, 0.0f, 20.0f);

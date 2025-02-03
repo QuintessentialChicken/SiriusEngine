@@ -46,7 +46,6 @@ private:
     {
         return staticBinds;
     }
-private:
     static std::vector<std::unique_ptr<Bindable>> staticBinds;
 };
 
