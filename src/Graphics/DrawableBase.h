@@ -8,7 +8,11 @@
 #include "Drawable.h"
 #include "IndexBuffer.h"
 
-
+/*
+ *  Helper class to store staticBinds per Drawable (Cube, Sphere, etc.) instead of having one for all Drawables
+ *  This works because each Drawable inherits from DrawableBase using themselves as the template type.
+ *  The compiler then creates DrawableBase<Cube>::staticBinds, DrawableBase<Sphere>::staticBinds, etc.
+ */
 template<class T>
 class DrawableBase : public Drawable
 {

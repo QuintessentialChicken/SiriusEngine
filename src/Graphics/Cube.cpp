@@ -4,6 +4,7 @@
 
 #include "Cube.h"
 
+#include <iostream>
 #include <random>
 
 #include "ConstantBuffer.h"
@@ -15,7 +16,6 @@
 #include "VertexShader.h"
 
 Cube::Cube(Graphics& gfx) {
-
     namespace dx = DirectX;
     std::mt19937 rng{std::random_device{}()};
     std::uniform_real_distribution<float> bdist{1.0f, 3.0f};
@@ -75,22 +75,29 @@ Cube::Cube(Graphics& gfx) {
 
     // model deformation transform (per instance, not stored as bind)
     XMStoreFloat3x3(&mt, dx::XMMatrixScaling(4.0f, 2.0f, 3.0f));
+    Cube::SetTransform({0.0f, 2.0f, 5.0f});
 }
 
-void Cube::Update(const float dt) noexcept {
-    roll += droll * dt;
-    pitch += dpitch * dt;
-    yaw += dyaw * dt;
-    theta += dtheta * dt;
-    phi += dphi * dt;
-    chi += dchi * dt;
-}
-
+// TODO Move Matrix Calculation to separate method which is called when transformations (pos, rot, scale) are updated
 DirectX::XMMATRIX Cube::GetTransformXM() const noexcept {
-    namespace dx = DirectX;
-    return dx::XMLoadFloat3x3(&mt) * // Individual transformation per box
-           dx::XMMatrixRotationRollPitchYaw(pitch, yaw, roll) *
-           dx::XMMatrixTranslation(r, 0.0f, 0.0f) *
-           dx::XMMatrixRotationRollPitchYaw(theta, phi, chi) *
-           dx::XMMatrixTranslation(0.0f, 0.0f, 5.0f);
+    return DirectX::XMMatrixScaling(scale.x, scale.y, scale.z) *
+           DirectX::XMMatrixRotationRollPitchYaw(rotation.x, rotation.y, rotation.z) *
+           DirectX::XMMatrixTranslation(position.x, position.y, position.z);
+}
+
+void Cube::SetTransform(const DirectX::XMFLOAT3& position) noexcept {
+    Cube::position = position;
+    std::cout << "Position: " << Cube::position.x << std::endl;
+}
+
+void Cube::AddTransform(const DirectX::XMFLOAT3& distance) noexcept {
+    position.x += distance.x;
+    position.y += distance.y;
+    position.z += distance.z;
+}
+
+void Cube::SetRotation(const DirectX::XMFLOAT3& rotation) noexcept {
+}
+
+void Cube::SetScale(const DirectX::XMFLOAT3& scale) noexcept {
 }

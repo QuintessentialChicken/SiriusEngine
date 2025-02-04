@@ -27,7 +27,7 @@ public:
         std::uniform_real_distribution<float> odist{0.0f, 3.1415f * 0.08f};
         std::uniform_real_distribution<float> rdist{6.0f, 20.0f};
         std::uniform_real_distribution<float> bdist{1.0f, 20.0f};
-        std::uniform_int_distribution<> typedist{ 0,2 };
+        std::uniform_int_distribution<> typedist{0, 2};
     };
 
     explicit App(int width = 800, int height = 600, const std::string& title = "Default Title");
@@ -40,7 +40,7 @@ private:
     Window wnd;
     Timer timer;
     std::vector<std::unique_ptr<Drawable> > drawables;
-    static constexpr size_t numDrawables = 10;
+    static constexpr size_t numDrawables = 1;
 };
 
 

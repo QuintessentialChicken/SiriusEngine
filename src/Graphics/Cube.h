@@ -8,11 +8,15 @@
 
 class Cube : public DrawableBase<Cube> {
 public:
-    Cube(Graphics& gfx);
-
-    void Update(float dt) noexcept override;
+    explicit Cube(Graphics& gfx);
 
     [[nodiscard]] DirectX::XMMATRIX GetTransformXM() const noexcept override;
+    void SetTransform(const DirectX::XMFLOAT3& position) noexcept override;
+    void AddTransform(const DirectX::XMFLOAT3& distance) noexcept override;
+    void SetRotation(const DirectX::XMFLOAT3& rotation) noexcept override;
+
+    void SetScale(const DirectX::XMFLOAT3& scale) noexcept override;
+
     struct Vertex {
         DirectX::XMFLOAT3 pos;
     };

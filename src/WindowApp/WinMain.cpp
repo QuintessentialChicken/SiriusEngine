@@ -19,3 +19,7 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
     }
     return -1;
 }
+
+int main() {
+    return App{800, 600, "Sirius 3D"}.Run();
+}
