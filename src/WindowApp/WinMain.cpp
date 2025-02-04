@@ -9,7 +9,7 @@
 
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
     try {
-        return App{}.Run();
+        return App{800, 600, "Sirius 3D"}.Run();
     } catch (const SiriusException &e) {
         MessageBox(nullptr, e.what(), e.GetType(), MB_OK | MB_ICONEXCLAMATION);
     } catch (const std::exception &e) {

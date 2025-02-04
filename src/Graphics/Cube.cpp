@@ -1,11 +1,12 @@
 //
-// Created by Leon on 02/02/2025.
+// Created by Leon on 04/02/2025.
 //
 
-#include "Box.h"
+#include "Cube.h"
+
+#include <random>
 
 #include "ConstantBuffer.h"
-#include "Cube.h"
 #include "InputLayout.h"
 #include "PixelShader.h"
 #include "Topology.h"
@@ -13,46 +14,20 @@
 #include "VertexBuffer.h"
 #include "VertexShader.h"
 
-Box::Box(
-    Graphics& gfx, std::mt19937& rng,
-    std::uniform_real_distribution<float>& adist,
-    std::uniform_real_distribution<float>& ddist,
-    std::uniform_real_distribution<float>& odist,
-    std::uniform_real_distribution<float>& rdist)
-    : r(rdist(rng)),
-      theta(adist(rng)),
-      phi(adist(rng)),
-      chi(adist(rng)),
-      droll(ddist(rng)),
-      dpitch(ddist(rng)),
-      dyaw(ddist(rng)),
-      dtheta(odist(rng)),
-      dphi(odist(rng)),
-      dchi(odist(rng)) {
+Cube::Cube(Graphics& gfx) {
 
     namespace dx = DirectX;
+    std::mt19937 rng{std::random_device{}()};
+    std::uniform_real_distribution<float> bdist{1.0f, 3.0f};
+    r = bdist(rng);
+    droll = bdist(rng);
+    dpitch = bdist(rng);
+    dyaw = bdist(rng);
+    dtheta = bdist(rng);
+    dphi = bdist(rng);
+    dchi = bdist(rng);
 
     if (!IsStaticInitialized()) {
-        struct Vertex {
-            struct
-            {
-                float x;
-                float y;
-                float z;
-            } pos;
-        };
-        const std::vector<Vertex> vertices =
-        {
-            { -1.0f,-1.0f,-1.0f },
-            { 1.0f,-1.0f,-1.0f },
-            { -1.0f,1.0f,-1.0f },
-            { 1.0f,1.0f,-1.0f },
-            { -1.0f,-1.0f,1.0f },
-            { 1.0f,-1.0f,1.0f },
-            { -1.0f,1.0f,1.0f },
-            { 1.0f,1.0f,1.0f },
-        };
-
         AddStaticBind(std::make_unique<VertexBuffer>(gfx, vertices));
 
         auto vs = std::make_unique<VertexShader>(gfx, L"VertexShader.cso");
@@ -62,15 +37,6 @@ Box::Box(
 
         AddStaticBind(std::make_unique<PixelShader>(gfx, L"PixelShader.cso"));
 
-        const std::vector<unsigned short> indices =
-        {
-            0,2,1, 2,3,1,
-            1,3,5, 3,7,5,
-            2,6,3, 3,6,7,
-            4,5,7, 4,7,6,
-            0,4,2, 2,4,6,
-            0,1,4, 1,5,4
-        };
         AddStaticIndexBuffer(std::make_unique<IndexBuffer>(gfx, indices));
 
         struct PixelShaderConstants {
@@ -84,12 +50,12 @@ Box::Box(
         const PixelShaderConstants colorBuffer =
         {
             {
-                { 1.0f,0.0f,1.0f },
-                { 1.0f,0.0f,0.0f },
-                { 0.0f,1.0f,0.0f },
-                { 0.0f,0.0f,1.0f },
-                { 1.0f,1.0f,0.0f },
-                { 0.0f,1.0f,1.0f },
+                {1.0f, 0.0f, 1.0f},
+                {1.0f, 0.0f, 0.0f},
+                {0.0f, 1.0f, 0.0f},
+                {0.0f, 0.0f, 1.0f},
+                {1.0f, 1.0f, 0.0f},
+                {0.0f, 1.0f, 1.0f},
             }
         };
         AddStaticBind(std::make_unique<PixelConstantBuffer<PixelShaderConstants> >(gfx, colorBuffer));
@@ -108,10 +74,10 @@ Box::Box(
     AddBind(std::make_unique<TransformCBuf>(gfx, *this));
 
     // model deformation transform (per instance, not stored as bind)
-    // XMStoreFloat3x3(&mt, dx::XMMatrixScaling(1.0f, 1.0f, bdist(rng)));
+    XMStoreFloat3x3(&mt, dx::XMMatrixScaling(4.0f, 2.0f, 3.0f));
 }
 
-void Box::Update(const float dt) noexcept {
+void Cube::Update(const float dt) noexcept {
     roll += droll * dt;
     pitch += dpitch * dt;
     yaw += dyaw * dt;
@@ -120,10 +86,11 @@ void Box::Update(const float dt) noexcept {
     chi += dchi * dt;
 }
 
-DirectX::XMMATRIX Box::GetTransformXM() const noexcept {
+DirectX::XMMATRIX Cube::GetTransformXM() const noexcept {
     namespace dx = DirectX;
-    return dx::XMMatrixRotationRollPitchYaw(pitch, yaw, roll) *
+    return dx::XMLoadFloat3x3(&mt) * // Individual transformation per box
+           dx::XMMatrixRotationRollPitchYaw(pitch, yaw, roll) *
            dx::XMMatrixTranslation(r, 0.0f, 0.0f) *
            dx::XMMatrixRotationRollPitchYaw(theta, phi, chi) *
-           dx::XMMatrixTranslation(0.0f, 0.0f, 20.0f);
+           dx::XMMatrixTranslation(0.0f, 0.0f, 5.0f);
 }

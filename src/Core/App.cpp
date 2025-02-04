@@ -5,16 +5,29 @@
 #include <thread>
 #include "App.h"
 #include "Window.h"
+#include "Graphics/Cube.h"
 
-App::App(): wnd{800, 600, "Sirius Game Engine"} {
-    std::mt19937 rng{std::random_device{}()};
-    std::uniform_real_distribution adist{0.0f, 3.1415f * 2.0f};
-    std::uniform_real_distribution ddist{0.0f, 3.1415f * 0.5f};
-    std::uniform_real_distribution odist{0.0f, 3.1415f * 0.08f};
-    std::uniform_real_distribution rdist{6.0f, 20.0f};
-    for (auto i = 0; i < 80; i++) {
-        boxes.push_back(std::make_unique<Box>(wnd.GetGraphics(), rng, adist, ddist, odist, rdist));
-    }
+App::Factory::Factory(Graphics& gfx) : gfx{gfx} {
+}
+
+std::unique_ptr<Drawable> App::Factory::operator()() {
+    // switch (typedist(rng)) {
+    //     case 0:
+    //         return std::make_unique<Cube>(gfx, adist(rng), ddist(rng), rdist(rng));
+    //     case 1:
+    //         return std::make_unique<Cube>(gfx, adist(rng), ddist(rng), rdist(rng));
+    //     default:
+    //         return std::make_unique<Cube>(gfx, adist(rng), ddist(rng), rdist(rng));;
+    // }
+    return std::make_unique<Cube>(gfx);
+    // return std::make_unique<Box>(gfx, rng, adist, ddist, odist, rdist, bdist);
+}
+
+App::App(const int width, const int height, const std::string& title) : wnd{width, height, title.c_str()} {
+    const Factory f{wnd.GetGraphics()};
+    drawables.reserve(numDrawables);
+    // Generate Drawables using f and appends them to the end of the drawables vector
+    std::generate_n(std::back_inserter(drawables), numDrawables, f);
     wnd.GetGraphics().SetProjection(DirectX::XMMatrixPerspectiveLH(1.0f, 3.0f / 4.0f, 0.5f, 40.0f));
 }
 
@@ -31,9 +44,9 @@ App::App(): wnd{800, 600, "Sirius Game Engine"} {
 void App::DoFrame() {
     const auto dt{timer.Mark()};
     wnd.GetGraphics().ClearBuffer(0.07f, 0.0f, 0.12f);
-    for (const auto& box: boxes) {
-        box->Update(dt);
-        box->Draw(wnd.GetGraphics());
+    for (const auto& drawable: drawables) {
+        drawable->Update(dt);
+        drawable->Draw(wnd.GetGraphics());
     }
     wnd.GetGraphics().EndFrame();
 }

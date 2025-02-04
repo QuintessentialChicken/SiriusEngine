@@ -1,9 +1,8 @@
 add_library(Graphics STATIC
         Bindable.cpp
         Bindable.h
-        Box.cpp
-        Box.h
         ConstantBuffer.h
+        Cube.cpp
         Cube.h
         Drawable.cpp
         Drawable.h
@@ -13,7 +12,6 @@ add_library(Graphics STATIC
         GraphicsThrowMacros.h
         IndexBuffer.cpp
         IndexBuffer.h
-        IndexedTriangleList.h
         InputLayout.cpp
         InputLayout.h
         PixelShader.cpp
