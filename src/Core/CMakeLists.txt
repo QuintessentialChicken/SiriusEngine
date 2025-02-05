@@ -15,5 +15,7 @@ add_library(Core
         Window.cpp
         Window.h
         WindowsThrowMacros.h
+        GDIPlusManager.cpp
+        GDIPlusManager.h
 )
 target_link_libraries(Core PRIVATE d3d11.lib dxguid.lib D3DCompiler.lib)

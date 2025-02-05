@@ -23,4 +23,10 @@ add_library(Graphics STATIC
         VertexBuffer.h
         VertexShader.cpp
         VertexShader.h
+        Surface.cpp
+        Surface.h
+        Texture.cpp
+        Texture.h
+        Sampler.cpp
+        Sampler.h
 )
