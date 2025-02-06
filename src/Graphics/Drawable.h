@@ -33,6 +33,11 @@ public:
 
     struct Vertex {
         DirectX::XMFLOAT3 pos;
+        struct
+        {
+            float u;
+            float v;
+        } tex;
     };
 
     // TODO Create a wrapper for Drawable vectors using properties

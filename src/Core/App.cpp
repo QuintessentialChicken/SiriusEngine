@@ -7,9 +7,12 @@
 
 #include <iostream>
 
+#include "GDIPlusManager.h"
 #include "Window.h"
 #include "Graphics/Cube.h"
 #include "Graphics/Plane.h"
+
+GDIPlusManager gdipm;
 
 App::Factory::Factory(Graphics& gfx) : gfx{gfx} {
 }
@@ -41,7 +44,7 @@ App::App(const int width, const int height, const std::string& title) : wnd{widt
 
 void App::DoFrame() {
     wnd.GetGraphics().ClearBuffer(0.07f, 0.0f, 0.12f);
-    // drawables[0]->AddTransform({cos(timer.Peek()) / 30.0f, -sin(timer.Peek() * 1.2f) / 35.0f, 0});
+    // drawables[0]->SetRotation({timer.Peek(), timer.Peek(), 0});
     for (const auto& drawable: drawables) {
         drawable->Draw(wnd.GetGraphics());
     }

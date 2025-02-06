@@ -107,7 +107,8 @@ Surface Surface::FromFile( const std::string& name )
 		mbstowcs_s( nullptr,wideName,name.c_str(),_TRUNCATE );
 
 		Gdiplus::Bitmap bitmap( wideName );
-		if( bitmap.GetLastStatus() != Gdiplus::Status::Ok )
+		auto status = bitmap.GetLastStatus();
+		if( status != Gdiplus::Status::Ok )
 		{
 			std::stringstream ss;
 			ss << "Loading image [" << name << "]: failed to load.";

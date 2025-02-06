@@ -7,6 +7,9 @@
 #include "ConstantBuffer.h"
 #include "InputLayout.h"
 #include "PixelShader.h"
+#include "Sampler.h"
+#include "Surface.h"
+#include "Texture.h"
 #include "Topology.h"
 #include "TransformCBuf.h"
 #include "VertexBuffer.h"
@@ -14,40 +17,29 @@
 
 Plane::Plane(Graphics& gfx) {
     if (!IsStaticInitialized()) {
-        AddStaticBind(std::make_unique<VertexBuffer>(gfx, vertices));
 
-        auto vs = std::make_unique<VertexShader>(gfx, L"VertexShader.cso");
-        auto vsbc = vs->GetBytecode();
+        AddStaticBind( std::make_unique<Texture>( gfx,Surface::FromFile( R"(..\..\resources\superman.png)" ) ) );
 
-        AddStaticBind(std::move(vs));
+        AddStaticBind( std::make_unique<VertexBuffer>( gfx, vertices ) );
 
-        AddStaticBind(std::make_unique<PixelShader>(gfx, L"PixelShader.cso"));
+        AddStaticBind( std::make_unique<Sampler>( gfx ) );
 
-        AddStaticIndexBuffer(std::make_unique<IndexBuffer>(gfx, indices));
+        auto pvs = std::make_unique<VertexShader>( gfx,L"TextureVS.cso" );
+        auto pvsbc = pvs->GetBytecode();
+        AddStaticBind( std::move( pvs ) );
 
-        struct PixelShaderConstants {
-            struct {
-                float r;
-                float g;
-                float b;
-                float a;
-            } face_colors[1];
-        };
-        constexpr PixelShaderConstants colorBuffer =
-        {
-            {
-                {1.0f, 1.0f, 1.0f}
-            }
-        };
-        AddStaticBind(std::make_unique<PixelConstantBuffer<PixelShaderConstants> >(gfx, colorBuffer));
+        AddStaticBind( std::make_unique<PixelShader>( gfx,L"TexturePS.cso" ) );
+
+        AddStaticIndexBuffer( std::make_unique<IndexBuffer>( gfx, indices ) );
 
         const std::vector<D3D11_INPUT_ELEMENT_DESC> ied =
         {
-            {"Position", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+            { "Position",0,DXGI_FORMAT_R32G32B32_FLOAT,0,0,D3D11_INPUT_PER_VERTEX_DATA,0 },
+            { "TexCoord",0,DXGI_FORMAT_R32G32_FLOAT,0,12,D3D11_INPUT_PER_VERTEX_DATA,0 },
         };
-        AddStaticBind(std::make_unique<InputLayout>(gfx, ied, vsbc));
+        AddStaticBind( std::make_unique<InputLayout>( gfx,ied,pvsbc ) );
 
-        AddStaticBind(std::make_unique<Topology>(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
+        AddStaticBind( std::make_unique<Topology>( gfx,D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST ) );
     } else {
         SetIndexFromStatic();
     }
@@ -55,8 +47,8 @@ Plane::Plane(Graphics& gfx) {
     AddBind(std::make_unique<TransformCBuf>(gfx, *this));
 
     // model deformation transform (per instance, not stored as bind)
-    Plane::SetTransform({0.0f, 0.0f, 10.0f});
-    Plane::SetRotation({1.5708f, 0.0f, 0.0f});
+    Plane::SetTransform({0.0f, 0.0f, 3.0f});
+    Plane::SetRotation({1.571f, 0.0f, 0.0f});
 }
 
 DirectX::XMMATRIX Plane::GetTransformXM() const noexcept {
