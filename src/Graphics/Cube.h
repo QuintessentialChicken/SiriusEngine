@@ -11,26 +11,26 @@ public:
     explicit Cube(Graphics& gfx);
 
     [[nodiscard]] DirectX::XMMATRIX GetTransformXM() const noexcept override;
+
     void SetTransform(const DirectX::XMFLOAT3& position) noexcept override;
+
     void AddTransform(const DirectX::XMFLOAT3& distance) noexcept override;
+
     void SetRotation(const DirectX::XMFLOAT3& rotation) noexcept override;
 
     void SetScale(const DirectX::XMFLOAT3& scale) noexcept override;
 
-    struct Vertex {
-        DirectX::XMFLOAT3 pos;
-    };
 
-    const std::vector<Vertex> vertices {{
-        {{-0.5, -0.5, -0.5}},
-        {{0.5, -0.5, -0.5}},
-        {{-0.5, 0.5, -0.5}},
-        {{0.5, 0.5, -0.5}},
-        {{-0.5, -0.5, 0.5}},
-        {{0.5, -0.5, 0.5}},
-        {{-0.5, 0.5, 0.5}},
-        {{0.5, 0.5, 0.5}}
-    }};
+    const std::vector<Vertex> vertices{
+        {{-0.5f, -0.5f, -0.5f}},
+        {{0.5f, -0.5f, -0.5f}},
+        {{-0.5f, 0.5f, -0.5f}},
+        {{0.5f, 0.5f, -0.5f}},
+        {{-0.5f, -0.5f, 0.5f}},
+        {{0.5f, -0.5f, 0.5f}},
+        {{-0.5f, 0.5f, 0.5f}},
+        {{0.5f, 0.5f, 0.5f}}
+    };
     const std::vector<unsigned short> indices{
         0, 2, 1, 2, 3, 1,
         1, 3, 5, 3, 7, 5,
@@ -89,7 +89,6 @@ public:
     // }
 
 private:
-    DirectX::XMFLOAT3X3 mt;
     float r = 0.0f;
     float roll = 0.0f;
     float pitch = 0.0f;

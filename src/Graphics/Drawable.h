@@ -17,10 +17,6 @@ class Drawable {
     friend class DrawableBase;
 
 public:
-    Drawable() = default;
-
-    Drawable(const Drawable&) = delete;
-
     virtual ~Drawable() = default;
 
     [[nodiscard]] virtual DirectX::XMMATRIX GetTransformXM() const noexcept = 0;
@@ -34,6 +30,14 @@ public:
     virtual void SetRotation(const DirectX::XMFLOAT3& rotation) noexcept = 0;
 
     virtual void SetScale(const DirectX::XMFLOAT3& scale) noexcept = 0;
+
+    struct Vertex {
+        DirectX::XMFLOAT3 pos;
+    };
+
+    // TODO Create a wrapper for Drawable vectors using properties
+    // const std::vector<Vertex> vertices = {{{1.0f, 2.0f, 3.0f}}};
+    // const std::vector<unsigned short> indices;
 
     DirectX::XMFLOAT3 position = {0.0f, 0.0f, 0.0f};
     DirectX::XMFLOAT3 rotation = {0.0f, 0.0f, 0.0f,};
@@ -49,7 +53,7 @@ private:
 
     const IndexBuffer* indexBuffer = nullptr;
 
-    std::vector<std::unique_ptr<Bindable>> binds;
+    std::vector<std::unique_ptr<Bindable> > binds;
 };
 
 

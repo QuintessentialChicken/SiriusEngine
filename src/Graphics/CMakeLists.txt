@@ -16,6 +16,14 @@ add_library(Graphics STATIC
         InputLayout.h
         PixelShader.cpp
         PixelShader.h
+        Plane.cpp
+        Plane.h
+        Sampler.cpp
+        Sampler.h
+        Surface.cpp
+        Surface.h
+        Texture.cpp
+        Texture.h
         Topology.cpp
         Topology.h
         TransformCBuf.cpp
@@ -23,10 +31,4 @@ add_library(Graphics STATIC
         VertexBuffer.h
         VertexShader.cpp
         VertexShader.h
-        Surface.cpp
-        Surface.h
-        Texture.cpp
-        Texture.h
-        Sampler.cpp
-        Sampler.h
 )

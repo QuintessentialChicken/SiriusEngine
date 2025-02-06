@@ -1,0 +1,5 @@
+- Create a wrapper for Drawable vectors
+    - Implement properties to access values directly (but with getters/setters internally)
+    - Override arithmetic expressions
+
+- Move Matrix Calculation for Transform to separate method which is called when transformations (pos, rot, scale) are updated

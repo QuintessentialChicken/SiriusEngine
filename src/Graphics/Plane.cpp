@@ -1,11 +1,8 @@
 //
-// Created by Leon on 04/02/2025.
+// Created by Leon on 06/02/2025.
 //
 
-#include "Cube.h"
-
-#include <iostream>
-#include <random>
+#include "Plane.h"
 
 #include "ConstantBuffer.h"
 #include "InputLayout.h"
@@ -15,18 +12,7 @@
 #include "VertexBuffer.h"
 #include "VertexShader.h"
 
-Cube::Cube(Graphics& gfx) {
-    namespace dx = DirectX;
-    std::mt19937 rng{std::random_device{}()};
-    std::uniform_real_distribution<float> bdist{1.0f, 3.0f};
-    r = bdist(rng);
-    droll = bdist(rng);
-    dpitch = bdist(rng);
-    dyaw = bdist(rng);
-    dtheta = bdist(rng);
-    dphi = bdist(rng);
-    dchi = bdist(rng);
-
+Plane::Plane(Graphics& gfx) {
     if (!IsStaticInitialized()) {
         AddStaticBind(std::make_unique<VertexBuffer>(gfx, vertices));
 
@@ -45,17 +31,12 @@ Cube::Cube(Graphics& gfx) {
                 float g;
                 float b;
                 float a;
-            } face_colors[6];
+            } face_colors[1];
         };
-        const PixelShaderConstants colorBuffer =
+        constexpr PixelShaderConstants colorBuffer =
         {
             {
-                {1.0f, 0.0f, 1.0f},
-                {1.0f, 0.0f, 0.0f},
-                {0.0f, 1.0f, 0.0f},
-                {0.0f, 0.0f, 1.0f},
-                {1.0f, 1.0f, 0.0f},
-                {0.0f, 1.0f, 1.0f},
+                {1.0f, 1.0f, 1.0f}
             }
         };
         AddStaticBind(std::make_unique<PixelConstantBuffer<PixelShaderConstants> >(gfx, colorBuffer));
@@ -74,28 +55,39 @@ Cube::Cube(Graphics& gfx) {
     AddBind(std::make_unique<TransformCBuf>(gfx, *this));
 
     // model deformation transform (per instance, not stored as bind)
-    Cube::SetTransform({0.0f, 2.0f, 5.0f});
+    Plane::SetTransform({0.0f, 0.0f, 10.0f});
+    Plane::SetRotation({1.5708f, 0.0f, 0.0f});
 }
 
-// TODO Move Matrix Calculation to separate method which is called when transformations (pos, rot, scale) are updated
-DirectX::XMMATRIX Cube::GetTransformXM() const noexcept {
+DirectX::XMMATRIX Plane::GetTransformXM() const noexcept {
     return DirectX::XMMatrixScaling(scale.x, scale.y, scale.z) *
            DirectX::XMMatrixRotationRollPitchYaw(rotation.x, rotation.y, rotation.z) *
            DirectX::XMMatrixTranslation(position.x, position.y, position.z);
 }
 
-void Cube::SetTransform(const DirectX::XMFLOAT3& position) noexcept {
-    Cube::position = position;
+void Plane::SetTransform(const DirectX::XMFLOAT3& position) noexcept {
+    Plane::position = position;
 }
 
-void Cube::AddTransform(const DirectX::XMFLOAT3& distance) noexcept {
+void Plane::AddTransform(const DirectX::XMFLOAT3& distance) noexcept {
     position.x += distance.x;
     position.y += distance.y;
     position.z += distance.z;
 }
 
-void Cube::SetRotation(const DirectX::XMFLOAT3& rotation) noexcept {
+
+/**
+ * 
+ * @param rotation Angle in Radians
+ */
+void Plane::SetRotation(const DirectX::XMFLOAT3& rotation) noexcept {
+    Plane::rotation.x = rotation.x;
+    Plane::rotation.y = rotation.y;
+    Plane::rotation.z = rotation.z;
 }
 
-void Cube::SetScale(const DirectX::XMFLOAT3& scale) noexcept {
+void Plane::SetScale(const DirectX::XMFLOAT3& scale) noexcept {
+    Plane::scale.x = scale.x;
+    Plane::scale.y = scale.y;
+    Plane::scale.z = scale.z;
 }
