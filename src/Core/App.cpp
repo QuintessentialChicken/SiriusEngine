@@ -9,6 +9,8 @@
 
 #include "GDIPlusManager.h"
 #include "Window.h"
+#include "External/imgui_impl_dx11.h"
+#include "External/imgui_impl_win32.h"
 #include "Graphics/Cube.h"
 #include "Graphics/Plane.h"
 
@@ -27,7 +29,7 @@ App::App(const int width, const int height, const std::string& title) : wnd{widt
     // Generate Drawables using f and appends them to the end of the drawables vector
     // std::generate_n(std::back_inserter(drawables), numDrawables, f);
     // drawables.emplace_back(std::make_unique<Cube>(wnd.GetGraphics()));
-    drawables.emplace_back(std::make_unique<Plane>(wnd.GetGraphics()));
+    drawables.emplace_back(std::make_unique<Cube>(wnd.GetGraphics()));
     wnd.GetGraphics().SetProjection(DirectX::XMMatrixPerspectiveLH(1.0f, 3.0f / 4.0f, 0.5f, 40.0f));
     timer = Timer{};
 }
@@ -43,10 +45,19 @@ App::App(const int width, const int height, const std::string& title) : wnd{widt
 }
 
 void App::DoFrame() {
-    wnd.GetGraphics().ClearBuffer(0.07f, 0.0f, 0.12f);
+    const auto dt = timer.Mark() * speed_factor;
+
+    wnd.GetGraphics().BeginFrame(0.07f, 0.0f, 0.12f);
     // drawables[0]->SetRotation({timer.Peek(), timer.Peek(), 0});
     for (const auto& drawable: drawables) {
+        drawable->SetRotation({dt, dt, dt});
         drawable->Draw(wnd.GetGraphics());
     }
+
+    if (ImGui::Begin("Simulation Speed")) {
+        ImGui::SliderFloat("Speed Factor", &speed_factor, 0.0f, 4.0f);
+        ImGui::Text("%.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+    }
+    ImGui::End();
     wnd.GetGraphics().EndFrame();
 }

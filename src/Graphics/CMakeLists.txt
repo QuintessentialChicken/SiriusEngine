@@ -10,6 +10,8 @@ add_library(Graphics STATIC
         Graphics.cpp
         Graphics.h
         GraphicsThrowMacros.h
+        ImguiManager.cpp
+        ImguiManager.h
         IndexBuffer.cpp
         IndexBuffer.h
         InputLayout.cpp

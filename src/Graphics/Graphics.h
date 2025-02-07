@@ -15,16 +15,19 @@
 
 class Graphics {
     friend class Bindable;
+
 public:
     explicit Graphics(HWND hWnd);
 
     Graphics(const Graphics&) = delete;
 
+    ~Graphics();
+
     Graphics& operator=(Graphics&) = delete;
 
-    void EndFrame();
+    void BeginFrame(float r, float g, float b) noexcept;
 
-    void ClearBuffer(float r, float g, float b) noexcept;
+    void EndFrame();
 
     void DrawIndexed(UINT count);
 
@@ -32,7 +35,14 @@ public:
 
     [[nodiscard]] DirectX::XMMATRIX GetProjection() const noexcept;
 
+    void EnableImgui() noexcept;
+
+    void DisableImgui() noexcept;
+
+    [[nodiscard]] bool isImguiEnabled() const noexcept;
+
 private:
+    bool imguiEnabled = true;
 #ifndef NDEBUG
     DxgiInfoManager infoManager;
 #endif

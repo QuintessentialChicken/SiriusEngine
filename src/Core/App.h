@@ -9,6 +9,7 @@
 #include "Timer.h"
 #include "Window.h"
 #include "Graphics/Drawable.h"
+#include "Graphics/ImguiManager.h"
 
 
 class App {
@@ -36,7 +37,9 @@ public:
 
 private:
     void DoFrame();
+    float speed_factor = 1.0f;
 
+    ImguiManager imgui;
     Window wnd;
     Timer timer;
     std::vector<std::unique_ptr<Drawable> > drawables;

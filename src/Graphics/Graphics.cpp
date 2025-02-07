@@ -11,6 +11,8 @@
 
 #include "Graphics.h"
 #include "Core/dxerr.h"
+#include "External/imgui_impl_dx11.h"
+#include "External/imgui_impl_win32.h"
 #include "Graphics/GraphicsThrowMacros.h"
 namespace wrl = Microsoft::WRL;
 namespace dx = DirectX;
@@ -105,9 +107,32 @@ Graphics::Graphics(HWND hWnd) {
     vp.TopLeftX = 0;
     vp.TopLeftY = 0;
     context->RSSetViewports(1, &vp);
+
+    ImGui_ImplDX11_Init(device.Get(), context.Get());
+}
+
+Graphics::~Graphics() {
+    ImGui_ImplDX11_Shutdown();
+}
+
+void Graphics::BeginFrame(float r, float g, float b) noexcept {
+    if( imguiEnabled )
+    {
+        ImGui_ImplDX11_NewFrame();
+        ImGui_ImplWin32_NewFrame();
+        ImGui::NewFrame();
+    }
+
+    std::array<const float, 4> color = {r, g, b, 1.0f};
+    context->ClearRenderTargetView(target.Get(), color.data());
+    context->ClearDepthStencilView(DSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 }
 
 void Graphics::EndFrame() {
+    if (imguiEnabled) {
+        ImGui::Render();
+        ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+    }
 #ifndef NDEBUG
     infoManager.Set();
 #endif
@@ -120,12 +145,6 @@ void Graphics::EndFrame() {
     }
 }
 
-void Graphics::ClearBuffer(float r, float g, float b) noexcept {
-    std::array<const float, 4> color = {r, g, b, 1.0f};
-    context->ClearRenderTargetView(target.Get(), color.data());
-    context->ClearDepthStencilView(DSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
-}
-
 void Graphics::DrawIndexed(const UINT count) {
     GFX_THROW_INFO_ONLY(context->DrawIndexed(count, 0, 0));
 }
@@ -136,6 +155,18 @@ void Graphics::SetProjection(DirectX::FXMMATRIX proj) noexcept {
 
 DirectX::XMMATRIX Graphics::GetProjection() const noexcept {
     return projection;
+}
+
+void Graphics::EnableImgui() noexcept {
+    imguiEnabled = true;
+}
+
+void Graphics::DisableImgui() noexcept {
+    imguiEnabled = false;
+}
+
+bool Graphics::isImguiEnabled() const noexcept {
+    return imguiEnabled;
 }
 
 Graphics::HrException::HrException(int line, const char* file, HRESULT hr, const std::vector<std::string>& infoMsgs) noexcept : Exception{line, file}, hr{hr} {
