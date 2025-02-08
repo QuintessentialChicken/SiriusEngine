@@ -1,1 +1,0 @@
-add_executable(Game Game.cpp Game.h)

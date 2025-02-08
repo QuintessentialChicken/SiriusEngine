@@ -1,5 +1,4 @@
 add_library(Core
-        App.cpp
         App.h
         dxerr.cpp
         dxerr.h
@@ -8,6 +7,8 @@ add_library(Core
         DxgiInfoManager.cpp
         DxgiInfoManager.h
         DXTrace.inl
+        Game.cpp
+        Game.h
         SiriusException.cpp
         SiriusException.h
         Timer.cpp
