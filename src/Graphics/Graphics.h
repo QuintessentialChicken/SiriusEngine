@@ -35,6 +35,10 @@ public:
 
     [[nodiscard]] DirectX::XMMATRIX GetProjection() const noexcept;
 
+    void SetCamera(DirectX::FXMMATRIX camera) noexcept;
+
+    DirectX::XMMATRIX GetCamera() const noexcept;
+
     void EnableImgui() noexcept;
 
     void DisableImgui() noexcept;
@@ -42,11 +46,12 @@ public:
     [[nodiscard]] bool isImguiEnabled() const noexcept;
 
 private:
-    bool imguiEnabled = true;
 #ifndef NDEBUG
     DxgiInfoManager infoManager;
 #endif
     DirectX::XMMATRIX projection;
+    DirectX::XMMATRIX camera;
+    bool imguiEnabled = true;
     Microsoft::WRL::ComPtr<ID3D11Device> device;
     Microsoft::WRL::ComPtr<IDXGISwapChain> swapChain;
     Microsoft::WRL::ComPtr<ID3D11DeviceContext> context;

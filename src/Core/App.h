@@ -8,6 +8,7 @@
 
 #include "Timer.h"
 #include "Window.h"
+#include "Graphics/Camera.h"
 #include "Graphics/Drawable.h"
 #include "Graphics/ImguiManager.h"
 
@@ -41,6 +42,7 @@ private:
 
     ImguiManager imgui;
     Window wnd;
+    Camera cam;
     Timer timer;
     std::vector<std::unique_ptr<Drawable> > drawables;
     static constexpr size_t numDrawables = 1;

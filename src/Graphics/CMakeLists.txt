@@ -1,6 +1,8 @@
 add_library(Graphics STATIC
         Bindable.cpp
         Bindable.h
+        Camera.cpp
+        Camera.h
         ConstantBuffer.h
         Cube.cpp
         Cube.h
@@ -34,3 +36,5 @@ add_library(Graphics STATIC
         VertexShader.cpp
         VertexShader.h
 )
+
+target_link_libraries(Graphics PRIVATE Gdiplus.lib)

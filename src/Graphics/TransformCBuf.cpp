@@ -18,7 +18,7 @@ TransformCBuf::TransformCBuf( Graphics& gfx, const Drawable& parent) : parent{pa
 
 void TransformCBuf::Bind( Graphics& gfx ) noexcept
 {
-    vcbuf->Update(gfx, XMMatrixTranspose(parent.GetTransformXM() * gfx.GetProjection()));
+    vcbuf->Update(gfx, XMMatrixTranspose(parent.GetTransformXM() * gfx.GetCamera() * gfx.GetProjection()));
     vcbuf->Bind(gfx);
 }
 

@@ -72,9 +72,6 @@ Cube::Cube(Graphics& gfx) {
     }
 
     AddBind(std::make_unique<TransformCBuf>(gfx, *this));
-
-    // model deformation transform (per instance, not stored as bind)
-    Cube::SetTransform({0.0f, 0.0f, 5.0f});
 }
 
 // TODO Move Matrix Calculation to separate method which is called when transformations (pos, rot, scale) are updated

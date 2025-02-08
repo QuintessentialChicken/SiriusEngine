@@ -47,8 +47,7 @@ Plane::Plane(Graphics& gfx) {
     AddBind(std::make_unique<TransformCBuf>(gfx, *this));
 
     // model deformation transform (per instance, not stored as bind)
-    Plane::SetTransform({0.0f, 0.0f, 3.0f});
-    Plane::SetRotation({1.571f, 0.0f, 0.0f});
+    Plane::SetScale({2.0f, 2.0f, 2.0f});
 }
 
 DirectX::XMMATRIX Plane::GetTransformXM() const noexcept {

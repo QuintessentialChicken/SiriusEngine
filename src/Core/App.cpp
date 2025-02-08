@@ -30,6 +30,11 @@ App::App(const int width, const int height, const std::string& title) : wnd{widt
     // std::generate_n(std::back_inserter(drawables), numDrawables, f);
     // drawables.emplace_back(std::make_unique<Cube>(wnd.GetGraphics()));
     drawables.emplace_back(std::make_unique<Cube>(wnd.GetGraphics()));
+    drawables.emplace_back(std::make_unique<Plane>(wnd.GetGraphics()));
+    drawables.emplace_back(std::make_unique<Plane>(wnd.GetGraphics()));
+    drawables[1]->SetRotation({1.571f, 0.0f, 0.0f});
+    drawables[2]->SetRotation({3.14159f, 0.0f, 0.0f});
+    drawables[2]->SetTransform({0.0f, -2.0f, -2.0f});
     wnd.GetGraphics().SetProjection(DirectX::XMMatrixPerspectiveLH(1.0f, 3.0f / 4.0f, 0.5f, 40.0f));
     timer = Timer{};
 }
@@ -46,11 +51,12 @@ App::App(const int width, const int height, const std::string& title) : wnd{widt
 
 void App::DoFrame() {
     const auto dt = timer.Mark() * speed_factor;
-
     wnd.GetGraphics().BeginFrame(0.07f, 0.0f, 0.12f);
+    wnd.GetGraphics().SetCamera(cam.GetMatrix());
     // drawables[0]->SetRotation({timer.Peek(), timer.Peek(), 0});
+    drawables[0]->SetRotation({dt, dt, dt});
+
     for (const auto& drawable: drawables) {
-        drawable->SetRotation({dt, dt, dt});
         drawable->Draw(wnd.GetGraphics());
     }
 
@@ -59,5 +65,6 @@ void App::DoFrame() {
         ImGui::Text("%.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
     }
     ImGui::End();
+    cam.SpawnControlWindow();
     wnd.GetGraphics().EndFrame();
 }
