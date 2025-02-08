@@ -35,7 +35,8 @@ App::App(const int width, const int height, const std::string& title) : wnd{widt
     drawables[1]->SetRotation({1.571f, 0.0f, 0.0f});
     drawables[2]->SetRotation({3.14159f, 0.0f, 0.0f});
     drawables[2]->SetTransform({0.0f, -2.0f, -2.0f});
-    wnd.GetGraphics().SetProjection(DirectX::XMMatrixPerspectiveLH(1.0f, 3.0f / 4.0f, 0.5f, 40.0f));
+    // wnd.GetGraphics().SetProjection(DirectX::XMMatrixPerspectiveLH(1.0f, 3.0f / 4.0f, 0.5f, 40.0f));
+    // wnd.GetGraphics().SetProjection(DirectX::XMMatrixOrthographicLH(1.0f, 3.0f / 4.0f, 0.5f, 40.0f));
     timer = Timer{};
 }
 
