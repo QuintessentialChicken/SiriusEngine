@@ -7,6 +7,7 @@
 
 Timer::Timer() {
     last = std::chrono::steady_clock::now();
+    start = last;
 }
 
 float Timer::Mark() {
@@ -18,4 +19,8 @@ float Timer::Mark() {
 
 float Timer::Peek() const {
     return std::chrono::duration<float>(std::chrono::steady_clock::now() - last).count();
+}
+
+float Timer::Total() const {
+    return std::chrono::duration<float>(std::chrono::steady_clock::now() - start).count();
 }

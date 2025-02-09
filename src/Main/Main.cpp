@@ -9,7 +9,7 @@
 
 int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
     try {
-        return App<Pong>{1000, 600, "Sirius 3D"}.Run();
+        return App<Pong>::GetInstance(1000, 600, "Sirius 3D").Run();
     } catch (const SiriusException &e) {
         MessageBox(nullptr, e.what(), e.GetType(), MB_OK | MB_ICONEXCLAMATION);
     } catch (const std::exception &e) {
@@ -21,5 +21,5 @@ int CALLBACK WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 }
 
 int main() {
-    return App<Pong>{1200, 600, "PONG"}.Run();
+    return App<Pong>::GetInstance(800, 600, "PONG").Run();
 }

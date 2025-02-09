@@ -99,10 +99,10 @@ Graphics::Graphics(HWND hWnd) {
     // bind depth stensil view to OM
     context->OMSetRenderTargets(1u, target.GetAddressOf(), DSV.Get());
 
-    GFX_THROW_INFO(swapChain->SetFullscreenState( TRUE, nullptr ));
+    // GFX_THROW_INFO(swapChain->SetFullscreenState( TRUE, nullptr ));
     D3D11_VIEWPORT vp;
-    vp.Width = 2560;
-    vp.Height = 1440;
+    vp.Width = 800;
+    vp.Height = 600;
     vp.MinDepth = 0;
     vp.MaxDepth = 1;
     vp.TopLeftX = 0;

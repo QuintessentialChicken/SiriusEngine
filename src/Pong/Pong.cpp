@@ -3,10 +3,15 @@
 //
 
 #include "Pong.h"
+
+#include "Core/App.h"
 class Cube;
 
 void Pong::Start() {
+
 }
+
 
 void Pong::Update() {
 }
+

@@ -15,8 +15,11 @@ public:
 
     float Peek() const;
 
+    float Total() const;
+
 private:
     std::chrono::steady_clock::time_point last;
+    std::chrono::steady_clock::time_point start;
 };
 
 
