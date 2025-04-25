@@ -11,8 +11,8 @@
 class VertexBuffer : public Bindable {
 public:
     template<class V>
-    VertexBuffer(Graphics& gfx, const std::vector<V>& vertices) : stride{sizeof(V)} {
-        INFOMAN(gfx);
+    VertexBuffer(const std::vector<V>& vertices) : stride{sizeof(V)} {
+        ID3D11Device* gfx = Graphics::GetDevice();
         D3D11_BUFFER_DESC bd = {};
         bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
         bd.Usage = D3D11_USAGE_DEFAULT;
@@ -22,7 +22,7 @@ public:
         bd.StructureByteStride = sizeof(V);
         D3D11_SUBRESOURCE_DATA sd = {};
         sd.pSysMem = vertices.data();
-        GFX_THROW_INFO(GetDevice(gfx)->CreateBuffer(&bd, &sd, &vertexBuffer));
+        gfx->CreateBuffer(&bd, &sd, &vertexBuffer);
     }
     void Bind(Graphics& gfx) noexcept override {
         const UINT offset = 0u;

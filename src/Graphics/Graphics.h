@@ -13,6 +13,8 @@
 #include "Core/DxgiInfoManager.h"
 
 
+
+
 class Graphics {
     friend class Bindable;
 
@@ -45,6 +47,8 @@ public:
 
     [[nodiscard]] bool isImguiEnabled() const noexcept;
 
+    static ID3D11Device* GetDevice();
+
 private:
 #ifndef NDEBUG
     DxgiInfoManager infoManager;
@@ -52,7 +56,7 @@ private:
     DirectX::XMMATRIX projection;
     DirectX::XMMATRIX camera;
     bool imguiEnabled = true;
-    Microsoft::WRL::ComPtr<ID3D11Device> device;
+    static Microsoft::WRL::ComPtr<ID3D11Device> device;
     Microsoft::WRL::ComPtr<IDXGISwapChain> swapChain;
     Microsoft::WRL::ComPtr<ID3D11DeviceContext> context;
     Microsoft::WRL::ComPtr<ID3D11RenderTargetView> target;

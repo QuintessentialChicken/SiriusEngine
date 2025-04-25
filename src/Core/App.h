@@ -6,6 +6,7 @@
 #define APP_H
 #include <iostream>
 #include <random>
+#include <thread>
 
 #include "Game.h"
 #include "GDIPlusManager.h"
@@ -43,7 +44,7 @@ public:
     }
 
     int Run() {
-        // game->Start();
+        game->Start();
         while (true) {
             if (const auto exitCode = Window::ProcessMessage()) {
                 return exitCode.value();

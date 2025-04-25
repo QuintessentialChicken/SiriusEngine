@@ -6,6 +6,7 @@
 #define PONG_H
 
 #include "Core/Game.h"
+#include "Core/Timer.h"
 #include "Graphics/Drawable.h"
 
 class Pong : public Game {
@@ -13,6 +14,10 @@ public:
     void Start() override;
 
     void Update() override;
+
+private:
+    std::vector<Drawable*> drawable;
+    Timer timer;
 };
 
 

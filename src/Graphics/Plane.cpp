@@ -20,7 +20,7 @@ Plane::Plane(Graphics& gfx) {
 
         AddStaticBind( std::make_unique<Texture>( gfx,Surface::FromFile( R"(..\..\resources\superman.png)" ) ) );
 
-        AddStaticBind( std::make_unique<VertexBuffer>( gfx, vertices ) );
+        AddStaticBind( std::make_unique<VertexBuffer>( vertices ) );
 
         AddStaticBind( std::make_unique<Sampler>( gfx ) );
 

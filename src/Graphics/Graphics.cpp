@@ -17,6 +17,9 @@
 namespace wrl = Microsoft::WRL;
 namespace dx = DirectX;
 
+Microsoft::WRL::ComPtr<ID3D11Device> Graphics::device = nullptr;
+
+
 Graphics::Graphics(HWND hWnd) {
     DXGI_SWAP_CHAIN_DESC sd = {};
     sd.BufferDesc.Width = 0;
@@ -176,6 +179,10 @@ void Graphics::DisableImgui() noexcept {
 
 bool Graphics::isImguiEnabled() const noexcept {
     return imguiEnabled;
+}
+
+ID3D11Device* Graphics::GetDevice() {
+    return device.Get();
 }
 
 Graphics::HrException::HrException(int line, const char* file, HRESULT hr, const std::vector<std::string>& infoMsgs) noexcept : Exception{line, file}, hr{hr} {

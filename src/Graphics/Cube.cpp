@@ -28,7 +28,7 @@ Cube::Cube(Graphics& gfx) {
     dchi = bdist(rng);
 
     if (!IsStaticInitialized()) {
-        AddStaticBind(std::make_unique<VertexBuffer>(gfx, vertices));
+        AddStaticBind(std::make_unique<VertexBuffer>(vertices));
 
         auto vs = std::make_unique<VertexShader>(gfx, L"VertexShader.cso");
         auto vsbc = vs->GetBytecode();
