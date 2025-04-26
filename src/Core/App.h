@@ -11,7 +11,6 @@
 #include "Game.h"
 #include "GDIPlusManager.h"
 #include "Timer.h"
-#include "Window.h"
 #include "Graphics/Camera.h"
 #include "Graphics/Drawable.h"
 #include "Graphics/ImguiManager.h"
@@ -41,14 +40,12 @@ public:
     float Time();
 
 private:
-    std::unique_ptr<Window> window;
     bool isInitialized = false;
     Timer timer;
     GDIPlusManager gdipm;
     float speed_factor = 1.0f;
     ImguiManager imgui;
     Camera cam;
-    std::vector<std::unique_ptr<Drawable>> drawables;
 
 
 

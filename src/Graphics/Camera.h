@@ -4,7 +4,7 @@
 
 #ifndef CAMERA_H
 #define CAMERA_H
-#include "Graphics.h"
+#include <DirectXMath.h>
 
 
 class Camera {

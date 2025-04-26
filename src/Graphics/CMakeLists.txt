@@ -1,16 +1,17 @@
 add_library(Graphics STATIC
-        Bindable.cpp
-        Bindable.h
+#        Bindable.cpp
+#        Bindable.h
         Camera.cpp
         Camera.h
         ConstantBuffer.h
         Cube.cpp
         Cube.h
-        Drawable.cpp
-        Drawable.h
+        GfxDevice.h
+        GfxDevice_D3D11.cpp
+        GfxDevice_Win32.cpp
+#        Drawable.cpp
+#        Drawable.h
         DrawableBase.h
-        Graphics.cpp
-        Graphics.h
         GraphicsThrowMacros.h
         ImguiManager.cpp
         ImguiManager.h
