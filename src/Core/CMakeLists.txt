@@ -1,4 +1,5 @@
 add_library(Core
+        App.cpp
         App.h
         dxerr.cpp
         dxerr.h

@@ -6,10 +6,11 @@
 
 class Game {
 public:
-    virtual ~Game() = default;
-    virtual void Start() {}  // Called once when the game starts
-    virtual void Update() {}  // Called every frame
+    static void Update();
+    static void Render();
+
 
 };
+
 
 #endif // GAME_H

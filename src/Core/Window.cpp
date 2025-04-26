@@ -2,9 +2,13 @@
 
 #include "Window.h"
 
+#include <iostream>
+
 #include "WindowsThrowMacros.h"
 #include "../resource.h"
 #include "External/imgui_impl_win32.h"
+
+HWND hwndMain = nullptr;
 
 Window::WindowClass Window::WindowClass::wndClass;
 
@@ -47,7 +51,7 @@ Window::Window(int width, int height, const char* title) : width{width}, height{
     if (AdjustWindowRect(&wr, WS_OVERLAPPEDWINDOW, FALSE) == 0) {
         throw CHWND_LAST_EXCEPT();
     }
-    hWnd = CreateWindow(
+    hwndMain = CreateWindow(
         WindowClass::GetName(),
         title,
         WS_OVERLAPPEDWINDOW,
@@ -61,22 +65,22 @@ Window::Window(int width, int height, const char* title) : width{width}, height{
         this
     );
 
-    if (hWnd == nullptr) {
+    if (hwndMain == nullptr) {
         throw CHWND_LAST_EXCEPT();
     }
 
-    ShowWindow(hWnd, SW_SHOWDEFAULT);
-    ImGui_ImplWin32_Init(hWnd);
-    gfx = std::make_unique<Graphics>(hWnd);
+    ShowWindow(hwndMain, SW_SHOWDEFAULT);
+    ImGui_ImplWin32_Init(hwndMain);
+    gfx = std::make_unique<Graphics>(hwndMain);
 }
 
 Window::~Window() {
     ImGui_ImplWin32_Shutdown();
-    DestroyWindow(hWnd);
+    DestroyWindow(hwndMain);
 }
 
 void Window::SetTitle(const std::string& title) const {
-    if (SetWindowText(hWnd, title.c_str()) == 0) {
+    if (SetWindowText(hwndMain, title.c_str()) == 0) {
         throw CHWND_LAST_EXCEPT();
     }
 }
