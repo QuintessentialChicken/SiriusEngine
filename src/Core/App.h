@@ -32,6 +32,7 @@ public:
     // App can inherit from state machine class, RunOneIteration is part of state machine class
     bool RunOneIteration();
     bool Init();
+    bool Shutdown();
     bool RunGame();
     void DoFrame();
 

@@ -5,9 +5,9 @@
 
 #include <array>
 
+#include "WndProc.h"
 #include "External/imgui_impl_dx11.h"
 #include "Graphics/GfxDevice.h"
-#include "Graphics/GraphicsThrowMacros.h"
 
 bool App::RunOneIteration() {
     // Checks if the state is Exit
@@ -20,7 +20,12 @@ bool App::RunOneIteration() {
         Init();
         isInitialized = true;
     }
-    return RunGame();
+
+    if (RunGame() == 0) {
+        Shutdown();
+        return false;
+    }
+    return true;
 }
 
 bool App::Init() {
@@ -33,17 +38,24 @@ bool App::Init() {
     return true;
 }
 
+bool App::Shutdown() {
+    GfxDevice::ShutdownClass();
+    return true;
+}
+
+
 bool App::RunGame() {
     MSG message;
     std::optional<int> exitCode = {};
     if (PeekMessage(&message, nullptr, 0, 0, PM_REMOVE)) {
         if (message.message == WM_QUIT) {
             exitCode = static_cast<int>(message.wParam);
+            std::cout << "Exiting" << std::endl;
         }
         TranslateMessage(&message);
         DispatchMessage(&message);
     }
-    if (exitCode) {
+    if (exitCode == 0) {
         return exitCode.value();
     }
     Game::Update();

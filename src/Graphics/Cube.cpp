@@ -15,7 +15,7 @@
 // #include "VertexBuffer.h"
 // #include "VertexShader.h"
 //
-// Cube::Cube(Graphics& gfx) {
+// Cube::Cube() {
 //     namespace dx = DirectX;
 //     std::mt19937 rng{std::random_device{}()};
 //     std::uniform_real_distribution<float> bdist{1.0f, 3.0f};

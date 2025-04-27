@@ -14,6 +14,7 @@ class GfxDevice {
 public:
     static int InitSingleton();
     static void InitClass();
+    static void ShutdownClass();
 
     static HWND CreateDeviceWindow();
 

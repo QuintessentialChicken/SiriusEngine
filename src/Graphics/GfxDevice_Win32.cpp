@@ -155,12 +155,8 @@ HWND GfxDevice::CreateDeviceWindow() {
         nullptr
     );
 
-    if (hwndMain == nullptr) {
-        // throw CHWND_LAST_EXCEPT();
-    }
-
-    ShowWindow(hwndMain, SW_SHOWDEFAULT);
-    ImGui_ImplWin32_Init(hwndMain);
+    ShowWindow(result, SW_SHOWDEFAULT);
+    ImGui_ImplWin32_Init(result);
 
     return result;
 }

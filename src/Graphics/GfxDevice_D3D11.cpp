@@ -15,8 +15,9 @@ Microsoft::WRL::ComPtr<ID3D11DepthStencilView> GfxDevice::DSV;
 
 void GfxDevice::InitClass() {
     if (!hwndMain) {
-        CreateDeviceWindow();
+        hwndMain = CreateDeviceWindow();
     }
+
 
     DXGI_SWAP_CHAIN_DESC sd = {};
     sd.BufferDesc.Width = 0;
@@ -109,6 +110,7 @@ void GfxDevice::InitClass() {
     vp.TopLeftY = 0;
     context->RSSetViewports(1, &vp);
 
+    ImGui::CreateContext();
     ImGui_ImplDX11_Init(device.Get(), context.Get());
 }
 
@@ -116,4 +118,19 @@ int GfxDevice::InitSingleton() {
     static GfxDevice deviceD3d11;
     pGfxDevice = &deviceD3d11;
     return 1100;
+}
+
+void GfxDevice::ShutdownClass() {
+    ImGui_ImplDX11_Shutdown();
+    ImGui_ImplWin32_Shutdown();
+    if (hwndMain) {
+        DestroyWindow(hwndMain);
+        context.Reset();
+        swapChain.Reset();
+        target.Reset();
+        DSV.Reset();
+        device.Reset();
+        hwndMain = nullptr;
+        winClass = 0;
+    }
 }

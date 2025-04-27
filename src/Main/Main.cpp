@@ -8,11 +8,13 @@ bool Main_OneLoopIteration() {
 }
 
 
+
 int main() {
     bool carryOn = true;
     while (carryOn) {
         carryOn = Main_OneLoopIteration();
     }
+    return 0;
 }
 
 
