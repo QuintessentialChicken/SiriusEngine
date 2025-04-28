@@ -18,11 +18,9 @@ public:
         constexpr Color() noexcept : dword() {
         }
 
-        constexpr Color(const Color &col) noexcept
-            : dword(col.dword) {
-        }
+        constexpr Color(const Color &col) noexcept = default;
 
-        constexpr Color(unsigned int dw) noexcept
+        constexpr explicit Color(unsigned int dw) noexcept
             : dword(dw) {
         }
 
@@ -34,32 +32,29 @@ public:
             : dword((r << 16u) | (g << 8u) | b) {
         }
 
-        constexpr Color(Color col, unsigned char x) noexcept
+        constexpr Color(const Color& col, unsigned char x) noexcept
             : Color((x << 24u) | col.dword) {
         }
 
-        Color &operator =(Color color) noexcept {
-            dword = color.dword;
-            return *this;
-        }
+        Color &operator =(const Color& color) noexcept = default;
 
-        constexpr unsigned char GetX() const noexcept {
+        [[nodiscard]] constexpr unsigned char GetX() const noexcept {
             return dword >> 24u;
         }
 
-        constexpr unsigned char GetA() const noexcept {
+        [[nodiscard]] constexpr unsigned char GetA() const noexcept {
             return GetX();
         }
 
-        constexpr unsigned char GetR() const noexcept {
+        [[nodiscard]] constexpr unsigned char GetR() const noexcept {
             return (dword >> 16u) & 0xFFu;
         }
 
-        constexpr unsigned char GetG() const noexcept {
+        [[nodiscard]] constexpr unsigned char GetG() const noexcept {
             return (dword >> 8u) & 0xFFu;
         }
 
-        constexpr unsigned char GetB() const noexcept {
+        [[nodiscard]] constexpr unsigned char GetB() const noexcept {
             return dword & 0xFFu;
         }
 

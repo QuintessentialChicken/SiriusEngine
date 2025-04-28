@@ -4,7 +4,9 @@
 
 #ifndef DEVICE_H
 #define DEVICE_H
+#include <complex>
 #include <d3d11.h>
+#include <DirectXMath.h>
 #include <dxgi.h>
 #include <wrl.h>
 
@@ -17,7 +19,12 @@ public:
     static void ShutdownClass();
 
     static HWND CreateDeviceWindow();
+    static void SetWindowTitle(const std::string& title);
 
+    static void DrawIndexed(UINT count);
+
+    static DirectX::XMMATRIX projection;
+    static DirectX::XMMATRIX camera;
     static Microsoft::WRL::ComPtr<IDXGISwapChain> swapChain;
     static Microsoft::WRL::ComPtr<ID3D11Device> device;
     static Microsoft::WRL::ComPtr<ID3D11DeviceContext> context;

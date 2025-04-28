@@ -10,6 +10,13 @@
 static std::string windowTitle;
 
 
+void GfxDevice::SetWindowTitle(const std::string& title) {
+    windowTitle = title;
+    if (hwndMain) {
+        SetWindowText(hwndMain, windowTitle.c_str());
+    }
+}
+
 LRESULT HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept {
     if (ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam)) {
         return true;
@@ -117,6 +124,7 @@ LRESULT HandleMsgSetup(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexce
 
 HWND GfxDevice::CreateDeviceWindow() {
     if (!winClass) {
+        hInstance = GetModuleHandle(nullptr);
         WNDCLASSEX wc{};
         wc.cbSize = sizeof(wc);
         wc.style = CS_OWNDC;

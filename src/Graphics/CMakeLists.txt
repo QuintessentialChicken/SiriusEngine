@@ -1,6 +1,4 @@
 add_library(Graphics STATIC
-#        Bindable.cpp
-#        Bindable.h
         Camera.cpp
         Camera.h
         ConstantBuffer.h
@@ -9,10 +7,9 @@ add_library(Graphics STATIC
         GfxDevice.h
         GfxDevice_D3D11.cpp
         GfxDevice_Win32.cpp
-#        Drawable.cpp
-#        Drawable.h
+        Drawable.cpp
+        Drawable.h
         DrawableBase.h
-        GraphicsThrowMacros.h
         ImguiManager.cpp
         ImguiManager.h
         IndexBuffer.cpp
@@ -25,8 +22,8 @@ add_library(Graphics STATIC
         Plane.h
         Sampler.cpp
         Sampler.h
-        Surface.cpp
-        Surface.h
+#        Surface.cpp
+#        Surface.h
         Texture.cpp
         Texture.h
         Topology.cpp

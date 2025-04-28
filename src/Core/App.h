@@ -47,6 +47,8 @@ private:
     float speed_factor = 1.0f;
     ImguiManager imgui;
     Camera cam;
+    std::vector<std::unique_ptr<Drawable>> drawables;
+
 
 
 

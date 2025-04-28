@@ -5,18 +5,19 @@
 #include "Drawable.h"
 
 #include "Bindable.h"
+#include "GfxDevice.h"
 #include "IndexBuffer.h"
 
-void Drawable::Draw(Graphics& gfx) const noexcept {
+void Drawable::Draw() const noexcept {
     for( auto& bind : binds )
     {
-        bind->Bind( gfx );
+        bind->Bind();
     }
     for( auto& bind : GetStaticBinds() )
     {
-        bind->Bind( gfx );
+        bind->Bind();
     }
-    gfx.DrawIndexed( indexBuffer->GetCount() );
+    GfxDevice::DrawIndexed( indexBuffer->GetCount() );
 }
 void Drawable::AddBind(std::unique_ptr<Bindable> bind) noexcept {
     assert( "*Must* use AddIndexBuffer to bind index buffer" && typeid(*bind) != typeid(IndexBuffer) );

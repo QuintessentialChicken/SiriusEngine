@@ -7,6 +7,8 @@
 
 
 GfxDevice* pGfxDevice;
+DirectX::XMMATRIX GfxDevice::projection;
+DirectX::XMMATRIX GfxDevice::camera;
 Microsoft::WRL::ComPtr<IDXGISwapChain> GfxDevice::swapChain;
 Microsoft::WRL::ComPtr<ID3D11Device> GfxDevice::device;
 Microsoft::WRL::ComPtr<ID3D11DeviceContext> GfxDevice::context;
@@ -134,3 +136,9 @@ void GfxDevice::ShutdownClass() {
         winClass = 0;
     }
 }
+
+
+void GfxDevice::DrawIndexed(const UINT count) {
+    context->DrawIndexed(count, 0, 0);
+}
+

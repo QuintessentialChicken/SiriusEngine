@@ -1,29 +1,34 @@
-// //
-// // Created by Leon on 02/02/2025.
-// //
 //
-// #include <d3dcompiler.h>
+// Created by Leon on 02/02/2025.
 //
-//
-// #include "VertexShader.h"
-// #include "GraphicsThrowMacros.h"
-//
-// VertexShader::VertexShader(Graphics& gfx, const std::wstring& path) {
-//     INFOMAN(gfx);
-//
-//     GFX_THROW_INFO(D3DReadFileToBlob(path.c_str(),&bytecodeBlob));
-//     GFX_THROW_INFO(GetDevice(gfx)->CreateVertexShader(
-//         bytecodeBlob->GetBufferPointer(),
-//         bytecodeBlob->GetBufferSize(),
-//         nullptr,
-//         &vertexShader
-//     ));
-// }
-//
-// void VertexShader::Bind(Graphics& gfx) noexcept {
-//     GetContext(gfx)->VSSetShader(vertexShader.Get(), nullptr, 0);
-// }
-//
-// ID3DBlob* VertexShader::GetBytecode() const noexcept {
-//     return bytecodeBlob.Get();
-// }
+
+#include <d3dcompiler.h>
+
+
+#include "VertexShader.h"
+
+#include <string>
+
+#include "GfxDevice.h"
+
+VertexShader::VertexShader(const std::wstring& path) {
+    if (FAILED(D3DReadFileToBlob(path.c_str(),&bytecodeBlob))) {
+        throw std::runtime_error("Failed to read vertex shader");
+    }
+    if (FAILED(GfxDevice::device->CreateVertexShader(
+        bytecodeBlob->GetBufferPointer(),
+        bytecodeBlob->GetBufferSize(),
+        nullptr,
+        &vertexShader
+    ))) {
+        throw std::runtime_error("Failed to create vertex shader");
+    }
+}
+
+void VertexShader::Bind() noexcept {
+    GfxDevice::context->VSSetShader(vertexShader.Get(), nullptr, 0);
+}
+
+ID3DBlob* VertexShader::GetBytecode() const noexcept {
+    return bytecodeBlob.Get();
+}
