@@ -4,7 +4,8 @@
 
 #ifndef SURFACE_H
 #define SURFACE_H
-#include <memory>
+#define NOMINMAX
+
 
 #include "Core/SiriusException.h"
 

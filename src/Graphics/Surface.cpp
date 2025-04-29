@@ -1,25 +1,16 @@
 //
 // Created by Lms on 05/02/2025.
 //
-
-#include <algorithm>
-#include "Surface.h"
-
 #include <cassert>
-
-#include "Core/App.h"
-
-#define FULL_WINTARD
-
-namespace Gdiplus
-{
-	using std::min;
-	using std::max;
-}
+#include <windows.h>
+#include <objidl.h>
 #include <gdiplus.h>
+#include <memory>
 #include <sstream>
+using namespace Gdiplus;
+#pragma comment (lib,"Gdiplus.lib")
 
-#pragma comment( lib,"gdiplus.lib" )
+#include "Surface.h"
 
 Surface::Surface( unsigned int width,unsigned int height ) noexcept
 	:

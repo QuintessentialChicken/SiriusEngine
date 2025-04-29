@@ -8,14 +8,12 @@ add_library(Core
 #        DxgiInfoManager.cpp
 #        DxgiInfoManager.h
         DXTrace.inl
-        Game.cpp
-        Game.h
+        Entrypoint_Engine.cpp
+        Entrypoint_Engine.h
         SiriusException.cpp
         SiriusException.h
         Timer.cpp
         Timer.h
-#        Window.cpp
-#        Window.h
         WindowsThrowMacros.h
         GDIPlusManager.cpp
         GDIPlusManager.h

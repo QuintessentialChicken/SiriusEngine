@@ -4,20 +4,14 @@
 
 #ifndef APP_H
 #define APP_H
-#include <iostream>
-#include <random>
 #include <thread>
 
-#include "Game.h"
 #include "GDIPlusManager.h"
 #include "Timer.h"
 #include "Graphics/Camera.h"
 #include "Graphics/Drawable.h"
 #include "Graphics/ImguiManager.h"
-#include "External/imgui_impl_win32.h"
-#include "Graphics/Cube.h"
 
-#include "Graphics/Plane.h"
 
 enum class PrimitiveType {
     Cube,

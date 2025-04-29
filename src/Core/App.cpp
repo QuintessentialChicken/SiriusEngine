@@ -3,11 +3,11 @@
 //
 #include "App.h"
 
-#include <array>
+#include <iostream>
 
-#include "WndProc.h"
 #include "External/imgui_impl_dx11.h"
 #include "Graphics/GfxDevice.h"
+#include "Graphics/Plane.h"
 
 bool App::RunOneIteration() {
     // Checks if the state is Exit
@@ -29,14 +29,8 @@ bool App::RunOneIteration() {
 }
 
 bool App::Init() {
-    // static Window wnd(800, 600, "Fuzzy");
-    // window = std::unique_ptr<Window>( &wnd );
-    // window->GetGraphics().SetProjection(DirectX::XMMatrixPerspectiveLH(1.0f, 3.0f / 4.0f, 0.5f, 40.0f));
-    // std::unique_ptr<Drawable> obj = std::make_unique<Cube>(wnd.GetGraphics());
-    // drawables.push_back(std::move(obj));
     GfxDevice::SetWindowTitle("Fuzzy");
     GfxDevice::InitClass();
-    GfxDevice::projection = DirectX::XMMatrixOrthographicLH(1.0f, 3.0f / 4.0f, 0.5f, 40.0f);
     std::unique_ptr<Drawable> obj = std::make_unique<Plane>();
     obj->SetRotation({1.5f, 0.0f, 0.0f});
     drawables.push_back(std::move(obj));
@@ -63,7 +57,6 @@ bool App::RunGame() {
     if (exitCode == 0) {
         return exitCode.value();
     }
-    Game::Update();
     DoFrame();
     return true;
 }

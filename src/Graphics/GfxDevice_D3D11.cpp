@@ -6,6 +6,7 @@
 #include "GfxDevice.h"
 #include "External/imgui_impl_dx11.h"
 #include "Core/WndProc.h"
+#include "External/imgui_impl_win32.h"
 
 
 GfxDevice* pGfxDevice;
@@ -116,6 +117,9 @@ void GfxDevice::InitClass() {
 
     ImGui::CreateContext();
     ImGui_ImplDX11_Init(device.Get(), context.Get());
+
+    projection = DirectX::XMMatrixPerspectiveLH(1.0f, 3.0f / 4.0f, 0.5f, 40.0f);
+
 }
 
 int GfxDevice::InitSingleton() {

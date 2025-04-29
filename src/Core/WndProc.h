@@ -4,7 +4,6 @@
 
 #ifndef WNDPROC_H
 #define WNDPROC_H
-#include "App.h"
 inline HWND hwndMain = nullptr;
 inline HINSTANCE hInstance = nullptr;
 inline unsigned winClass;
