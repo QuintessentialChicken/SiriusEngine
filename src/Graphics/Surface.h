@@ -111,9 +111,9 @@ public:
 
     [[nodiscard]] Color GetPixel(unsigned int x, unsigned int y) const noexcept;
 
-    unsigned int GetWidth() const noexcept;
+    [[nodiscard]] unsigned int GetWidth() const noexcept;
 
-    unsigned int GetHeight() const noexcept;
+    [[nodiscard]] unsigned int GetHeight() const noexcept;
 
     Color *GetBufferPtr() noexcept;
 

@@ -36,9 +36,9 @@ bool App::Init() {
     // drawables.push_back(std::move(obj));
     GfxDevice::SetWindowTitle("Fuzzy");
     GfxDevice::InitClass();
-    GfxDevice::projection = DirectX::XMMatrixPerspectiveLH(1.0f, 3.0f / 4.0f, 0.5f, 40.0f);
-    std::unique_ptr<Drawable> obj = std::make_unique<Cube>();
-    obj->SetTransform({0.0f, 2.0f, 0.0f});
+    GfxDevice::projection = DirectX::XMMatrixOrthographicLH(1.0f, 3.0f / 4.0f, 0.5f, 40.0f);
+    std::unique_ptr<Drawable> obj = std::make_unique<Plane>();
+    obj->SetRotation({1.5f, 0.0f, 0.0f});
     drawables.push_back(std::move(obj));
     return true;
 }
@@ -70,35 +70,14 @@ bool App::RunGame() {
 
 
 void App::DoFrame() {
-    if( true )
-    {
-        ImGui_ImplDX11_NewFrame();
-        ImGui_ImplWin32_NewFrame();
-        ImGui::NewFrame();
-    }
-
-    std::array<const float, 4> color = {cam.yaw, 0.0f, 0.0f, 1.0f};
-    GfxDevice::context->ClearRenderTargetView(GfxDevice::target.Get(), color.data());
-    GfxDevice::context->ClearDepthStencilView(GfxDevice::DSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
-
+    GfxDevice::BeginFrame();
     GfxDevice::camera = cam.GetMatrix();
     for (const auto& drawable : drawables) {
         drawable->Draw();
     }
 
     cam.SpawnControlWindow();
-    if (true) {
-        ImGui::Render();
-        ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
-    }
-
-    if (HRESULT hr; FAILED(hr = GfxDevice::swapChain->Present( 1u,0u ))) {
-        // if (hr == DXGI_ERROR_DEVICE_REMOVED) {
-        //     throw GFX_DEVICE_REMOVED_EXCEPT(GfxDevice::device->GetDeviceRemovedReason());
-        // } else {
-        //     throw GFX_EXCEPT(hr);
-        // }
-    }
+    GfxDevice::EndFrame();
 }
 
 

@@ -22,8 +22,8 @@ add_library(Graphics STATIC
         Plane.h
         Sampler.cpp
         Sampler.h
-#        Surface.cpp
-#        Surface.h
+        Surface.cpp
+        Surface.h
         Texture.cpp
         Texture.h
         Topology.cpp

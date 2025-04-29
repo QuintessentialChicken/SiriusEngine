@@ -1,6 +1,8 @@
 //
 // Created by Leon on 26/04/2025.
 //
+#include <array>
+
 #include "GfxDevice.h"
 #include "External/imgui_impl_dx11.h"
 #include "Core/WndProc.h"
@@ -137,6 +139,29 @@ void GfxDevice::ShutdownClass() {
     }
 }
 
+void GfxDevice::BeginFrame() {
+    if( true )
+    {
+        ImGui_ImplDX11_NewFrame();
+        ImGui_ImplWin32_NewFrame();
+        ImGui::NewFrame();
+    }
+
+    std::array<const float, 4> color = {1.0f, 0.0f, 0.0f, 1.0f};
+    context->ClearRenderTargetView(GfxDevice::target.Get(), color.data());
+    context->ClearDepthStencilView(GfxDevice::DSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
+}
+
+void GfxDevice::EndFrame() {
+    if (true) {
+        ImGui::Render();
+        ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+    }
+
+    if (HRESULT hr; FAILED(hr = GfxDevice::swapChain->Present( 1u,0u ))) {
+        throw std::runtime_error("Failed to present swap chain");
+    }
+}
 
 void GfxDevice::DrawIndexed(const UINT count) {
     context->DrawIndexed(count, 0, 0);

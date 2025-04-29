@@ -101,32 +101,31 @@ Surface Surface::FromFile( const std::string& name )
 	unsigned int height = 0;
 	std::unique_ptr<Color[]> pBuffer;
 
+
+	// convert filenam to wide string (for Gdiplus)
+	wchar_t wideName[512];
+	mbstowcs_s( nullptr,wideName,name.c_str(),_TRUNCATE );
+
+	Gdiplus::Bitmap bitmap( wideName );
+	auto status = bitmap.GetLastStatus();
+	if( status != Gdiplus::Status::Ok )
 	{
-		// convert filenam to wide string (for Gdiplus)
-		wchar_t wideName[512];
-		mbstowcs_s( nullptr,wideName,name.c_str(),_TRUNCATE );
+		std::stringstream ss;
+		ss << "Loading image [" << name << "]: failed to load.";
+		throw Exception( __LINE__,__FILE__ ,ss.str() );
+	}
 
-		Gdiplus::Bitmap bitmap( wideName );
-		auto status = bitmap.GetLastStatus();
-		if( status != Gdiplus::Status::Ok )
+	width = bitmap.GetWidth();
+	height = bitmap.GetHeight();
+	pBuffer = std::make_unique<Color[]>( width * height );
+
+	for( unsigned int y = 0; y < height; y++ )
+	{
+		for( unsigned int x = 0; x < width; x++ )
 		{
-			std::stringstream ss;
-			ss << "Loading image [" << name << "]: failed to load.";
-			throw Exception( __LINE__,__FILE__ ,ss.str() );
-		}
-
-		width = bitmap.GetWidth();
-		height = bitmap.GetHeight();
-		pBuffer = std::make_unique<Color[]>( width * height );
-
-		for( unsigned int y = 0; y < height; y++ )
-		{
-			for( unsigned int x = 0; x < width; x++ )
-			{
-				Gdiplus::Color c;
-				bitmap.GetPixel( x,y,&c );
-				pBuffer[y * width + x] = c.GetValue();
-			}
+			Gdiplus::Color c;
+			bitmap.GetPixel( x,y,&c );
+			pBuffer[y * width + x] = static_cast<Color>(c.GetValue());
 		}
 	}
 

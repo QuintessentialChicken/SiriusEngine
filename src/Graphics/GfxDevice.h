@@ -21,6 +21,8 @@ public:
     static HWND CreateDeviceWindow();
     static void SetWindowTitle(const std::string& title);
 
+    static void BeginFrame();
+    static void EndFrame();
     static void DrawIndexed(UINT count);
 
     static DirectX::XMMATRIX projection;

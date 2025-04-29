@@ -3,9 +3,7 @@
 //
 
 #ifndef CAMERA_H
-
 #define CAMERA_H
-
 #include <DirectXMath.h>
 
 class Camera {
