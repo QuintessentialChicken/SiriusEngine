@@ -14,12 +14,15 @@ static bool CallMainOnce()
 }
 
 // Call Main if game does not assign Entry point
-bool (*g_pProjectMainOrDoOneLoop)(void) = CallMainOnce;
+bool (*g_pProjectMainPrologue)() = nullptr;
+bool (*g_pProjectMainOrDoOneLoop)() = CallMainOnce;
 
 int main() {
-    bool carryOn = true;
-    while (carryOn) {
-        carryOn = g_pProjectMainOrDoOneLoop();
+    if (g_pProjectMainPrologue()) {
+        bool carryOn = true;
+        while (carryOn) {
+            carryOn = g_pProjectMainOrDoOneLoop();
+        }
     }
     return 0;
 }

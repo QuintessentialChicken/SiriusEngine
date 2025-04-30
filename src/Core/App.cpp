@@ -16,9 +16,9 @@ bool App::RunOneIteration() {
     // Update()
 
     // For now, directly call update as the main game loop
-    if (!isInitialized) {
+    if (!isSystemInitialized) {
         Init();
-        isInitialized = true;
+        isSystemInitialized = true;
     }
 
     if (RunGame() == 0) {
@@ -57,6 +57,9 @@ bool App::RunGame() {
     if (exitCode == 0) {
         return exitCode.value();
     }
+    for (const auto& fun : updateFunctions) {
+        fun();
+    }
     DoFrame();
     return true;
 }
@@ -68,11 +71,13 @@ void App::DoFrame() {
     for (const auto& drawable : drawables) {
         drawable->Draw();
     }
-
     cam.SpawnControlWindow();
     GfxDevice::EndFrame();
 }
 
+void App::RegisterUpdateFunction(void(*fun)()) {
+    updateFunctions.push_back(fun);
+}
 
 
 float App::DeltaTime() {

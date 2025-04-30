@@ -29,13 +29,13 @@ public:
     bool Shutdown();
     bool RunGame();
     void DoFrame();
-
+    void RegisterUpdateFunction(void (*)());
     float DeltaTime();
-
     float Time();
 
 private:
-    bool isInitialized = false;
+    std::vector<void (*)()> updateFunctions;
+    bool isSystemInitialized = false;
     Timer timer;
     GDIPlusManager gdipm;
     float speed_factor = 1.0f;

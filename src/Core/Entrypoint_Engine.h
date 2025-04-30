@@ -4,6 +4,7 @@
 
 #ifndef ENTRYPOINT_ENGINE_H
 #define ENTRYPOINT_ENGINE_H
+extern bool (*g_pProjectMainPrologue)();
 extern bool (*g_pProjectMainOrDoOneLoop)();
 extern int Main();
 
@@ -12,6 +13,7 @@ static struct app_entry_point_setter_t \
 { \
 app_entry_point_setter_t() \
 { \
+g_pProjectMainPrologue = pro \
 g_pProjectMainOrDoOneLoop = loop; \
 } \
 } app_entry_point_setter_instance; \
