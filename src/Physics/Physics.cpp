@@ -44,7 +44,7 @@ DirectX::XMFLOAT2 Physics::CalculateGravity(const float mass) {
 
 void Physics::CalculateTorque(const std::unique_ptr<Drawable>& object) {
     object->force = {0.0f, force, 0.0f};
-    DirectX::XMFLOAT2 hitOffset = {object->position.x / 2, object->position.y / 2};
+    DirectX::XMFLOAT2 hitOffset = {1, 1};//{object->position.x / 2, object->position.y / 2};
     object->torque = (hitOffset.x * object->force.y - hitOffset.y * object->force.x) * 1;
 }
 

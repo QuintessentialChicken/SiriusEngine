@@ -10,7 +10,7 @@
 App my_app;
 
 void Init() {
-    constexpr float LO = -2.0;
+    constexpr float LO = 0.1;
     constexpr float HI = 2.0;
     std::mt19937 rng{std::random_device{}()};
     std::uniform_real_distribution bdist{LO, HI};
