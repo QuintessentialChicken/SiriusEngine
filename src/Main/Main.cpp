@@ -14,15 +14,16 @@ void Init() {
     constexpr float HI = 2.0;
     std::mt19937 rng{std::random_device{}()};
     std::uniform_real_distribution bdist{LO, HI};
-    for (int i = 0; i < 10; i++) {
-        float scale = bdist(rng);
-        std::unique_ptr<Drawable> cube = std::make_unique<Cube>();
-        cube->SetTransform({bdist(rng), bdist(rng), 0.0f});
-        cube->SetScale({scale, scale, 0.0f});
-        cube->mass = scale;
-        cube->inertia = cube->mass * (cube->width * cube->width + cube->height * cube->height) / 12.0f;
-        GameWorld::GetInstance()->AddObject(std::move(cube));
-    }
+    std::uniform_real_distribution adist{-5.0f, 5.0f};
+
+    std::unique_ptr<Drawable> cube = std::make_unique<Cube>();
+    cube->SetTransform({-2.0f, 0.0f, 0.0f});
+    cube->initialPosition = cube->position;
+    GameWorld::GetInstance()->AddObject(std::move(cube));
+    std::unique_ptr<Drawable> cube2 = std::make_unique<Cube>();
+    cube2->SetTransform({2.0f, 0.0f, 0.0f});
+    cube2->initialPosition = cube2->position;
+    GameWorld::GetInstance()->AddObject(std::move(cube2));
 }
 
 void Update() {

@@ -20,11 +20,13 @@ public:
 
     static HWND CreateDeviceWindow();
     static void SetWindowTitle(const std::string& title);
+    static void SetBackgroundColor(std::array<float, 4> color);
 
     static void BeginFrame();
     static void EndFrame();
     static void DrawIndexed(UINT count);
 
+    static std::array<float, 4> color;
     static DirectX::XMMATRIX projection;
     static DirectX::XMMATRIX camera;
     static Microsoft::WRL::ComPtr<IDXGISwapChain> swapChain;

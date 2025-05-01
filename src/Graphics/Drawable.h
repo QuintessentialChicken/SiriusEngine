@@ -43,15 +43,16 @@ public:
     // const std::vector<Vertex> vertices = {{{1.0f, 2.0f, 3.0f}}};
     // const std::vector<unsigned short> indices;
 
-    float mass = 100.0f;
-    float width = 1.0f;
-    float height = 1.0f;
+    float mass = 1.0f;
+    float width = 0.5f;
+    float height = 0.5f;
     float inertia = mass * (width * width + height * height) / 12.0f;
     float angularVelocity = 0.0f;
     float angle = 0.0f;
     float torque = 0.0f;
     DirectX::XMFLOAT3 force = {0.0f, 0.0f, 0.0f};
     DirectX::XMFLOAT3 position = {0.0f, 0.0f, 0.0f};
+    DirectX::XMFLOAT3 initialPosition = {0.0f, 0.0f, 0.0f};
     DirectX::XMFLOAT3 rotation = {0.0f, 0.0f, 0.0f,};
     DirectX::XMFLOAT3 scale = {1.0f, 1.0f, 1.0f};
     DirectX::XMFLOAT3 linearVelocity = {0.0f, 0.0f, 0.0f};

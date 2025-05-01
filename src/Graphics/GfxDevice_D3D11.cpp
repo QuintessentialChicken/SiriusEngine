@@ -10,6 +10,7 @@
 
 
 GfxDevice* pGfxDevice;
+std::array<float, 4> GfxDevice::color = {0.0f, 0.3f, 0.0f, 1.0f};
 DirectX::XMMATRIX GfxDevice::projection;
 DirectX::XMMATRIX GfxDevice::camera;
 Microsoft::WRL::ComPtr<IDXGISwapChain> GfxDevice::swapChain;
@@ -120,10 +121,10 @@ void GfxDevice::InitClass() {
     ImGui::CreateContext();
     ImGui_ImplDX11_Init(device.Get(), context.Get());
 
-    float aspectRatio = static_cast<float>(screenWidth) / static_cast<float>(screenHeight);
-    float viewHeight = 10.0f;
-    float viewWidth = viewHeight * aspectRatio;
-    projection = DirectX::XMMatrixOrthographicLH(viewWidth, viewHeight, 0.5f, 40.0f);
+    // float aspectRatio = static_cast<float>(screenWidth) / static_cast<float>(screenHeight);
+    // float viewHeight = 5.0f;
+    // float viewWidth = viewHeight * aspectRatio;
+    projection = DirectX::XMMatrixPerspectiveLH(1, 3.0f/4.0f, 0.5f, 40.0f);
 
 }
 
@@ -156,7 +157,6 @@ void GfxDevice::BeginFrame() {
         ImGui::NewFrame();
     }
 
-    std::array<const float, 4> color = {0.0f, 0.3f, 0.0f, 1.0f};
     context->ClearRenderTargetView(GfxDevice::target.Get(), color.data());
     context->ClearDepthStencilView(GfxDevice::DSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 }

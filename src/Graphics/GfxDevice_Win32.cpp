@@ -3,6 +3,7 @@
 //
 
 
+#include <array>
 #include <optional>
 
 #include "GfxDevice.h"
@@ -18,6 +19,10 @@ void GfxDevice::SetWindowTitle(const std::string& title) {
     if (hwndMain) {
         SetWindowText(hwndMain, windowTitle.c_str());
     }
+}
+
+void GfxDevice::SetBackgroundColor(std::array<float, 4> color) {
+    GfxDevice::color = color;
 }
 
 LRESULT HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept {
