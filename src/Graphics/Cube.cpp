@@ -94,7 +94,11 @@ void Cube::AddTransform(const DirectX::XMFLOAT3& distance) noexcept {
 void Cube::SetRotation(const DirectX::XMFLOAT3& rotation) noexcept {
     Cube::rotation.x += rotation.x;
     Cube::rotation.y += rotation.y;
-    Cube::rotation.z += rotation.z;}
+    Cube::rotation.z += rotation.z;
+}
 
 void Cube::SetScale(const DirectX::XMFLOAT3& scale) noexcept {
+    Cube::scale.x = scale.x;
+    Cube::scale.y = scale.y;
+    Cube::scale.z = scale.z;
 }

@@ -8,6 +8,8 @@
 #include "External/imgui_impl_dx11.h"
 #include "Graphics/GfxDevice.h"
 #include "Graphics/Plane.h"
+#include "Main/GameWorld.h"
+#include "Physics/Physics.h"
 
 bool App::RunOneIteration() {
     // Checks if the state is Exit
@@ -31,14 +33,15 @@ bool App::RunOneIteration() {
 bool App::Init() {
     GfxDevice::SetWindowTitle("Fuzzy");
     GfxDevice::InitClass();
-    std::unique_ptr<Drawable> obj = std::make_unique<Plane>();
-    obj->SetRotation({1.5f, 0.0f, 0.0f});
-    drawables.push_back(std::move(obj));
+    for (const auto& fun : startFunctions) {
+        fun();
+    }
     return true;
 }
 
 bool App::Shutdown() {
     GfxDevice::ShutdownClass();
+    GameWorld::DestroySingleton();
     return true;
 }
 
@@ -68,17 +71,23 @@ bool App::RunGame() {
 void App::DoFrame() {
     GfxDevice::BeginFrame();
     GfxDevice::camera = cam.GetMatrix();
-    for (const auto& drawable : drawables) {
-        drawable->Draw();
+    GameWorld* world = GameWorld::GetInstance();
+    for (const auto& obj : world->GetAllObjects()) {
+        obj->Draw();
     }
     cam.SpawnControlWindow();
+    Physics::SpawnControlWindow();
     GfxDevice::EndFrame();
+}
+
+void App::RegisterInitFunction(void(*fun)()) {
+    startFunctions.push_back(fun);
+
 }
 
 void App::RegisterUpdateFunction(void(*fun)()) {
     updateFunctions.push_back(fun);
 }
-
 
 float App::DeltaTime() {
     return timer.Mark();

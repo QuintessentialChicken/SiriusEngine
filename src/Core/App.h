@@ -29,11 +29,13 @@ public:
     bool Shutdown();
     bool RunGame();
     void DoFrame();
+    void RegisterInitFunction(void (*)());
     void RegisterUpdateFunction(void (*)());
     float DeltaTime();
     float Time();
 
 private:
+    std::vector<void (*)()> startFunctions;
     std::vector<void (*)()> updateFunctions;
     bool isSystemInitialized = false;
     Timer timer;
@@ -42,10 +44,6 @@ private:
     ImguiManager imgui;
     Camera cam;
     std::vector<std::unique_ptr<Drawable>> drawables;
-
-
-
-
 };
 
 

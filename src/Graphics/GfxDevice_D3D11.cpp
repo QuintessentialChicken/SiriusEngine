@@ -81,11 +81,13 @@ void GfxDevice::InitClass() {
     // bind depth state
     context->OMSetDepthStencilState(DSState.Get(), 1u);
 
+    UINT screenWidth = 800;
+    UINT screenHeight = 600;
     // create depth stensil texture
     Microsoft::WRL::ComPtr<ID3D11Texture2D> depthStencil;
     D3D11_TEXTURE2D_DESC depthDesc = {};
-    depthDesc.Width = 800u;
-    depthDesc.Height = 600u;
+    depthDesc.Width = screenWidth;
+    depthDesc.Height = screenHeight;
     depthDesc.MipLevels = 1u;
     depthDesc.ArraySize = 1u;
     depthDesc.Format = DXGI_FORMAT_D32_FLOAT;
@@ -118,7 +120,10 @@ void GfxDevice::InitClass() {
     ImGui::CreateContext();
     ImGui_ImplDX11_Init(device.Get(), context.Get());
 
-    projection = DirectX::XMMatrixPerspectiveLH(1.0f, 3.0f / 4.0f, 0.5f, 40.0f);
+    float aspectRatio = static_cast<float>(screenWidth) / static_cast<float>(screenHeight);
+    float viewHeight = 10.0f;
+    float viewWidth = viewHeight * aspectRatio;
+    projection = DirectX::XMMatrixOrthographicLH(viewWidth, viewHeight, 0.5f, 40.0f);
 
 }
 
@@ -151,7 +156,7 @@ void GfxDevice::BeginFrame() {
         ImGui::NewFrame();
     }
 
-    std::array<const float, 4> color = {1.0f, 0.0f, 0.0f, 1.0f};
+    std::array<const float, 4> color = {0.0f, 0.3f, 0.0f, 1.0f};
     context->ClearRenderTargetView(GfxDevice::target.Get(), color.data());
     context->ClearDepthStencilView(GfxDevice::DSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
 }

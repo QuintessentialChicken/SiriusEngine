@@ -32,6 +32,11 @@ public:
     static Microsoft::WRL::ComPtr<ID3D11DeviceContext> context;
     static Microsoft::WRL::ComPtr<ID3D11RenderTargetView> target;
     static Microsoft::WRL::ComPtr<ID3D11DepthStencilView> DSV;
+    void Test() {
+        privateNonStatic = 1;
+    }
+private:
+    int privateNonStatic = 0;
 };
 
 
