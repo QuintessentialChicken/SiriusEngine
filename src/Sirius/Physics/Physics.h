@@ -20,7 +20,13 @@ public:
     static void SpawnControlWindow() noexcept;
 
 private:
+    static void ElasticCollision(std::pair<const std::unique_ptr<Drawable>&, const std::unique_ptr<Drawable>&> objects);
+
+    static void LinearVelocity(const std::unique_ptr<Drawable>& object);
+
     static DirectX::XMFLOAT2 CalculateGravity(float mass);
+
+    static void AngularVelocity(const std::unique_ptr<Drawable>& object);
 
     static void CalculateTorque(const std::unique_ptr<Drawable>& object);
 

@@ -7,6 +7,8 @@
 #include "Graphics/Cube.h"
 #include "Physics/Physics.h"
 
+// TODO Most of this should happen in App which should be part of game, not the engine
+// App will inherit from the finite state machine which will be part of the engine
 App my_app;
 
 void Init() {
@@ -22,6 +24,7 @@ void Init() {
     GameWorld::GetInstance()->AddObject(std::move(cube));
     std::unique_ptr<Drawable> cube2 = std::make_unique<Cube>();
     cube2->SetTransform({2.0f, 0.0f, 0.0f});
+    cube2->SetRotation({0.0f, 1.5708f * 2, 0.0f});
     cube2->initialPosition = cube2->position;
     GameWorld::GetInstance()->AddObject(std::move(cube2));
 }
@@ -30,10 +33,10 @@ void Update() {
 }
 
 bool Main_Prologue() {
-    std::cout << "Prologue" << "\n" << "Registering Init Functions" << std::endl;
+    std::cout << "Prologue: Registering Init Functions" << std::endl;
     my_app.RegisterInitFunction(Init);
     my_app.RegisterInitFunction(Physics::Init);
-    std::cout << "Prologue" << "\n" << "Registering Update Functions" << std::endl;
+    std::cout << "Prologue: Registering Update Functions" << std::endl;
     my_app.RegisterUpdateFunction(Update);
     my_app.RegisterUpdateFunction(Physics::Update);
 
