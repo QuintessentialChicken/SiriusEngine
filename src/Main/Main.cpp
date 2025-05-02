@@ -1,7 +1,7 @@
 #include <iostream>
 #include <random>
 
-#include "GameWorld.h"
+#include "Game/GameWorld.h"
 #include "Core/App.h"
 #include "Core/Entrypoint_Engine.h"
 #include "Graphics/Cube.h"

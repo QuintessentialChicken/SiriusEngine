@@ -1,4 +1,4 @@
-add_library(Core
+add_library(Core STATIC
         App.cpp
         App.h
         dxerr.cpp

@@ -10,7 +10,7 @@
 
 #include "External/imgui.h"
 #include "Graphics/GfxDevice.h"
-#include "Main/GameWorld.h"
+#include "../../Game/GameWorld.h"
 Timer timer;
 float runningSum = 0.0f;
 bool Physics::applyForce = false;

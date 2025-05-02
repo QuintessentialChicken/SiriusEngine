@@ -17,8 +17,7 @@
 #pragma once
 #include <intsafe.h>
 
-#include "imgui.h"      // IMGUI_IMPL_API
-#include "Core/App.h"
+#include "imgui.h"
 #ifndef IMGUI_DISABLE
 
 struct ID3D11Device;

@@ -8,7 +8,7 @@
 #include "External/imgui_impl_dx11.h"
 #include "Graphics/GfxDevice.h"
 #include "Graphics/Plane.h"
-#include "Main/GameWorld.h"
+#include "../../Game/GameWorld.h"
 #include "Physics/Physics.h"
 
 bool App::RunOneIteration() {

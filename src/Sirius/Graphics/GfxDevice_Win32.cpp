@@ -7,7 +7,7 @@
 #include <optional>
 
 #include "GfxDevice.h"
-#include "resource.h"
+#include "../../resource.h"
 #include "Core/WndProc.h"
 #include "External/imgui_impl_win32.h"
 

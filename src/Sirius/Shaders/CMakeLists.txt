@@ -1,5 +1,6 @@
 add_custom_target(Shaders)
 
+set(SHADER_DIR ${CMAKE_SOURCE_DIR}/Sirius/Shaders)
 set(HLSL_SHADER_FILES VertexShader.hlsl PixelShader.hlsl TexturePS.hlsl TextureVS.hlsl)
 
 set_source_files_properties(VertexShader.hlsl PROPERTIES ShaderType "vs")
@@ -15,8 +16,8 @@ foreach(FILE ${HLSL_SHADER_FILES})
     get_source_file_property(shadermodel ${FILE} ShaderModel)
     add_custom_command(TARGET Shaders
             PRE_BUILD
-            COMMAND fxc.exe /nologo /Emain /T${shadertype}_${shadermodel} $<IF:$<CONFIG:DEBUG>,/Od,/O1> /Zi /Fo ${CMAKE_BINARY_DIR}/Main/${FILE_WE}.cso /Fd ${CMAKE_BINARY_DIR}/Main/${FILE_WE}.pdb ${FILE}
+            COMMAND fxc.exe /nologo /Emain /T${shadertype}_${shadermodel} $<IF:$<CONFIG:DEBUG>,/Od,/O1> /Zi /Fo ${CMAKE_BINARY_DIR}/Main/${FILE_WE}.cso /Fd ${CMAKE_BINARY_DIR}/Main/${FILE_WE}.pdb ${SHADER_DIR}/${FILE}
             COMMENT "HLSL ${FILE}"
-            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+            WORKING_DIRECTORY .
             VERBATIM)
 endforeach(FILE)

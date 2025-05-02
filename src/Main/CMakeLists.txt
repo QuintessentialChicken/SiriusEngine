@@ -1,12 +1,15 @@
 add_executable(Main
-        Main.cpp ${CMAKE_SOURCE_DIR}/sirius.rc
-        GameWorld.cpp
-        GameWorld.h)
+        Main.cpp
+        ${CMAKE_SOURCE_DIR}/sirius.rc
+)
 add_dependencies(Main Shaders)
+
 target_link_libraries(Main PRIVATE
-        Core
-        External
-        Graphics
-        Physics
-        Input
+        Game
+        Engine
+)
+
+target_include_directories(Main PRIVATE
+        ${CMAKE_SOURCE_DIR}/Sirius
+        ${CMAKE_SOURCE_DIR}
 )
