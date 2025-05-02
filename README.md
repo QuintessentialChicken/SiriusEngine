@@ -4,3 +4,5 @@ I'm developing this game engine to get a better grasp at the innter workings of 
 Right now I'm using DirectX, but I'm planning to move on to Vulkan once I have a good structure in place.
 
 I'm also excited to get started on more complex rendering systems and physics simulations.
+
+I'm keeping a blog on [leonstier.com](https://leonstier.com/engine/index.html) where I keep tabs on the details.
