@@ -51,10 +51,12 @@ void Physics::Update() {
 }
 
 void Physics::ElasticCollision(std::pair<const std::unique_ptr<Drawable>&, const std::unique_ptr<Drawable>&> objects) {
-    objects.first->linearVelocity.x = ((objects.first->mass - objects.second->mass) / (objects.first->mass + objects.second->mass)) * objects.first->linearVelocity.x
+    const float v1 = ((objects.first->mass - objects.second->mass) / (objects.first->mass + objects.second->mass)) * objects.first->linearVelocity.x
                 + (2 * objects.second->mass) / (objects.first->mass + objects.second->mass) * objects.second->linearVelocity.x;
-    objects.second->linearVelocity.x = ((objects.second->mass - objects.first->mass) / (objects.second->mass + objects.first->mass)) * objects.second->linearVelocity.x
-                + (2 * objects.first->mass) / (objects.second->mass + objects.first->mass) * objects.first->linearVelocity.x * -1;
+    const float v2 = ((objects.second->mass - objects.first->mass) / (objects.second->mass + objects.first->mass)) * objects.second->linearVelocity.x
+                + (2 * objects.first->mass) / (objects.second->mass + objects.first->mass) * objects.first->linearVelocity.x;
+    objects.first->linearVelocity.x = v1;
+    objects.second->linearVelocity.x = v2;
 }
 
 
