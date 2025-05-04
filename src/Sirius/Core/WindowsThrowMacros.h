@@ -4,7 +4,6 @@
 
 #ifndef WINDOWSTHROWMACROS_H
 #define WINDOWSTHROWMACROS_H
-#define AUTOREPEAT (lParam & 0x40000000)
 #define CHWND_EXCEPT( hr ) Window::HrException( __LINE__,__FILE__,hr )
 #define CHWND_LAST_EXCEPT() Window::HrException( __LINE__,__FILE__,GetLastError() )
 #define CHWND_NOGFX_EXCEPT() Window::NoGfxHrException( __LINE__,__FILE__ )

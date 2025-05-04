@@ -3,5 +3,7 @@ add_library(Input
         Keyboard.h
         Mouse.cpp
         Mouse.h
+        Input.cpp
+        Input.h
 )
 

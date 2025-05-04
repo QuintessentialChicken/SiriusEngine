@@ -8,7 +8,7 @@
 
 #include "GfxDevice.h"
 #include "../../resource.h"
-#include "Core/WndProc.h"
+#include "WndProc.h"
 #include "External/imgui_impl_win32.h"
 
 static std::string windowTitle;
@@ -36,73 +36,10 @@ LRESULT HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept {
         case WM_KILLFOCUS:
             // kbd.ClearState();
             break;
-        // /*********** KEYBOARD MESSAGES ***********/
-        // case WM_SYSKEYDOWN:
-        // case WM_KEYDOWN:
-        //     if (!AUTOREPEAT || kbd.autorepeatEnabled) {
-        //         kbd.OnKeyPressed(wParam);
-        //     }
-        //     break;
-        // case WM_SYSKEYUP:
-        // case WM_KEYUP:
-        //     kbd.OnKeyReleased(wParam);
-        //     break;
-        // case WM_CHAR:
-        //     kbd.OnChar(static_cast<char>(wParam));
-        //     break;
-        // /*********** END KEYBOARD MESSAGES ***********/
-        // /************** MOUSE MESSAGES ***************/
-        // case WM_MOUSEMOVE: {
-        //     if (const auto [x, y] = MAKEPOINTS(lParam); x >= 0 && x < width && y >= 0 && y < height) {
-        //         mouse.OnMouseMove(x, y);
-        //         if (!mouse.IsInWindow()) {
-        //             SetCapture(hWnd);
-        //             mouse.OnMouseEnter();
-        //         }
-        //     }
-        //     // not in client -> log move / maintain capture if button down
-        //     else {
-        //         if (wParam & (MK_LBUTTON | MK_RBUTTON)) {
-        //             mouse.OnMouseMove(x, y);
-        //         }
-        //         // button up -> release capture / log event for leaving
-        //         else {
-        //             ReleaseCapture();
-        //             mouse.OnMouseLeave();
-        //         }
-        //     }
-        //     break;
-        // }
-        // case WM_LBUTTONDOWN: {
-        //     const auto [x, y]{MAKEPOINTS(lParam)};
-        //     mouse.OnLeftPressed(x, y);
-        //     break;
-        // }
-        // case WM_LBUTTONUP: {
-        //     const auto [x, y]{MAKEPOINTS(lParam)};
-        //     mouse.OnLeftReleased(x, y);
-        //     break;
-        // }
-        // case WM_RBUTTONDOWN: {
-        //     const auto [x, y]{MAKEPOINTS(lParam)};
-        //     mouse.OnRightPressed(x, y);
-        //     break;
-        // }
-        // case WM_RBUTTONUP: {
-        //     const auto [x, y]{MAKEPOINTS(lParam)};
-        //     mouse.OnRightReleased(x, y);
-        //     break;
-        // }
-        // case WM_MOUSEWHEEL: {
-        //     const auto [x, y] = MAKEPOINTS(lParam);
-        //     const int delta = GET_WHEEL_DELTA_WPARAM(wParam);
-        //     mouse.OnWheelDelta(x, y, delta);
-        //     break;
-        // }
-        default: ;
-        /************ END MOUSE MESSAGES *************/
+        default:
+            {}
     }
-    return DefWindowProc(hWnd, msg, wParam, lParam);
+    return g_WindowProc(hWnd, msg, wParam, lParam);
 }
 
 LRESULT HandleMsgThunk(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept {

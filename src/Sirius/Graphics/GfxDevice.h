@@ -15,7 +15,7 @@ class GfxDevice {
 
 public:
     static int InitSingleton();
-    static void InitClass();
+    static void Init();
     static void ShutdownClass();
 
     static HWND CreateDeviceWindow();
@@ -41,6 +41,7 @@ private:
     int privateNonStatic = 0;
 };
 
+extern GfxDevice* pGfxDevice;
 
 
 #endif //DEVICE_H

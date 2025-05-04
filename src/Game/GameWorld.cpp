@@ -29,6 +29,10 @@ void GameWorld::AddObject(std::unique_ptr<Drawable> object) {
     objects.push_back(std::move(object));
 }
 
+Drawable& GameWorld::GetObjectAtIndex(int index) const {
+    return *objects.at(index);
+}
+
 std::vector<std::unique_ptr<Drawable>>& GameWorld::GetAllObjects() {
     return objects;
 }

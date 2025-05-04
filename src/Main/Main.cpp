@@ -2,12 +2,13 @@
 #include <random>
 
 #include "Game/GameWorld.h"
-#include "Core/App.h"
+#include "../Game/App.h"
 #include "Core/Entrypoint_Engine.h"
 #include "Graphics/Cube.h"
+#include "Input/Mouse.h"
 #include "Physics/Physics.h"
 
-// TODO Most of this should happen in App which should be part of game, not the engine
+// TODO Most of this should happen in App
 // App will inherit from the finite state machine which will be part of the engine
 App my_app;
 
@@ -30,6 +31,7 @@ void Init() {
 }
 
 void Update() {
+    GameWorld::GetInstance()->GetObjectAtIndex(0).SetTransform({-15 + static_cast<float>(Mouse::GetX()) * 0.05f, 15 + static_cast<float>(Mouse::GetY()) * -0.05f, 0});
 }
 
 bool Main_Prologue() {

@@ -1,4 +1,6 @@
 add_library(Game
+        App.cpp
+        App.h
         GameWorld.cpp
         GameWorld.h
 )

@@ -33,6 +33,7 @@ add_library(Graphics STATIC
         VertexBuffer.h
         VertexShader.cpp
         VertexShader.h
+        WndProc.h
 )
 
 target_link_libraries(Graphics PRIVATE Gdiplus.lib)

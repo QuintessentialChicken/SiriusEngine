@@ -8,7 +8,8 @@
 #include "External/imgui_impl_dx11.h"
 #include "Graphics/GfxDevice.h"
 #include "Graphics/Plane.h"
-#include "../../Game/GameWorld.h"
+#include "GameWorld.h"
+#include "Input/Input.h"
 #include "Physics/Physics.h"
 
 bool App::RunOneIteration() {
@@ -32,7 +33,8 @@ bool App::RunOneIteration() {
 
 bool App::Init() {
     GfxDevice::SetWindowTitle("Fuzzy");
-    GfxDevice::InitClass();
+    GfxDevice::Init();
+    Input::Init();
     for (const auto& fun : startFunctions) {
         fun();
     }

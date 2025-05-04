@@ -6,8 +6,8 @@
 #define APP_H
 #include <thread>
 
-#include "GDIPlusManager.h"
-#include "Timer.h"
+#include "Core/GDIPlusManager.h"
+#include "Core/Timer.h"
 #include "Graphics/Camera.h"
 #include "Graphics/Drawable.h"
 #include "Graphics/ImguiManager.h"

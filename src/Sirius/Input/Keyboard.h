@@ -2,6 +2,7 @@
 #include <queue>
 #include <bitset>
 
+// TODO Rework Keyboard Class
 class Keyboard {
     friend class Window;
 

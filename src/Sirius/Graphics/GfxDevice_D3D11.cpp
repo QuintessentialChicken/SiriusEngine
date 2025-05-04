@@ -5,7 +5,7 @@
 
 #include "GfxDevice.h"
 #include "External/imgui_impl_dx11.h"
-#include "Core/WndProc.h"
+#include "WndProc.h"
 #include "External/imgui_impl_win32.h"
 
 
@@ -19,7 +19,7 @@ Microsoft::WRL::ComPtr<ID3D11DeviceContext> GfxDevice::context;
 Microsoft::WRL::ComPtr<ID3D11RenderTargetView> GfxDevice::target;
 Microsoft::WRL::ComPtr<ID3D11DepthStencilView> GfxDevice::DSV;
 
-void GfxDevice::InitClass() {
+void GfxDevice::Init() {
     if (!hwndMain) {
         hwndMain = CreateDeviceWindow();
     }
@@ -126,12 +126,6 @@ void GfxDevice::InitClass() {
     // float viewWidth = viewHeight * aspectRatio;
     projection = DirectX::XMMatrixPerspectiveLH(1, 3.0f/4.0f, 0.5f, 40.0f);
 
-}
-
-int GfxDevice::InitSingleton() {
-    static GfxDevice deviceD3d11;
-    pGfxDevice = &deviceD3d11;
-    return 1100;
 }
 
 void GfxDevice::ShutdownClass() {

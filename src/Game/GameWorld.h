@@ -4,6 +4,7 @@
 
 #ifndef GAMEWORLD_H
 #define GAMEWORLD_H
+#include <string>
 #include <vector>
 
 #include "Graphics/Drawable.h"
@@ -17,6 +18,7 @@ public:
 
     void AddObject(std::unique_ptr<Drawable> object);
 
+    Drawable& GetObjectAtIndex(int index) const;
     std::vector<std::unique_ptr<Drawable>>& GetAllObjects();
 private:
     static GameWorld* instance;
