@@ -12,43 +12,39 @@
 #include "Input/Input.h"
 #include "Physics/Physics.h"
 
-bool App::RunOneIteration() {
-    // Checks if the state is Exit
-    // Inside Update (from finite state machine class) the state is updated and the state evaluation function is called.
-    // This function then calls Init, Update, etc. based on the state
-    // Update()
-
-    // For now, directly call update as the main game loop
-    if (!isSystemInitialized) {
-        Init();
-        isSystemInitialized = true;
+Fsm::Return App::UpdateState(const signed short state) {
+    switch (state) {
+        case INIT_SYSTEM:
+            return Init();
+        case RUN_GAME:
+            return RunGame();
+        case SHUTDOWN_SYSTEM:
+            return Shutdown();
+        default:
+            return UNHANDLED;
     }
-
-    if (RunGame() == 0) {
-        Shutdown();
-        return false;
-    }
-    return true;
 }
 
-bool App::Init() {
+Fsm::Return App::Init() {
     GfxDevice::SetWindowTitle("Fuzzy");
     GfxDevice::Init();
     Input::Init();
     for (const auto& fun : startFunctions) {
         fun();
     }
-    return true;
+    SetState(RUN_GAME);
+    return CONTINUE;
 }
 
-bool App::Shutdown() {
+Fsm::Return App::Shutdown() {
     GfxDevice::ShutdownClass();
     GameWorld::DestroySingleton();
-    return true;
+    return EXIT;
 }
 
 
-bool App::RunGame() {
+// ReSharper disable once CppDFAConstantFunctionResult
+Fsm::Return App::RunGame() {
     MSG message;
     std::optional<int> exitCode = {};
     if (PeekMessage(&message, nullptr, 0, 0, PM_REMOVE)) {
@@ -60,13 +56,14 @@ bool App::RunGame() {
         DispatchMessage(&message);
     }
     if (exitCode == 0) {
-        return exitCode.value();
+        SetState(SHUTDOWN_SYSTEM);
+        return CONTINUE;
     }
     for (const auto& fun : updateFunctions) {
         fun();
     }
     DoFrame();
-    return true;
+    return CONTINUE;
 }
 
 

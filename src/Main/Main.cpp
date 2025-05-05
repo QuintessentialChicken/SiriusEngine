@@ -8,8 +8,7 @@
 #include "Input/Mouse.h"
 #include "Physics/Physics.h"
 
-// TODO Most of this should happen in App
-// App will inherit from the finite state machine which will be part of the engine
+// TODO Most of this should happen in App. This is just the glue between the engine and the game.
 App my_app;
 
 void Init() {

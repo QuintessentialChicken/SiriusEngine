@@ -2,7 +2,6 @@
 #include <queue>
 #include <bitset>
 
-// TODO Rework Keyboard Class
 class Keyboard {
 public:
     [[nodiscard]] static bool IsKeyPressed(unsigned char keycode) noexcept;
