@@ -6,6 +6,7 @@
 
 #include <iostream>
 
+#include "Keyboard.h"
 #include "Mouse.h"
 #include "Graphics/WndProc.h"
 #define AUTOREPEAT (lParam & 0x40000000)
@@ -16,21 +17,21 @@ void Input::Init() {
 
 LRESULT CALLBACK InputWindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) {
     switch (msg) {
-        // /*********** KEYBOARD MESSAGES ***********/
-        // case WM_SYSKEYDOWN:
-        // case WM_KEYDOWN:
-        //     if (!AUTOREPEAT || kbd.autorepeatEnabled) {
-        //         kbd.OnKeyPressed(wParam);
-        //     }
-        //     break;
-        // case WM_SYSKEYUP:
-        // case WM_KEYUP:
-        //     kbd.OnKeyReleased(wParam);
-        //     break;
-        // case WM_CHAR:
-        //     kbd.OnChar(static_cast<char>(wParam));
-        //     break;
-        // /*********** END KEYBOARD MESSAGES ***********/
+        /*********** KEYBOARD MESSAGES ***********/
+        case WM_SYSKEYDOWN:
+        case WM_KEYDOWN:
+            if (!AUTOREPEAT || Keyboard::IsAutorepeatEnabled()) {
+                Keyboard::OnKeyPressed(wParam);
+            }
+            break;
+        case WM_SYSKEYUP:
+        case WM_KEYUP:
+            Keyboard::OnKeyReleased(wParam);
+            break;
+        case WM_CHAR:
+            Keyboard::OnChar(static_cast<char>(wParam));
+            break;
+        /*********** END KEYBOARD MESSAGES ***********/
         /************** MOUSE MESSAGES ***************/
         case WM_MOUSEMOVE: {
             std::cout << "Mouse move" << std::endl;

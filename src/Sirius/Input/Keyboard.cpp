@@ -1,24 +1,11 @@
 #include "Keyboard.h"
 
-bool Keyboard::KeyIsPressed(unsigned char keycode) const noexcept {
+bool Keyboard::autorepeatEnabled = false;
+std::bitset<256> Keyboard::keyStates;
+std::queue<char> Keyboard::charBuffer;
+
+bool Keyboard::IsKeyPressed(unsigned char keycode) noexcept {
     return keyStates[keycode];
-}
-
-Keyboard::Event Keyboard::ReadKey() noexcept {
-    if (keyBuffer.empty()) {
-        return {};
-    }
-    const Event event = keyBuffer.front();
-    keyBuffer.pop();
-    return event;
-}
-
-bool Keyboard::KeyIsEmpty() const noexcept {
-    return keyBuffer.empty();
-}
-
-void Keyboard::ClearKey() noexcept {
-    keyBuffer = std::queue<Event>();
 }
 
 char Keyboard::ReadChar() noexcept {
@@ -30,7 +17,7 @@ char Keyboard::ReadChar() noexcept {
     return charcode;
 }
 
-bool Keyboard::CharIsEmpty() const noexcept {
+bool Keyboard::CharIsEmpty() noexcept {
     return charBuffer.empty();
 }
 
@@ -39,7 +26,6 @@ void Keyboard::ClearChar() noexcept {
 }
 
 void Keyboard::Clear() noexcept {
-    ClearKey();
     ClearChar();
 }
 
@@ -51,20 +37,16 @@ void Keyboard::DisableAutorepeat() noexcept {
     autorepeatEnabled = false;
 }
 
-bool Keyboard::AutorepeatIsEnabled() const noexcept {
+bool Keyboard::IsAutorepeatEnabled() noexcept {
     return autorepeatEnabled;
 }
 
 void Keyboard::OnKeyPressed(unsigned char keycode) noexcept {
     keyStates[keycode] = true;
-    keyBuffer.emplace(Event::Type::Press, keycode);
-    TrimBuffer(keyBuffer);
 }
 
 void Keyboard::OnKeyReleased(unsigned char keycode) noexcept {
     keyStates[keycode] = false;
-    keyBuffer.emplace(Event::Type::Release, keycode);
-    TrimBuffer(keyBuffer);
 }
 
 void Keyboard::ClearState() noexcept {
@@ -73,13 +55,4 @@ void Keyboard::ClearState() noexcept {
 
 void Keyboard::OnChar(char character) noexcept {
     charBuffer.emplace(character);
-    TrimBuffer(charBuffer);
-}
-
-template<typename T>
-void Keyboard::TrimBuffer(std::queue<T> &buffer) noexcept {
-    while( buffer.size() > bufferSize )
-    {
-        buffer.pop();
-    }
 }
