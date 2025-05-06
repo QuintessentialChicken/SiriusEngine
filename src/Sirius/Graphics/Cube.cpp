@@ -101,4 +101,6 @@ void Cube::SetScale(const DirectX::XMFLOAT3& scale) noexcept {
     Cube::scale.x = scale.x;
     Cube::scale.y = scale.y;
     Cube::scale.z = scale.z;
+    width *= scale.x;
+    height *= scale.y;
 }

@@ -43,6 +43,8 @@ public:
     // const std::vector<Vertex> vertices = {{{1.0f, 2.0f, 3.0f}}};
     // const std::vector<unsigned short> indices;
 
+    bool physicsEnabled = false;
+    bool playerControlled = false;
     float mass = 1.0f;
     float width = 0.5f;
     float height = 0.5f;

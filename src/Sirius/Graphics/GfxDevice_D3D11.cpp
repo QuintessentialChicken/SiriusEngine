@@ -121,10 +121,10 @@ void GfxDevice::Init() {
     ImGui::CreateContext();
     ImGui_ImplDX11_Init(device.Get(), context.Get());
 
-    // float aspectRatio = static_cast<float>(screenWidth) / static_cast<float>(screenHeight);
-    // float viewHeight = 5.0f;
-    // float viewWidth = viewHeight * aspectRatio;
-    projection = DirectX::XMMatrixPerspectiveLH(1, 3.0f/4.0f, 0.5f, 40.0f);
+    float aspectRatio = static_cast<float>(screenWidth) / static_cast<float>(screenHeight);
+    float viewHeight = 5.0f;
+    float viewWidth = viewHeight * aspectRatio;
+    projection = DirectX::XMMatrixOrthographicLH(viewWidth, viewHeight, 0.5f, 40.0f);
 
 }
 

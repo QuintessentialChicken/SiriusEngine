@@ -3,6 +3,8 @@ add_library(Game
         App.h
         GameWorld.cpp
         GameWorld.h
+        Game.cpp
+        Game.h
 )
 
 target_include_directories(Game PRIVATE

@@ -18,7 +18,7 @@ public:
 
     void AddObject(std::unique_ptr<Drawable> object);
 
-    Drawable& GetObjectAtIndex(int index) const;
+    [[nodiscard]] Drawable& GetObjectAtIndex(int index) const;
     std::vector<std::unique_ptr<Drawable>>& GetAllObjects();
 private:
     static GameWorld* instance;

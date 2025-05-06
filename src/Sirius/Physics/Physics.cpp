@@ -11,6 +11,7 @@
 #include "External/imgui.h"
 #include "Graphics/GfxDevice.h"
 #include "../../Game/GameWorld.h"
+#include "Graphics/WndProc.h"
 Timer timer;
 bool Physics::applyForce = false;
 float Physics::force = 0.0f;
@@ -27,7 +28,9 @@ void Physics::Update() {
     dt = timer.Mark();
     const auto& objects = GameWorld::GetInstance()->GetAllObjects();
     for (size_t i = 0; i < objects.size(); ++i) {
+        if (!objects[i]->physicsEnabled) continue;
         objects[i]->force = {force, 0.0f, 0.0f};
+
         // DirectX::XMFLOAT2 gravity = CalculateGravity(objects[i]->mass);
         // DirectX::XMFLOAT2 acceleration = {0.0f, gravity.y / objects[i]->mass};
         // objects[i]->linearVelocity.y += acceleration.y * dt;
@@ -41,11 +44,11 @@ void Physics::Update() {
                 objects[i]->position.y - objects[i]->height < objects[j]->position.y + objects[j]->height
             ) {
                 std::cout << "Collision" << std::endl;
-                ElasticCollision(std::tie(objects[i], objects[j]));
+                objects[i]->linearVelocity.x *= -1.0f;
+                // ElasticCollision(std::tie(objects[i], objects[j]));
             }
         }
         LinearVelocity(objects[i]);
-        force *= -1;
     }
     force = 0.0f;
 }

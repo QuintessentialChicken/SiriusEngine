@@ -4,51 +4,29 @@
 #include "Game/GameWorld.h"
 #include "../Game/App.h"
 #include "Core/Entrypoint_Engine.h"
+#include "Game/Game.h"
 #include "Graphics/Cube.h"
 #include "Input/Mouse.h"
 #include "Physics/Physics.h"
 
-// TODO Most of this should happen in App. This is just the glue between the engine and the game.
 App my_app;
 
-void Init() {
-    constexpr float LO = 0.1;
-    constexpr float HI = 2.0;
-    std::mt19937 rng{std::random_device{}()};
-    std::uniform_real_distribution bdist{LO, HI};
-    std::uniform_real_distribution adist{-5.0f, 5.0f};
 
-    std::unique_ptr<Drawable> cube = std::make_unique<Cube>();
-    cube->SetTransform({-2.0f, 0.0f, 0.0f});
-    cube->initialPosition = cube->position;
-    GameWorld::GetInstance()->AddObject(std::move(cube));
-    std::unique_ptr<Drawable> cube2 = std::make_unique<Cube>();
-    cube2->SetTransform({2.0f, 0.0f, 0.0f});
-    cube2->SetRotation({0.0f, 1.5708f * 2, 0.0f});
-    cube2->initialPosition = cube2->position;
-    GameWorld::GetInstance()->AddObject(std::move(cube2));
-}
-
-void Update() {
-    GameWorld::GetInstance()->GetObjectAtIndex(0).SetTransform({-15 + static_cast<float>(Mouse::GetX()) * 0.05f, 15 + static_cast<float>(Mouse::GetY()) * -0.05f, 0});
-}
-
+// TODO Eventually move the Register functions to Gameskeleton and call them from Game
+// Keep this as empty as possible, it's just glue between the engine and the game
 bool Main_Prologue() {
     std::cout << "Prologue: Registering Init Functions" << std::endl;
-    my_app.RegisterInitFunction(Init);
+    my_app.RegisterInitFunction(Game::Init);
     my_app.RegisterInitFunction(Physics::Init);
     std::cout << "Prologue: Registering Update Functions" << std::endl;
-    my_app.RegisterUpdateFunction(Update);
+    my_app.RegisterUpdateFunction(Game::Update);
     my_app.RegisterUpdateFunction(Physics::Update);
-
     return true;
 }
 
 bool Main_OneLoopIteration() {
     return my_app.RunOneIteration();
 }
-
-
 
 SET_APP_ENTRY_POINTS(Main_Prologue, Main_OneLoopIteration)
 
