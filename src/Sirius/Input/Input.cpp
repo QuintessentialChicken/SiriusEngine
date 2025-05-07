@@ -34,7 +34,6 @@ LRESULT CALLBACK InputWindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPar
         /*********** END KEYBOARD MESSAGES ***********/
         /************** MOUSE MESSAGES ***************/
         case WM_MOUSEMOVE: {
-            std::cout << "Mouse move" << std::endl;
             // TODO Properly find window width and height
             if (const auto [x, y] = MAKEPOINTS(lParam); x >= 0 && x < 800 && y >= 0 && y < 600) {
                 Mouse::SetPos(x, y);

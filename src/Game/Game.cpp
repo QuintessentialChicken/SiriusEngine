@@ -4,13 +4,18 @@
 
 #include "Game.h"
 
+#include <iostream>
 #include <random>
 
 #include "GameWorld.h"
+#include "Graphics/Camera.h"
 #include "Graphics/Cube.h"
+#include "Graphics/WndProc.h"
 #include "Input/Keyboard.h"
+#include "Input/Mouse.h"
 #include "Physics/Physics.h"
 
+class Camera;
 class Drawable;
 
 
@@ -48,7 +53,12 @@ void Game::Init() {
 
 void Game::Update() {
     for (auto& obj : GameWorld::GetInstance()->GetAllObjects()) {
-        if (!obj->playerControlled) continue;
+        if (!obj->playerControlled) {
+            // DirectX::XMFLOAT2 worldCoords = Camera::ScreenToWorld(0, Mouse::GetY());
+            // obj->SetTransform({worldCoords.x, worldCoords.y, 0});
+            // std::cout << "World X: " << obj->position.x << " World Y: " << obj->position.y << " Screen X: " << Mouse::GetX() << " Screen Y: " << Mouse::GetY() << "\n";
+            continue;
+        }
         if (Keyboard::IsKeyPressed('W')) obj->linearVelocity.y = 0.05f;
         if (Keyboard::IsKeyPressed('S')) obj->linearVelocity.y = -0.05f;
         if (!Keyboard::IsKeyPressed('W') && !Keyboard::IsKeyPressed('S')) obj->linearVelocity.y = 0;

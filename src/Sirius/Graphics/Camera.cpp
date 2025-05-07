@@ -37,6 +37,19 @@ void Camera::SpawnControlWindow() noexcept {
     ImGui::End();
 }
 
+DirectX::XMFLOAT2 Camera::ScreenToWorld(int x, int y) {
+    int zoom = 1;
+    float aspectRatio = 800.0f / 600.0f;
+    float viewHeight = 5.0f;
+    float viewWidth = viewHeight * aspectRatio;
+    float ndcX = ((2.0f * x) / 800) - 1.0f;
+    float ndcY = 1.0f - ((2.0f * y) / 600);
+
+    float worldX = ndcX * (viewWidth / 2.0f) * zoom;
+    float worldY = ndcY * (viewHeight / 2.0f) * zoom;
+    return {worldX, worldY};
+}
+
 void Camera::Reset() noexcept {
     r = 20.0f;
     theta = 0.0f;

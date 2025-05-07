@@ -10,11 +10,12 @@ class Camera {
 public:
     [[nodiscard]] DirectX::XMMATRIX GetMatrix() const noexcept;
     void SpawnControlWindow() noexcept;
+    static DirectX::XMFLOAT2 ScreenToWorld(int x, int y);
     void Reset() noexcept;
     float yaw = 0.0f;
 private:
     float theta = 0.0f;
-    float r = 2.5f;
+    float r = 1.0f;
     float phi = 0.0f;
     float pitch = 0.0f;
     float roll = 0.0f;
