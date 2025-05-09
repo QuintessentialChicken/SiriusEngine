@@ -6,9 +6,11 @@
 #define DRAWABLE_H
 #include <DirectXMath.h>
 #include <memory>
+
 #include <vector>
 
 
+constexpr float PI = 3.14159265f;
 class Bindable;
 
 class Drawable {
@@ -16,11 +18,15 @@ class Drawable {
     friend class DrawableBase;
 
 public:
+
     virtual ~Drawable() = default;
 
     [[nodiscard]] virtual DirectX::XMMATRIX GetTransformXM() const noexcept = 0;
+    [[nodiscard]] virtual DirectX::XMMATRIX GetTransformXMAlt() const noexcept = 0;
 
     void Draw() const noexcept;
+
+    virtual void Update(float dt) noexcept = 0;
 
     virtual void SetTransform(const DirectX::XMFLOAT3& position) noexcept = 0;
 
@@ -32,6 +38,7 @@ public:
 
     struct Vertex {
         DirectX::XMFLOAT3 pos;
+        DirectX::XMFLOAT3 n;
         struct
         {
             float u;
@@ -64,12 +71,29 @@ protected:
 
     void AddIndexBuffer(std::unique_ptr<class IndexBuffer> ibuf) noexcept;
 
+
+    float r = 0.0f;
+    float roll = 0.0f;
+    float pitch = 0.0f;
+    float yaw = 0.0f;
+    float theta = 0.0f;
+    float phi = 0.0f;
+    float chi = 0.0f;
+    // speed (delta/s)
+    float droll = 1.0f;
+    float dpitch = 1.0f;
+    float dyaw = 1.0f;
+    float dtheta = 1.0f;
+    float dphi = 1.0f;
+    float dchi = 1.0f;
+
 private:
     [[nodiscard]] virtual const std::vector<std::unique_ptr<Bindable> >& GetStaticBinds() const noexcept = 0;
 
     const IndexBuffer* indexBuffer = nullptr;
 
     std::vector<std::unique_ptr<Bindable> > binds;
+
 };
 
 

@@ -17,7 +17,6 @@ Timer timer;
 bool Physics::applyForce = false;
 float Physics::force = 0.0f;
 float Physics::privateForce = 0.0f;
-float PI = 3.14159265358979323846;
 float rads = PI / 180;
 float dt = 0.0f;
 static DirectX::XMFLOAT2 screenLimitsHigh = Camera::ScreenToWorld(800, 600);

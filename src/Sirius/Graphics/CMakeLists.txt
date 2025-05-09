@@ -34,6 +34,10 @@ add_library(Graphics STATIC
         VertexShader.cpp
         VertexShader.h
         WndProc.h
+        PointLight.cpp
+        PointLight.h
+        Sphere.cpp
+        Sphere.h
 )
 
 target_link_libraries(Graphics PRIVATE Gdiplus.lib)

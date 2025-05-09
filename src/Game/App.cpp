@@ -5,6 +5,7 @@
 
 #include <iostream>
 
+#include "Game.h"
 #include "External/imgui_impl_dx11.h"
 #include "Graphics/GfxDevice.h"
 #include "Graphics/Plane.h"
@@ -75,6 +76,7 @@ void App::DoFrame() {
         obj->Draw();
     }
     cam.SpawnControlWindow();
+    Game::SpawnControlWindow();
     Physics::SpawnControlWindow();
     GfxDevice::EndFrame();
 }

@@ -4,6 +4,7 @@
 
 #ifndef GAME_H
 #define GAME_H
+#include "Core/Timer.h"
 
 
 /*
@@ -13,6 +14,12 @@ class Game {
 public:
     static void Init();
     static void Update();
+
+    static void SpawnControlWindow();
+
+private:
+    static Timer timer;
+    static float speedFactor;
 };
 
 

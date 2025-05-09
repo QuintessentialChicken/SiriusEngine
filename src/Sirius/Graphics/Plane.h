@@ -21,11 +21,11 @@ public:
 
     void SetScale(const DirectX::XMFLOAT3& scale) noexcept override;
 
-    std::vector<Vertex> vertices{
-        {{-1.0f, 0.0f, -1.0f},{ 0.0f,0.0f }},
-        {{1.0f, 0.0f, -1.0f}, { 1.0f,0.0f }},
-        {{-1.0f, 0.0f, 1.0f}, { 0.0f,1.0f }},
-        {{1.0f, 0.0f, 1.0f}, { 1.0f,1.0f } },
+    std::vector<Vertex> vertices {
+        {{-1.0f, 0.0f, -1.0f}, {0.0f, 0.0f, 0.0f},{ 0.0f,0.0f }},
+        {{1.0f, 0.0f, -1.0f}, {0.0f, 0.0f, 0.0f},{ 1.0f,0.0f }},
+        {{-1.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 0.0f},{ 0.0f,1.0f }},
+        {{1.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 0.0f},{ 1.0f,1.0f } },
     };
 
     const std::vector<unsigned short> indices {

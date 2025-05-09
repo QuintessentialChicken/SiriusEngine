@@ -1,12 +1,16 @@
 add_custom_target(Shaders)
 
 set(SHADER_DIR ${CMAKE_SOURCE_DIR}/Sirius/Shaders)
-set(HLSL_SHADER_FILES VertexShader.hlsl PixelShader.hlsl TexturePS.hlsl TextureVS.hlsl)
+set(HLSL_SHADER_FILES VertexShader.hlsl PixelShader.hlsl TexturePS.hlsl TextureVS.hlsl SolidVS.hlsl SolidPS.hlsl PhongVS.hlsl PhongPS.hlsl)
 
 set_source_files_properties(VertexShader.hlsl PROPERTIES ShaderType "vs")
 set_source_files_properties(PixelShader.hlsl PROPERTIES ShaderType "ps")
 set_source_files_properties(TextureVS.hlsl PROPERTIES ShaderType "vs")
 set_source_files_properties(TexturePS.hlsl PROPERTIES ShaderType "ps")
+set_source_files_properties(SolidVS.hlsl PROPERTIES ShaderType "vs")
+set_source_files_properties(SolidPS.hlsl PROPERTIES ShaderType "ps")
+set_source_files_properties(PhongVS.hlsl PROPERTIES ShaderType "vs")
+set_source_files_properties(PhongPS.hlsl PROPERTIES ShaderType "ps")
 set_source_files_properties(${HLSL_SHADER_FILES} PROPERTIES ShaderModel "5_0")
 
 foreach(FILE ${HLSL_SHADER_FILES})

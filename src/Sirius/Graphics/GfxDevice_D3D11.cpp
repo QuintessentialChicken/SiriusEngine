@@ -124,8 +124,8 @@ void GfxDevice::Init() {
     float aspectRatio = static_cast<float>(screenWidth) / static_cast<float>(screenHeight);
     float viewHeight = 5.0f;
     float viewWidth = viewHeight * aspectRatio;
-    projection = DirectX::XMMatrixOrthographicLH(viewWidth, viewHeight, 0.5f, 40.0f);
-    // projection = DirectX::XMMatrixOrthographicLH(1.0f, 3.0f/4.0f, 0.5f, 40.0f);
+    // projection = DirectX::XMMatrixOrthographicLH(viewWidth, viewHeight, 0.5f, 40.0f);
+    projection = DirectX::XMMatrixPerspectiveLH(1.0f, 3.0f/4.0f, 0.5f, 40.0f);
 }
 
 void GfxDevice::ShutdownClass() {

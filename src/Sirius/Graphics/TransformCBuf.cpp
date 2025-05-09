@@ -18,7 +18,7 @@ TransformCBuf::TransformCBuf(const Drawable& parent) : parent{parent}
 
 void TransformCBuf::Bind() noexcept
 {
-    vcbuf->Update(DirectX::XMMatrixTranspose(parent.GetTransformXM() * GfxDevice::camera * GfxDevice::projection));
+    vcbuf->Update(DirectX::XMMatrixTranspose(parent.GetTransformXMAlt() * GfxDevice::camera * GfxDevice::projection));
     vcbuf->Bind();
 }
 
