@@ -34,44 +34,44 @@ Cube::Cube() {
     phi = adist(rng);
 
     if (!IsStaticInitialized()) {
-        Cube::SetNormalsIndependentFlat();
-        AddStaticBind(std::make_unique<VertexBuffer>(vertices));
-        AddStaticIndexBuffer(std::make_unique<IndexBuffer>(indices));
+        SetNormalsIndependentFlat();
+        AddStaticBind(std::make_unique<VertexBuffer>(independentVertices));
+        AddStaticIndexBuffer(std::make_unique<IndexBuffer>(independentIndices));
 
-        auto vs = std::make_unique<VertexShader>(L"VertexShader.cso");
+        auto vs = std::make_unique<VertexShader>(L"PhongVS.cso");
         auto vsbc = vs->GetBytecode();
 
         AddStaticBind(std::move(vs));
 
-        AddStaticBind(std::make_unique<PixelShader>(L"PixelShader.cso"));
+        AddStaticBind(std::make_unique<PixelShader>(L"PhongPS.cso"));
 
 
-        struct PixelShaderConstants {
-            struct {
-                float r;
-                float g;
-                float b;
-                float a;
-            } face_colors[6];
-        };
-        const PixelShaderConstants colorBuffer =
-        {
-            {
-                {1.0f, 0.0f, 1.0f},
-                {1.0f, 0.0f, 0.0f},
-                {0.0f, 1.0f, 0.0f},
-                {0.0f, 0.0f, 1.0f},
-                {1.0f, 1.0f, 0.0f},
-                {0.0f, 1.0f, 1.0f},
-            }
-        };
+        // struct PixelShaderConstants {
+        //     struct {
+        //         float r;
+        //         float g;
+        //         float b;
+        //         float a;
+        //     } face_colors[6];
+        // };
+        // const PixelShaderConstants colorBuffer =
+        // {
+        //     {
+        //         {1.0f, 0.0f, 1.0f},
+        //         {1.0f, 0.0f, 0.0f},
+        //         {0.0f, 1.0f, 0.0f},
+        //         {0.0f, 0.0f, 1.0f},
+        //         {1.0f, 1.0f, 0.0f},
+        //         {0.0f, 1.0f, 1.0f},
+        //     }
+        // };
 
-        AddStaticBind(std::make_unique<PixelConstantBuffer<PixelShaderConstants> >(colorBuffer));
+        // AddStaticBind(std::make_unique<PixelConstantBuffer<PixelShaderConstants> >(colorBuffer));
 
         const std::vector<D3D11_INPUT_ELEMENT_DESC> ied =
         {
             {"Position", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-            // {"Normal", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0},
+            {"Normal", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0},
         };
         AddStaticBind(std::make_unique<InputLayout>(ied, vsbc));
 
@@ -92,7 +92,7 @@ DirectX::XMMATRIX Cube::GetTransformXM() const noexcept {
 
 DirectX::XMMATRIX Cube::GetTransformXMAlt() const noexcept {
     return DirectX::XMMatrixScaling(scale.x, scale.y, scale.z) *
-           DirectX::XMMatrixRotationRollPitchYaw(roll, pitch, yaw) *
+           DirectX::XMMatrixRotationRollPitchYaw(pitch, yaw, roll) *
            DirectX::XMMatrixTranslation(r, 0.0f, 0.0f) *
            DirectX::XMMatrixRotationRollPitchYaw(theta, phi, chi);
 }
@@ -103,9 +103,9 @@ void Cube::SetNormalsIndependentFlat() noexcept {
         assert( indices.size() % 3 == 0 && !indices.empty() );
         for( size_t i = 0; i < indices.size(); i += 3 )
         {
-            auto& v0 = vertices[indices[i]];
-            auto& v1 = vertices[indices[i + 1]];
-            auto& v2 = vertices[indices[i + 2]];
+            auto& v0 = independentVertices[indices[i]];
+            auto& v1 = independentVertices[indices[i + 1]];
+            auto& v2 = independentVertices[indices[i + 2]];
             const auto p0 = XMLoadFloat3( &v0.pos );
             const auto p1 = XMLoadFloat3( &v1.pos );
             const auto p2 = XMLoadFloat3( &v2.pos );

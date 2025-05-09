@@ -47,7 +47,7 @@ public:
     };
 
 
-    const std::vector<Vertex> independentVertices {
+    std::vector<Vertex> independentVertices {
         { { -side,-side,-side }},// 0 near side
         { { side,-side,-side }},// 1
         { { -side,side,-side }},// 2

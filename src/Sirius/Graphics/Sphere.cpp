@@ -24,22 +24,22 @@ Sphere::Sphere(int latDiv, int longDiv) {
     assert(longDiv >= 3);
     namespace dx = DirectX;
 
-    std::mt19937 rng{std::random_device{}()};
-    std::uniform_real_distribution adist{0.0f, PI * 2.0f};
-    std::uniform_real_distribution ddist{0.0f, PI * 0.5f};
-    std::uniform_real_distribution odist{0.0f, PI * 0.08f};
-    std::uniform_real_distribution rdist{6.0f, 20.0f};
-    std::uniform_real_distribution bdist{0.4f, 3.0f};
-    r = rdist(rng);
-    droll = ddist(rng);
-    dpitch = ddist(rng);
-    dyaw = ddist(rng);
-    dphi = odist(rng);
-    dtheta = odist(rng);
-    dchi = odist(rng);
-    chi = adist(rng);
-    theta = adist(rng);
-    phi = adist(rng);
+    // std::mt19937 rng{std::random_device{}()};
+    // std::uniform_real_distribution adist{0.0f, PI * 2.0f};
+    // std::uniform_real_distribution ddist{0.0f, PI * 0.5f};
+    // std::uniform_real_distribution odist{0.0f, PI * 0.08f};
+    // std::uniform_real_distribution rdist{6.0f, 20.0f};
+    // std::uniform_real_distribution bdist{0.4f, 3.0f};
+    // r = rdist(rng);
+    // droll = ddist(rng);
+    // dpitch = ddist(rng);
+    // dyaw = ddist(rng);
+    // dphi = odist(rng);
+    // dtheta = odist(rng);
+    // dchi = odist(rng);
+    // chi = adist(rng);
+    // theta = adist(rng);
+    // phi = adist(rng);
 
     constexpr float radius = 1.0f;
     const auto base = dx::XMVectorSet(0.0f, 0.0f, radius, 0.0f);
@@ -115,37 +115,19 @@ Sphere::Sphere(int latDiv, int longDiv) {
         AddStaticBind(std::make_unique<VertexBuffer>(vertices));
         AddStaticIndexBuffer(std::make_unique<IndexBuffer>(indices));
 
-        auto vs = std::make_unique<VertexShader>(L"VertexShader.cso");
+        auto vs = std::make_unique<VertexShader>(L"SolidVS.cso");
         auto vsbc = vs->GetBytecode();
 
         AddStaticBind(std::move(vs));
 
-        AddStaticBind(std::make_unique<PixelShader>(L"PixelShader.cso"));
+        AddStaticBind(std::make_unique<PixelShader>(L"SolidPS.cso"));
 
-        // struct PSColorConstant {
-        //     dx::XMFLOAT3 color = {1.0f, 1.0f, 1.0f};
-        //     float padding;
-        // } colorConst;
-        struct PixelShaderConstants {
-            struct {
-                float r;
-                float g;
-                float b;
-                float a;
-            } face_colors[6];
-        };
-        const PixelShaderConstants colorBuffer =
-      {
-            {
-                {1.0f, 0.0f, 1.0f},
-                {1.0f, 0.0f, 0.0f},
-                {0.0f, 1.0f, 0.0f},
-                {0.0f, 0.0f, 1.0f},
-                {1.0f, 1.0f, 0.0f},
-                {0.0f, 1.0f, 1.0f},
-            }
-      };
-        AddStaticBind(std::make_unique<PixelConstantBuffer<PixelShaderConstants>>(colorBuffer));
+        struct PSColorConstant {
+            dx::XMFLOAT3 color = {1.0f, 1.0f, 1.0f};
+            float padding;
+        } colorConst;
+
+        AddStaticBind(std::make_unique<PixelConstantBuffer<PSColorConstant>>(colorConst));
 
         const std::vector<D3D11_INPUT_ELEMENT_DESC> ied =
         {

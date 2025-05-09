@@ -11,6 +11,7 @@
 #include "GameWorld.h"
 #include "Graphics/Camera.h"
 #include "Graphics/Cube.h"
+#include "Graphics/PointLight.h"
 #include "Graphics/Sphere.h"
 #include "Graphics/WndProc.h"
 #include "Input/Keyboard.h"
@@ -24,14 +25,16 @@ Timer Game::timer;
 float Game::speedFactor = 1.0f;
 
 void Game::Init() {
+    GameWorld::GetInstance()->AddLightSource(std::make_unique<PointLight>());
     for (int i = 0; i < 100; i++) {
-        GameWorld::GetInstance()->AddObject(std::make_unique<Sphere>());
+        GameWorld::GetInstance()->AddObject(std::make_unique<Cube>());
     }
     timer.Mark();
 }
 
 void Game::Update() {
     const auto dt = timer.Mark() * speedFactor;
+
     for (auto& obj: GameWorld::GetInstance()->GetAllObjects()) {
         if (!obj->playerControlled) {
             // DirectX::XMFLOAT2 worldCoords = Camera::ScreenToWorld(0, Mouse::GetY());

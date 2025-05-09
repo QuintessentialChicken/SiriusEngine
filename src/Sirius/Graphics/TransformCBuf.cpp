@@ -8,18 +8,31 @@
 #include "Drawable.h"
 #include <DirectXMath.h>
 
+#include "Camera.h"
+
 TransformCBuf::TransformCBuf(const Drawable& parent) : parent{parent}
 {
     if( !vcbuf )
     {
-        vcbuf = std::make_unique<VertexConstantBuffer<DirectX::XMMATRIX>>();
+        vcbuf = std::make_unique<VertexConstantBuffer<Transforms>>();
     }
 }
 
 void TransformCBuf::Bind() noexcept
 {
-    vcbuf->Update(DirectX::XMMatrixTranspose(parent.GetTransformXMAlt() * GfxDevice::camera * GfxDevice::projection));
+    const auto model = parent.GetTransformXMAlt();
+
+    const Transforms tf =
+{
+        DirectX::XMMatrixTranspose( model ),
+        DirectX::XMMatrixTranspose(
+            model *
+            GfxDevice::camera *
+            GfxDevice::projection
+        )
+    };
+    vcbuf->Update(tf);
     vcbuf->Bind();
 }
 
-std::unique_ptr<VertexConstantBuffer<DirectX::XMMATRIX>> TransformCBuf::vcbuf;
+std::unique_ptr<VertexConstantBuffer<TransformCBuf::Transforms>> TransformCBuf::vcbuf;

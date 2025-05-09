@@ -72,6 +72,10 @@ void App::DoFrame() {
     GfxDevice::BeginFrame();
     GfxDevice::camera = cam.GetMatrix();
     GameWorld* world = GameWorld::GetInstance();
+    for (auto& light : world->GetAllLightSources()) {
+        light->Bind();
+        light->Draw();
+    }
     for (const auto& obj : world->GetAllObjects()) {
         obj->Draw();
     }

@@ -21,4 +21,5 @@ float4 main( float3 worldPos : Position,float3 n : Normal ) : SV_Target
 	const float3 diffuse = materialColor * lightColor * (max(0.0f, dot(dirToL, n)));
 	// final color
 	return float4(saturate( diffuse + ambient ),1.0f);
+	//return float4(1.0f, 0.0f, 0.0f, 1.0f);
 }
