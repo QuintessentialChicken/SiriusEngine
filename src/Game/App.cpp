@@ -10,6 +10,7 @@
 #include "Graphics/GfxDevice.h"
 #include "Graphics/Plane.h"
 #include "GameWorld.h"
+#include "Graphics/Renderer.h"
 #include "Input/Input.h"
 #include "Physics/Physics.h"
 
@@ -28,7 +29,8 @@ Fsm::Return App::UpdateState(const signed short state) {
 
 Fsm::Return App::Init() {
     GfxDevice::SetWindowTitle("Fuzzy");
-    GfxDevice::Init();
+    // GfxDevice::Init();
+    Renderer::Init();
     Input::Init();
     for (const auto& fun : startFunctions) {
         fun();
@@ -38,7 +40,8 @@ Fsm::Return App::Init() {
 }
 
 Fsm::Return App::Shutdown() {
-    GfxDevice::ShutdownClass();
+    // GfxDevice::ShutdownClass();
+    Renderer::Shutdown();
     GameWorld::DestroySingleton();
     return EXIT;
 }
@@ -69,7 +72,8 @@ Fsm::Return App::RunGame() {
 
 
 void App::DoFrame() {
-    GfxDevice::BeginFrame();
+    // GfxDevice::BeginFrame();
+    Renderer::BeginFrame();
     GfxDevice::camera = cam.GetMatrix();
     GameWorld* world = GameWorld::GetInstance();
     for (auto& light : world->GetAllLightSources()) {
@@ -82,7 +86,8 @@ void App::DoFrame() {
     cam.SpawnControlWindow();
     Game::SpawnControlWindow();
     Physics::SpawnControlWindow();
-    GfxDevice::EndFrame();
+    // GfxDevice::EndFrame();
+    Renderer::EndFrame();
 }
 
 void App::RegisterInitFunction(void(*fun)()) {

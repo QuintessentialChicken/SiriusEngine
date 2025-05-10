@@ -5,7 +5,6 @@ add_library(Graphics STATIC
         Cube.cpp
         Cube.h
         GfxDevice.h
-        GfxDevice_D3D11.cpp
         GfxDevice_Win32.cpp
         Drawable.cpp
         Drawable.h
@@ -38,6 +37,15 @@ add_library(Graphics STATIC
         PointLight.h
         Sphere.cpp
         Sphere.h
+        RenderApi.h
+        RenderApi_D3D11.cpp
+        RenderApi_D3D11.h
+        Renderer.cpp
+        Renderer.h
+        RenderApi.cpp
+        Buffer.h
+        Buffer_D3D11.cpp
+        Buffer_D3D11.h
 )
 
 target_link_libraries(Graphics PRIVATE Gdiplus.lib)

@@ -5,8 +5,8 @@
 #include "Drawable.h"
 
 #include "Bindable.h"
-#include "GfxDevice.h"
 #include "IndexBuffer.h"
+#include "Renderer.h"
 
 void Drawable::Draw() const noexcept {
     for( auto& bind : binds )
@@ -17,7 +17,7 @@ void Drawable::Draw() const noexcept {
     {
         bind->Bind();
     }
-    GfxDevice::DrawIndexed( indexBuffer->GetCount() );
+    Renderer::DrawIndexed( indexBuffer->GetCount() );
 }
 
 void Drawable::AddBind(std::unique_ptr<Bindable> bind) noexcept {

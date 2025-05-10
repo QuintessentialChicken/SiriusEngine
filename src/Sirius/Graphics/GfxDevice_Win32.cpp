@@ -11,6 +11,7 @@
 #include "WndProc.h"
 #include "External/imgui_impl_win32.h"
 
+std::array<float, 4> GfxDevice::color;
 static std::string windowTitle;
 
 

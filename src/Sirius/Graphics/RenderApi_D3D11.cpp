@@ -1,27 +1,20 @@
 //
-// Created by Leon on 26/04/2025.
+// Created by Leon on 10/05/2025.
 //
+
+#include "RenderApi_D3D11.h"
+
 #include <array>
+#include <External/imgui_impl_dx11.h>
+#include <External/imgui_impl_win32.h>
 
-#include "GfxDevice.h"
-#include "External/imgui_impl_dx11.h"
+#include "Buffer_D3D11.h"
 #include "WndProc.h"
-#include "External/imgui_impl_win32.h"
 
 
-GfxDevice* pGfxDevice;
-std::array<float, 4> GfxDevice::color = {0.0f, 0.3f, 0.0f, 1.0f};
-DirectX::XMMATRIX GfxDevice::projection;
-DirectX::XMMATRIX GfxDevice::camera;
-Microsoft::WRL::ComPtr<IDXGISwapChain> GfxDevice::swapChain;
-Microsoft::WRL::ComPtr<ID3D11Device> GfxDevice::device;
-Microsoft::WRL::ComPtr<ID3D11DeviceContext> GfxDevice::context;
-Microsoft::WRL::ComPtr<ID3D11RenderTargetView> GfxDevice::target;
-Microsoft::WRL::ComPtr<ID3D11DepthStencilView> GfxDevice::DSV;
-
-void GfxDevice::Init() {
+void RenderApi_D3D11::Init() {
     if (!hwndMain) {
-        hwndMain = CreateDeviceWindow();
+        hwndMain = GfxDevice::CreateDeviceWindow();
     }
 
 
@@ -128,7 +121,35 @@ void GfxDevice::Init() {
     projection = DirectX::XMMatrixPerspectiveLH(1.0f, 3.0f/4.0f, 0.5f, 40.0f);
 }
 
-void GfxDevice::ShutdownClass() {
+
+void RenderApi_D3D11::BeginFrame() {
+    if( true )
+    {
+        ImGui_ImplDX11_NewFrame();
+        ImGui_ImplWin32_NewFrame();
+        ImGui::NewFrame();
+    }
+
+    context->ClearRenderTargetView(target.Get(), color.data());
+    context->ClearDepthStencilView(DSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
+}
+
+void RenderApi_D3D11::EndFrame() {
+    if (true) {
+        ImGui::Render();
+        ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
+    }
+
+    if (HRESULT hr; FAILED(hr = RenderApi_D3D11::swapChain->Present( 1u,0u ))) {
+        throw std::runtime_error("Failed to present swap chain");
+    }
+}
+
+void RenderApi_D3D11::DrawIndexed(const UINT count) {
+    context->DrawIndexed(count, 0, 0);
+}
+
+void RenderApi_D3D11::Shutdown() {
     ImGui_ImplDX11_Shutdown();
     ImGui_ImplWin32_Shutdown();
     if (hwndMain) {
@@ -143,30 +164,14 @@ void GfxDevice::ShutdownClass() {
     }
 }
 
-void GfxDevice::BeginFrame() {
-    if( true )
-    {
-        ImGui_ImplDX11_NewFrame();
-        ImGui_ImplWin32_NewFrame();
-        ImGui::NewFrame();
-    }
-
-    context->ClearRenderTargetView(GfxDevice::target.Get(), color.data());
-    context->ClearDepthStencilView(GfxDevice::DSV.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
+std::unique_ptr<IVertexBuffer> RenderApi_D3D11::CreateVertexBuffer(const void* data, size_t size, UINT stride) {
+    return std::make_unique<VertexBuffer_D3D11>(data, size, stride, device.Get(), context.Get());
 }
 
-void GfxDevice::EndFrame() {
-    if (true) {
-        ImGui::Render();
-        ImGui_ImplDX11_RenderDrawData(ImGui::GetDrawData());
-    }
-
-    if (HRESULT hr; FAILED(hr = GfxDevice::swapChain->Present( 1u,0u ))) {
-        throw std::runtime_error("Failed to present swap chain");
-    }
+std::unique_ptr<IIndexBuffer> RenderApi_D3D11::CreateIndexBuffer(const void* indices, size_t size) {
+    return std::make_unique<IndexBuffer_D3D11>(indices, size, device.Get(), context.Get());
 }
 
-void GfxDevice::DrawIndexed(const UINT count) {
-    context->DrawIndexed(count, 0, 0);
+std::unique_ptr<IConstantBuffer> RenderApi_D3D11::CreateConstantBuffer(const void* data, size_t size) {
+    return std::make_unique<ConstantBuffer_D3D11>(data, size, device.Get(), context.Get());
 }
-
