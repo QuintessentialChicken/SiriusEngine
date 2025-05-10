@@ -100,12 +100,12 @@ DirectX::XMMATRIX Cube::GetTransformXMAlt() const noexcept {
 void Cube::SetNormalsIndependentFlat() noexcept {
     {
         using namespace DirectX;
-        assert( indices.size() % 3 == 0 && !indices.empty() );
-        for( size_t i = 0; i < indices.size(); i += 3 )
+        assert( independentIndices.size() % 3 == 0 && !independentIndices.empty() );
+        for( size_t i = 0; i < independentIndices.size(); i += 3 )
         {
-            auto& v0 = independentVertices[indices[i]];
-            auto& v1 = independentVertices[indices[i + 1]];
-            auto& v2 = independentVertices[indices[i + 2]];
+            auto& v0 = independentVertices[independentIndices[i]];
+            auto& v1 = independentVertices[independentIndices[i + 1]];
+            auto& v2 = independentVertices[independentIndices[i + 2]];
             const auto p0 = XMLoadFloat3( &v0.pos );
             const auto p1 = XMLoadFloat3( &v1.pos );
             const auto p2 = XMLoadFloat3( &v2.pos );

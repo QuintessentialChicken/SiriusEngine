@@ -17,9 +17,10 @@ float4 main( float3 worldPos : Position,float3 n : Normal ) : SV_Target
 	const float3 vToL = lightPos - worldPos;
 	const float distToL = length( vToL );
 	const float3 dirToL = vToL / distToL;
-
-	const float3 diffuse = materialColor * lightColor * (max(0.0f, dot(dirToL, n)));
+	// diffuse attenuation
+	const float att = 1.0f / (attConst + attLin * distToL + attQuad * (distToL * distToL));
+	// diffuse intensity
+	const float3 diffuse = lightColor * diffuseIntensity * /*att*/1 * max( 0.0f,dot( dirToL,n ) );
 	// final color
 	return float4(saturate( diffuse + ambient ),1.0f);
-	//return float4(1.0f, 0.0f, 0.0f, 1.0f);
 }
