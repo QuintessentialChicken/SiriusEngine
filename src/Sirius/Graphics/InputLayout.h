@@ -1,24 +1,45 @@
-//
-// Created by Leon on 02/02/2025.
-//
+#ifndef INPUT_LAYOUT_H
+#define INPUT_LAYOUT_H
 
-#ifndef INPUTLAYOUT_H
-#define INPUTLAYOUT_H
-#include <d3d11.h>
 #include <vector>
+#include <d3d11.h>
+#include <string>
 #include <wrl/client.h>
 
-#include "Bindable.h"
+// API-agnostic format description
+enum class DataFormat {
+    Float1,
+    Float2,
+    Float3,
+    Float4,
+    Int1,
+    Int2,
+    Int3,
+    Int4,
+    UInt1,
+    UInt2,
+    UInt3,
+    UInt4
+};
 
+// Input layout element description
+struct InputLayoutElement {
+    std::string semanticName;
+    unsigned int semanticIndex;
+    DataFormat format;
+    unsigned int inputSlot;
+    unsigned int alignedByteOffset;
+    bool perInstance = false;
+    unsigned int instanceDataStepRate = 0;
+};
 
-class InputLayout : public Bindable {
+// Input layout interface
+class IInputLayout {
 public:
-    InputLayout(const std::vector<D3D11_INPUT_ELEMENT_DESC>& layout, ID3DBlob* pVertexShaderBytecode );
-    void Bind() noexcept override;
-protected:
-    Microsoft::WRL::ComPtr<ID3D11InputLayout> inputLayout;
+    virtual ~IInputLayout() = default;
+    virtual void Bind() = 0;
 };
 
 
 
-#endif //INPUTLAYOUT_H
+#endif // INPUT_LAYOUT_H

@@ -6,6 +6,7 @@
 #define BUFFER_D3D11_H
 #include <wrl/client.h>
 #include <d3d11.h>
+#include <memory>
 
 #include "Buffer.h"
 
@@ -51,14 +52,13 @@ public:
     void Bind(ShaderStage stages, UINT slot) override;
 
     void Update(const void* data, size_t size) override;
+
 private:
     size_t bufferSize;
     Microsoft::WRL::ComPtr<ID3D11Buffer> constantBuffer;
     Microsoft::WRL::ComPtr<ID3D11Device> device;
     Microsoft::WRL::ComPtr<ID3D11DeviceContext> context;
 };
-
-
 
 
 #endif //BUFFER_D3D11_H

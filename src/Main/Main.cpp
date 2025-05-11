@@ -17,10 +17,10 @@ App my_app;
 bool Main_Prologue() {
     std::cout << "Prologue: Registering Init Functions" << std::endl;
     my_app.RegisterInitFunction(Game::Init);
-    my_app.RegisterInitFunction(Physics::Init);
+    // my_app.RegisterInitFunction(Physics::Init);
     std::cout << "Prologue: Registering Update Functions" << std::endl;
     my_app.RegisterUpdateFunction(Game::Update);
-    my_app.RegisterUpdateFunction(Physics::Update);
+    // my_app.RegisterUpdateFunction(Physics::Update);
     return true;
 }
 

@@ -10,7 +10,6 @@
 #include <vector>
 
 
-constexpr float PI = 3.14159265f;
 class Bindable;
 
 class Drawable {

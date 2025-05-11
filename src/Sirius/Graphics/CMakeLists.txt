@@ -13,7 +13,6 @@ add_library(Graphics STATIC
         ImguiManager.h
         IndexBuffer.cpp
         IndexBuffer.h
-        InputLayout.cpp
         InputLayout.h
         PixelShader.cpp
         PixelShader.h
@@ -27,8 +26,6 @@ add_library(Graphics STATIC
         Texture.h
         Topology.cpp
         Topology.h
-        TransformCBuf.cpp
-        TransformCBuf.h
         VertexBuffer.h
         VertexShader.cpp
         VertexShader.h
@@ -46,6 +43,23 @@ add_library(Graphics STATIC
         Buffer.h
         Buffer_D3D11.cpp
         Buffer_D3D11.h
+        Mesh.cpp
+        Mesh.h
+        Material.cpp
+        Material.h
+        Transform.cpp
+        Transform.h
+        Model.cpp
+        Model.h
+        Shader.h
+        Shader_D3D11.cpp
+        Shader_D3D11.h
+        InputLayout_D3D11.cpp
+        InputLayout_D3D11.h
+        PipelineState.h
+        PipelineState_D3D11.cpp
+        PipelineState_D3D11.h
+        Buffer.cpp
 )
 
 target_link_libraries(Graphics PRIVATE Gdiplus.lib)

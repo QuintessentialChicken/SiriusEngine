@@ -17,6 +17,8 @@ Timer timer;
 bool Physics::applyForce = false;
 float Physics::force = 0.0f;
 float Physics::privateForce = 0.0f;
+static constexpr float PI = 3.14159265f;
+
 float rads = PI / 180;
 float dt = 0.0f;
 static DirectX::XMFLOAT2 screenLimitsHigh = Camera::ScreenToWorld(800, 600);
@@ -28,30 +30,30 @@ void Physics::Init() {
 // TODO Lock down delta time - Create some sort of fixed update
 void Physics::Update() {
     dt = timer.Mark();
-    const auto& objects = GameWorld::GetInstance()->GetAllObjects();
-    for (size_t i = 0; i < objects.size(); ++i) {
-        if (!objects[i]->physicsEnabled) continue;
-        objects[i]->force = {force, force, 0.0f};
-
-        // DirectX::XMFLOAT2 gravity = CalculateGravity(objects[i]->mass);
-        // DirectX::XMFLOAT2 acceleration = {0.0f, gravity.y / objects[i]->mass};
-        // objects[i]->linearVelocity.y += acceleration.y * dt;
-        // objects[i]->position.y += objects[i]->linearVelocity.y * dt;
-        // AngularVelocity(objects[i]);
-        for (size_t j = 0; j < objects.size(); j++) {
-            if (i == j) continue;
-            if (objects[i]->position.x + objects[i]->width > objects[j]->position.x - objects[j]->width &&
-                objects[i]->position.x - objects[i]->width < objects[j]->position.x + objects[j]->width &&
-                objects[i]->position.y + objects[i]->height > objects[j]->position.y - objects[j]->height &&
-                objects[i]->position.y - objects[i]->height < objects[j]->position.y + objects[j]->height
-            ) {
-                std::cout << "Collision" << std::endl;
-                objects[i]->linearVelocity.x *= -1.0f;
-                // ElasticCollision(std::tie(objects[i], objects[j]));
-            }
-        }
-        LinearVelocity(objects[i]);
-    }
+    // const auto& objects = GameWorld::GetInstance()->GetAllObjects();
+    // for (size_t i = 0; i < objects.size(); ++i) {
+    //     if (!objects[i]->physicsEnabled) continue;
+    //     objects[i]->force = {force, force, 0.0f};
+    //
+    //     // DirectX::XMFLOAT2 gravity = CalculateGravity(objects[i]->mass);
+    //     // DirectX::XMFLOAT2 acceleration = {0.0f, gravity.y / objects[i]->mass};
+    //     // objects[i]->linearVelocity.y += acceleration.y * dt;
+    //     // objects[i]->position.y += objects[i]->linearVelocity.y * dt;
+    //     // AngularVelocity(objects[i]);
+    //     for (size_t j = 0; j < objects.size(); j++) {
+    //         if (i == j) continue;
+    //         if (objects[i]->position.x + objects[i]->width > objects[j]->position.x - objects[j]->width &&
+    //             objects[i]->position.x - objects[i]->width < objects[j]->position.x + objects[j]->width &&
+    //             objects[i]->position.y + objects[i]->height > objects[j]->position.y - objects[j]->height &&
+    //             objects[i]->position.y - objects[i]->height < objects[j]->position.y + objects[j]->height
+    //         ) {
+    //             std::cout << "Collision" << std::endl;
+    //             objects[i]->linearVelocity.x *= -1.0f;
+    //             // ElasticCollision(std::tie(objects[i], objects[j]));
+    //         }
+    //     }
+    //     LinearVelocity(objects[i]);
+    // }
     force = 0.0f;
 }
 
@@ -100,13 +102,13 @@ void Physics::SpawnControlWindow() noexcept {
         }
         if (ImGui::Button("Reset")) {
             force = 0.0f;
-            for (auto& object : GameWorld::GetInstance()->GetAllObjects()) {
-                object->force = {0.0f, 0.0f, 0.0f};
-                object->torque = 0.0f;
-                object->angularVelocity = 0;
-                object->linearVelocity = {0.0f, 0.0f, 0.0f};
-                object->SetTransform(object->initialPosition);
-            }
+            // for (auto& object : GameWorld::GetInstance()->GetAllObjects()) {
+            //     object->force = {0.0f, 0.0f, 0.0f};
+            //     object->torque = 0.0f;
+            //     object->angularVelocity = 0;
+            //     object->linearVelocity = {0.0f, 0.0f, 0.0f};
+            //     object->SetTransform(object->initialPosition);
+            // }
         }
     }
     ImGui::End();

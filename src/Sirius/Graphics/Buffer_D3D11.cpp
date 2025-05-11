@@ -96,27 +96,28 @@ ConstantBuffer_D3D11::ConstantBuffer_D3D11(const void* data, size_t size, ID3D11
 }
 
 void ConstantBuffer_D3D11::Bind(ShaderStage stages, UINT slot) {
-    if ((stages & ShaderStage::Vertex) != ShaderStage::Vertex) {
+    auto test = stages & ShaderStage::Vertex;
+    if ((stages & ShaderStage::Vertex) == ShaderStage::Vertex) {
         context->VSSetConstantBuffers(slot, 1, constantBuffer.GetAddressOf());
     }
 
-    if ((stages & ShaderStage::Pixel) != ShaderStage::Pixel) {
+    if ((stages & ShaderStage::Pixel) == ShaderStage::Pixel) {
         context->PSSetConstantBuffers(slot, 1, constantBuffer.GetAddressOf());
     }
 
-    if ((stages & ShaderStage::Geometry) != ShaderStage::Geometry) {
+    if ((stages & ShaderStage::Geometry) == ShaderStage::Geometry) {
         context->GSSetConstantBuffers(slot, 1, constantBuffer.GetAddressOf());
     }
 
-    if ((stages & ShaderStage::Hull) != ShaderStage::Hull) {
+    if ((stages & ShaderStage::Hull) == ShaderStage::Hull) {
         context->HSSetConstantBuffers(slot, 1, constantBuffer.GetAddressOf());
     }
 
-    if ((stages & ShaderStage::Domain) != ShaderStage::Domain) {
+    if ((stages & ShaderStage::Domain) == ShaderStage::Domain) {
         context->DSSetConstantBuffers(slot, 1, constantBuffer.GetAddressOf());
     }
 
-    if ((stages & ShaderStage::Compute) != ShaderStage::Compute) {
+    if ((stages & ShaderStage::Compute) == ShaderStage::Compute) {
         context->CSSetConstantBuffers(slot, 1, constantBuffer.GetAddressOf());
     }
 }

@@ -28,22 +28,22 @@ GameWorld* GameWorld::GetInstance() {
     return instance;
 }
 
-void GameWorld::AddLightSource(std::unique_ptr<PointLight> light) {
-    lights.push_back(std::move(light));
-}
+// void GameWorld::AddLightSource(std::unique_ptr<PointLight> light) {
+//     lights.push_back(std::move(light));
+// }
 
-void GameWorld::AddObject(std::unique_ptr<Drawable> object) {
+void GameWorld::AddObject(std::unique_ptr<Cube> object) {
     objects.push_back(std::move(object));
 }
 
-std::vector<std::unique_ptr<PointLight>>& GameWorld::GetAllLightSources() {
-    return lights;
-}
+// std::vector<std::unique_ptr<PointLight>>& GameWorld::GetAllLightSources() {
+//     return lights;
+// }
 
-Drawable& GameWorld::GetObjectAtIndex(int index) const {
-    return *objects.at(index);
-}
+// Drawable& GameWorld::GetObjectAtIndex(int index) const {
+//     return *objects.at(index);
+// }
 
-std::vector<std::unique_ptr<Drawable>>& GameWorld::GetAllObjects() {
+std::vector<std::unique_ptr<Cube>>& GameWorld::GetAllObjects() {
     return objects;
 }

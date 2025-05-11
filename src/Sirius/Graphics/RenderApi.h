@@ -4,13 +4,14 @@
 
 #ifndef RENDERAPI_H
 #define RENDERAPI_H
+#include <DirectXMath.h>
 #include <intsafe.h>
 #include <memory>
 
 #include "Buffer.h"
-
-class ID3D11Device;
-class ID3D11DeviceContext;
+#include "InputLayout.h"
+#include "PipelineState.h"
+#include "Shader.h"
 
 class IRenderApi {
 public:
@@ -23,9 +24,14 @@ public:
     virtual void DrawIndexed(UINT count) = 0;
     virtual void Shutdown() = 0;
 
+    virtual std::unique_ptr<IShader> CreateShader(ShaderType type, const std::wstring& path) = 0;
+    virtual std::unique_ptr<IInputLayout> CreateInputLayout(const std::vector<InputLayoutElement>& elements, const void* shaderBytecode, size_t bytecodeSize) = 0;
+    virtual std::unique_ptr<IPipelineState> CreatePipelineState(const PipelineStateDesc& desc) = 0;
     virtual std::unique_ptr<IVertexBuffer> CreateVertexBuffer(const void* data, size_t size, UINT stride) = 0;
     virtual std::unique_ptr<IIndexBuffer> CreateIndexBuffer(const void* indices, size_t size) = 0;
     virtual std::unique_ptr<IConstantBuffer> CreateConstantBuffer(const void* data, size_t size) = 0;
+
+    [[nodiscard]] virtual DirectX::XMMATRIX GetProjection() const noexcept = 0;
 
 
     enum class Api {

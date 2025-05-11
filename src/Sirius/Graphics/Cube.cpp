@@ -4,24 +4,19 @@
 
 #include "Cube.h"
 
-#include <iostream>
 #include <random>
 
-#include "InputLayout.h"
-#include "PixelShader.h"
-#include "Topology.h"
-#include "TransformCBuf.h"
-#include "VertexBuffer.h"
-#include "VertexShader.h"
+#include <DirectXMath.h>
+
+constexpr float PI = 3.14159265f;
 
 Cube::Cube() {
-    namespace dx = DirectX;
     std::mt19937 rng{std::random_device{}()};
     std::uniform_real_distribution adist{0.0f, PI * 2.0f};
     std::uniform_real_distribution ddist{0.0f, PI * 0.5f};
     std::uniform_real_distribution odist{0.0f, PI * 0.08f};
     std::uniform_real_distribution rdist{6.0f, 20.0f};
-    std::uniform_real_distribution bdist{0.4f, 3.0f};
+
     r = rdist(rng);
     droll = ddist(rng);
     dpitch = ddist(rng);
@@ -33,122 +28,74 @@ Cube::Cube() {
     theta = adist(rng);
     phi = adist(rng);
 
-    if (!IsStaticInitialized()) {
-        SetNormalsIndependentFlat();
-        AddStaticBind(std::make_unique<VertexBuffer>(independentVertices));
-        AddStaticIndexBuffer(std::make_unique<IndexBuffer>(independentIndices));
+    // Create mesh and material
+    auto mesh = Mesh::CreateCube();
+    auto material = std::make_shared<ColoredCubeMaterial>();
 
-        auto vs = std::make_unique<VertexShader>(L"PhongVS.cso");
-        auto vsbc = vs->GetBytecode();
-
-        AddStaticBind(std::move(vs));
-
-        AddStaticBind(std::make_unique<PixelShader>(L"PhongPS.cso"));
-
-
-        // struct PixelShaderConstants {
-        //     struct {
-        //         float r;
-        //         float g;
-        //         float b;
-        //         float a;
-        //     } face_colors[6];
-        // };
-        // const PixelShaderConstants colorBuffer =
-        // {
-        //     {
-        //         {1.0f, 0.0f, 1.0f},
-        //         {1.0f, 0.0f, 0.0f},
-        //         {0.0f, 1.0f, 0.0f},
-        //         {0.0f, 0.0f, 1.0f},
-        //         {1.0f, 1.0f, 0.0f},
-        //         {0.0f, 1.0f, 1.0f},
-        //     }
-        // };
-
-        // AddStaticBind(std::make_unique<PixelConstantBuffer<PixelShaderConstants> >(colorBuffer));
-
-        const std::vector<D3D11_INPUT_ELEMENT_DESC> ied =
-        {
-            {"Position", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-            {"Normal", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0},
-        };
-        AddStaticBind(std::make_unique<InputLayout>(ied, vsbc));
-
-        AddStaticBind(std::make_unique<Topology>(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
-    } else {
-        SetIndexFromStatic();
-    }
-
-    AddBind(std::make_unique<TransformCBuf>(*this));
+    // Create model
+    model = std::make_unique<Model>(mesh, material);
 }
 
-// TODO Move Matrix Calculation to separate method which is called when transformations (pos, rot, scale) are updated
-DirectX::XMMATRIX Cube::GetTransformXM() const noexcept {
-    return DirectX::XMMatrixScaling(scale.x, scale.y, scale.z) *
-           DirectX::XMMatrixRotationRollPitchYaw(rotation.x, rotation.y, rotation.z) *
-           DirectX::XMMatrixTranslation(position.x, position.y, position.z);
-}
-
-DirectX::XMMATRIX Cube::GetTransformXMAlt() const noexcept {
-    return DirectX::XMMatrixScaling(scale.x, scale.y, scale.z) *
-           DirectX::XMMatrixRotationRollPitchYaw(pitch, yaw, roll) *
-           DirectX::XMMatrixTranslation(r, 0.0f, 0.0f) *
-           DirectX::XMMatrixRotationRollPitchYaw(theta, phi, chi);
-}
-
-void Cube::SetNormalsIndependentFlat() noexcept {
-    {
-        using namespace DirectX;
-        assert( independentIndices.size() % 3 == 0 && !independentIndices.empty() );
-        for( size_t i = 0; i < independentIndices.size(); i += 3 )
-        {
-            auto& v0 = independentVertices[independentIndices[i]];
-            auto& v1 = independentVertices[independentIndices[i + 1]];
-            auto& v2 = independentVertices[independentIndices[i + 2]];
-            const auto p0 = XMLoadFloat3( &v0.pos );
-            const auto p1 = XMLoadFloat3( &v1.pos );
-            const auto p2 = XMLoadFloat3( &v2.pos );
-
-            const auto n = XMVector3Normalize( XMVector3Cross( (p1 - p0),(p2 - p0) ) );
-
-            XMStoreFloat3( &v0.n,n );
-            XMStoreFloat3( &v1.n,n );
-            XMStoreFloat3( &v2.n,n );
-        }
-    }
-}
-
-void Cube::Update(float dt) noexcept {
+void Cube::Update(float dt) {
+    // Update rotation angles
     roll += droll * dt;
     pitch += dpitch * dt;
     yaw += dyaw * dt;
     theta += dtheta * dt;
     phi += dphi * dt;
     chi += dchi * dt;
+
+    // Update transform based on animation parameters
+    UpdateTransform();
 }
 
-
-void Cube::SetTransform(const DirectX::XMFLOAT3& pos) noexcept {
-    position = pos;
+void Cube::Draw(const DirectX::XMMATRIX& view, const DirectX::XMMATRIX& projection) {
+    model->Draw(view, projection);
 }
 
-void Cube::AddTransform(const DirectX::XMFLOAT3& distance) noexcept {
-    position.x += distance.x;
-    position.y += distance.y;
-    position.z += distance.z;
+void Cube::UpdateTransform() {
+    // Create a transform matrix that mimics the old behavior
+    DirectX::XMMATRIX rotMatrix = DirectX::XMMatrixRotationRollPitchYaw(pitch, yaw, roll);
+    DirectX::XMMATRIX transMatrix = DirectX::XMMatrixTranslation(r, 0.0f, 0.0f);
+    DirectX::XMMATRIX orbitMatrix = DirectX::XMMatrixRotationRollPitchYaw(theta, phi, chi);
+
+    // Combine transformations
+    DirectX::XMMATRIX worldMatrix = rotMatrix * transMatrix * orbitMatrix;
+
+    // Extract position, rotation, and scale from the matrix
+    DirectX::XMVECTOR scale;
+    DirectX::XMVECTOR rotation;
+    DirectX::XMVECTOR position;
+
+    DirectX::XMMatrixDecompose(&scale, &rotation, &position, worldMatrix);
+
+    // Convert to XMFLOAT3
+    DirectX::XMFLOAT3 pos{}, rot{}, scl{};
+    DirectX::XMStoreFloat3(&pos, position);
+    DirectX::XMStoreFloat3(&rot, rotation); // Note: this is a quaternion, not Euler angles
+    DirectX::XMStoreFloat3(&scl, scale);
+
+    // Update the model's transform
+    model->GetTransform().SetPosition(pos);
+    // For quaternion to Euler conversion, you might need more complex math
+    // This is a simplified approach:
+    model->GetTransform().SetRotation(DirectX::XMFLOAT3(pitch, yaw, roll));
+    model->GetTransform().SetScale(scl);
 }
 
-void Cube::SetRotation(const DirectX::XMFLOAT3& rotation) noexcept {
-    Cube::rotation.x += rotation.x;
-    Cube::rotation.y += rotation.y;
-    Cube::rotation.z += rotation.z;
+void Cube::SetPosition(const DirectX::XMFLOAT3& pos) {
+    model->GetTransform().SetPosition(pos);
 }
 
-void Cube::SetScale(const DirectX::XMFLOAT3& scale) noexcept {
-    Cube::scale.x = scale.x;
-    Cube::scale.y = scale.y;
-    Cube::scale.z = scale.z;
-    width *= scale.x;
-    height *= scale.y;
+void Cube::Translate(const DirectX::XMFLOAT3& offset) {
+    model->GetTransform().Translate(offset);
 }
+
+void Cube::SetRotation(const DirectX::XMFLOAT3& rot) {
+    model->GetTransform().SetRotation(rot);
+}
+
+void Cube::SetScale(const DirectX::XMFLOAT3& scl) {
+    model->GetTransform().SetScale(scl);
+}
+
