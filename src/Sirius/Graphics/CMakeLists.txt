@@ -1,21 +1,13 @@
 add_library(Graphics STATIC
         Camera.cpp
         Camera.h
-        ConstantBuffer.h
         Cube.cpp
         Cube.h
         GfxDevice.h
         GfxDevice_Win32.cpp
-        Drawable.cpp
-        Drawable.h
-        DrawableBase.h
         ImguiManager.cpp
         ImguiManager.h
-        IndexBuffer.cpp
-        IndexBuffer.h
         InputLayout.h
-        PixelShader.cpp
-        PixelShader.h
         Plane.cpp
         Plane.h
         Sampler.cpp
@@ -24,11 +16,6 @@ add_library(Graphics STATIC
         Surface.h
         Texture.cpp
         Texture.h
-        Topology.cpp
-        Topology.h
-        VertexBuffer.h
-        VertexShader.cpp
-        VertexShader.h
         WndProc.h
         PointLight.cpp
         PointLight.h

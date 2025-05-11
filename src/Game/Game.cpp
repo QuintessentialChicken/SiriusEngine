@@ -25,19 +25,16 @@ Timer Game::timer;
 float Game::speedFactor = 1.0f;
 
 void Game::Init() {
-    // GameWorld::GetInstance()->AddLightSource(std::make_unique<PointLight>());
-    // for (int i = 0; i < 100; i++) {
-    //     GameWorld::GetInstance()->AddObject(std::make_unique<Cube>());
-    // }
-    auto cube = std::make_unique<Cube>();
-    GameWorld::GetInstance()->AddObject(std::move(cube));
+    for (int i = 0; i < 100; i++) {
+        GameWorld::GetInstance()->AddObject(std::make_unique<Cube>());
+    }
     timer.Mark();
 }
 
 void Game::Update() {
     const auto dt = timer.Mark() * speedFactor;
     for (auto& cube: GameWorld::GetInstance()->GetAllObjects()) {
-        // cube->Update(dt);
+        cube->Update(dt);
     }
     // for (auto& obj: GameWorld::GetInstance()->GetAllObjects()) {
     //     if (!obj->playerControlled) {

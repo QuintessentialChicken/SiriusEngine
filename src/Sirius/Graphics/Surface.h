@@ -8,6 +8,7 @@
 
 
 #include "Core/SiriusException.h"
+#include <memory>
 
 
 class Surface {

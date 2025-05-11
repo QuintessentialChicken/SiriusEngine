@@ -5,8 +5,8 @@
 #ifndef INPUT_H
 #define INPUT_H
 #include <intsafe.h>
-
-#include "Graphics/ConstantBuffer.h"
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
 
 LRESULT InputWindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 

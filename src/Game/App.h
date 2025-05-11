@@ -10,7 +10,6 @@
 #include "Core/GDIPlusManager.h"
 #include "Core/Timer.h"
 #include "Graphics/Camera.h"
-#include "Graphics/Drawable.h"
 #include "Graphics/ImguiManager.h"
 
 
@@ -53,7 +52,6 @@ private:
     float speed_factor = 1.0f;
     ImguiManager imgui;
     Camera cam;
-    std::vector<std::unique_ptr<Drawable>> drawables;
 };
 
 

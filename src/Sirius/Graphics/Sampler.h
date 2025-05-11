@@ -7,13 +7,11 @@
 #include <d3d11.h>
 #include <wrl/client.h>
 
-#include "Bindable.h"
-
-class Sampler : public Bindable
+class Sampler
 {
 public:
     explicit Sampler();
-    void Bind() noexcept override;
+    void Bind() noexcept;
 protected:
     Microsoft::WRL::ComPtr<ID3D11SamplerState> pSampler;
 };

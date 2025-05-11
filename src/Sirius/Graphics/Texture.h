@@ -7,17 +7,15 @@
 
 #include <wrl/client.h>
 
-#include "Bindable.h"
-#include "PixelShader.h"
 #include "Surface.h"
 
-class Texture : public Bindable
+class Texture
 {
 public:
     explicit Texture(const Surface& s );
-    void Bind() noexcept override;
+    void Bind() noexcept;
 protected:
-    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> pTextureView;
+    // Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> pTextureView;
 };
 
 

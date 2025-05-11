@@ -57,42 +57,42 @@ void Physics::Update() {
     force = 0.0f;
 }
 
-void Physics::ElasticCollision(std::pair<const std::unique_ptr<Drawable>&, const std::unique_ptr<Drawable>&> objects) {
-    const float v1 = ((objects.first->mass - objects.second->mass) / (objects.first->mass + objects.second->mass)) * objects.first->linearVelocity.x
-                + (2 * objects.second->mass) / (objects.first->mass + objects.second->mass) * objects.second->linearVelocity.x;
-    const float v2 = ((objects.second->mass - objects.first->mass) / (objects.second->mass + objects.first->mass)) * objects.second->linearVelocity.x
-                + (2 * objects.first->mass) / (objects.second->mass + objects.first->mass) * objects.first->linearVelocity.x;
-    objects.first->linearVelocity.x = v1;
-    objects.second->linearVelocity.x = v2;
-}
-
-
-void Physics::LinearVelocity(const std::unique_ptr<Drawable>& object) {
-    DirectX::XMFLOAT2 linearAcceleration = {object->force.x / object->mass, object->force.y / object->mass};
-    object->linearVelocity.x += linearAcceleration.x * dt;
-    object->linearVelocity.y += linearAcceleration.y * dt;
-    if (object->position.y - object->width <  screenLimitsHigh.y || object->position.y + object->width > screenLimitsLow.y) {
-        object->linearVelocity.y *= -1.0f;
-    }
-    object->position.x += object->linearVelocity.x * dt;
-    object->position.y += object->linearVelocity.y * dt;
-}
-
-void Physics::AngularVelocity(const std::unique_ptr<Drawable>& object) {
-    CalculateTorque(object);
-    const float angularAcceleration = object->torque / object->inertia;
-    object->angularVelocity += angularAcceleration * dt;
-    object->rotation.z += object->angularVelocity * dt;
-}
-// Mass cancels out
-DirectX::XMFLOAT2 Physics::CalculateGravity(const float mass) {
-    return {0.0f, -9.81f * mass};
-}
-
-void Physics::CalculateTorque(const std::unique_ptr<Drawable>& object) {
-    DirectX::XMFLOAT2 hitOffset = {1, 1};//{object->position.x / 2, object->position.y / 2};
-    object->torque = (hitOffset.x * object->force.y - hitOffset.y * object->force.x) * 1;
-}
+// void Physics::ElasticCollision(std::pair<const std::unique_ptr<Drawable>&, const std::unique_ptr<Drawable>&> objects) {
+//     const float v1 = ((objects.first->mass - objects.second->mass) / (objects.first->mass + objects.second->mass)) * objects.first->linearVelocity.x
+//                 + (2 * objects.second->mass) / (objects.first->mass + objects.second->mass) * objects.second->linearVelocity.x;
+//     const float v2 = ((objects.second->mass - objects.first->mass) / (objects.second->mass + objects.first->mass)) * objects.second->linearVelocity.x
+//                 + (2 * objects.first->mass) / (objects.second->mass + objects.first->mass) * objects.first->linearVelocity.x;
+//     objects.first->linearVelocity.x = v1;
+//     objects.second->linearVelocity.x = v2;
+// }
+//
+//
+// void Physics::LinearVelocity(const std::unique_ptr<Drawable>& object) {
+//     DirectX::XMFLOAT2 linearAcceleration = {object->force.x / object->mass, object->force.y / object->mass};
+//     object->linearVelocity.x += linearAcceleration.x * dt;
+//     object->linearVelocity.y += linearAcceleration.y * dt;
+//     if (object->position.y - object->width <  screenLimitsHigh.y || object->position.y + object->width > screenLimitsLow.y) {
+//         object->linearVelocity.y *= -1.0f;
+//     }
+//     object->position.x += object->linearVelocity.x * dt;
+//     object->position.y += object->linearVelocity.y * dt;
+// }
+//
+// void Physics::AngularVelocity(const std::unique_ptr<Drawable>& object) {
+//     CalculateTorque(object);
+//     const float angularAcceleration = object->torque / object->inertia;
+//     object->angularVelocity += angularAcceleration * dt;
+//     object->rotation.z += object->angularVelocity * dt;
+// }
+// // Mass cancels out
+// DirectX::XMFLOAT2 Physics::CalculateGravity(const float mass) {
+//     return {0.0f, -9.81f * mass};
+// }
+//
+// void Physics::CalculateTorque(const std::unique_ptr<Drawable>& object) {
+//     DirectX::XMFLOAT2 hitOffset = {1, 1};//{object->position.x / 2, object->position.y / 2};
+//     object->torque = (hitOffset.x * object->force.y - hitOffset.y * object->force.x) * 1;
+// }
 
 void Physics::SpawnControlWindow() noexcept {
     if (ImGui::Begin("Physics")) {

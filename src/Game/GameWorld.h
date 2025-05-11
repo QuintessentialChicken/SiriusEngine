@@ -4,10 +4,9 @@
 
 #ifndef GAMEWORLD_H
 #define GAMEWORLD_H
-#include <string>
+#include <memory>
 #include <vector>
 
-#include "Graphics/Drawable.h"
 #include "Graphics/PointLight.h"
 
 
