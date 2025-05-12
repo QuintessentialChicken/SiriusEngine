@@ -7,8 +7,10 @@
 #include <optional>
 
 #include "GfxDevice.h"
+#include "Renderer.h"
 #include "../../resource.h"
 #include "WndProc.h"
+#include "Core/SiriusException.h"
 #include "External/imgui_impl_win32.h"
 
 std::array<float, 4> GfxDevice::color;
@@ -37,6 +39,8 @@ LRESULT HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept {
         case WM_KILLFOCUS:
             // kbd.ClearState();
             break;
+        case WM_SIZE:
+            Renderer::ResizeViewport(LOWORD(lParam), HIWORD(lParam));
         default:
             {}
     }
@@ -92,4 +96,62 @@ HWND GfxDevice::CreateDeviceWindow() {
 
 static std::optional<int> ProcessMessage() {
 
+}
+
+std::string GfxDevice::Exception::TranslateErrorCode( HRESULT hr ) noexcept
+{
+    char* pMsgBuf = nullptr;
+    // windows will allocate memory for err string and make our pointer point to it
+    const DWORD nMsgLen = FormatMessage(
+        FORMAT_MESSAGE_ALLOCATE_BUFFER |
+        FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+        nullptr,hr,MAKELANGID( LANG_NEUTRAL,SUBLANG_DEFAULT ),
+        reinterpret_cast<LPSTR>(&pMsgBuf),0,nullptr
+    );
+    // 0 string length returned indicates a failure
+    if( nMsgLen == 0 )
+    {
+        return "Unidentified error code";
+    }
+    // copy error string from windows-allocated buffer to std::string
+    std::string errorString = pMsgBuf;
+    // free windows buffer
+    LocalFree( pMsgBuf );
+    return errorString;
+}
+
+
+GfxDevice::HrException::HrException( int line,const char* file,HRESULT hr ) noexcept : Exception(line, file), hr( hr ) {}
+
+const char* GfxDevice::HrException::what() const noexcept
+{
+    std::ostringstream oss;
+    oss << GetType() << std::endl
+        << "[Error Code] 0x" << std::hex << std::uppercase << GetErrorCode()
+        << std::dec << " (" << (unsigned long)GetErrorCode() << ")" << std::endl
+        << "[Description] " << GetErrorDescription() << std::endl
+        << GetOriginString();
+    whatBuffer = oss.str();
+    return whatBuffer.c_str();
+}
+
+const char* GfxDevice::HrException::GetType() const noexcept
+{
+    return "Sirius Window Exception";
+}
+
+HRESULT GfxDevice::HrException::GetErrorCode() const noexcept
+{
+    return hr;
+}
+
+std::string GfxDevice::HrException::GetErrorDescription() const noexcept
+{
+    return Exception::TranslateErrorCode( hr );
+}
+
+
+const char* GfxDevice::NoGfxException::GetType() const noexcept
+{
+    return "Sirius Window Exception [No Graphics]";
 }

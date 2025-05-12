@@ -40,6 +40,10 @@ void Renderer::Shutdown() {
     renderApi->Shutdown();
 }
 
+void Renderer::ResizeViewport(int width, int height) {
+    renderApi->ResizeViewport(width, height);
+}
+
 std::unique_ptr<IVertexBuffer> Renderer::CreateVertexBuffer(const void* data, size_t size, UINT stride) {
     return renderApi->CreateVertexBuffer(data, size, stride);
 }

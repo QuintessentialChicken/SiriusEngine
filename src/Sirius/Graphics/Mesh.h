@@ -27,7 +27,8 @@ public:
     
     // Factory method for creating a cube mesh
     static std::unique_ptr<Mesh> CreateCube();
-    
+    static std::unique_ptr<Mesh> CreateSphere();
+
 private:
     std::unique_ptr<IVertexBuffer> vertexBuffer;
     std::unique_ptr<IIndexBuffer> indexBuffer;

@@ -17,8 +17,6 @@ add_library(Graphics STATIC
         WndProc.h
         PointLight.cpp
         PointLight.h
-        Sphere.cpp
-        Sphere.h
         RenderApi.h
         D3D11/RenderApi_D3D11.cpp
         D3D11/RenderApi_D3D11.h

@@ -10,7 +10,8 @@
 class Model {
 public:
     enum class Primitives {
-        CUBE
+        CUBE = 0,
+        SPHERE = 1
     };
 
     Model(std::unique_ptr<Mesh> mesh, std::unique_ptr<Material> material);
@@ -28,10 +29,6 @@ public:
 
     Transform& GetTransform();
 
-private:
-    void UpdateTransform();
-
-
     float roll = 0.0f;
     float pitch = 0.0f;
     float yaw = 0.0f;
@@ -45,6 +42,10 @@ private:
     float dphi = 0.0f;
     float dchi = 0.0f;
     float r = 0.0f;
+private:
+    void UpdateTransform();
+
+
     std::unique_ptr<Mesh> mesh;
     std::unique_ptr<Material> material;
     Transform transform;

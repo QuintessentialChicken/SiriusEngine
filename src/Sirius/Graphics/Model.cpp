@@ -7,13 +7,22 @@
 #include <utility>
 
 #include "Renderer.h"
+#include "../../Game/App.h"
 
 Model::Model(std::unique_ptr<Mesh> mesh, std::unique_ptr<Material> material)
 : mesh(std::move(mesh)), material(std::move(material)), transformBuffer(std::make_unique<TransformBuffer>())
 {}
 
 std::unique_ptr<Model> Model::CreatePrimitive(Primitives primitive) {
-    return std::make_unique<Model>(Mesh::CreateCube(), std::make_unique<ColoredCubeMaterial>());
+
+    switch (primitive) {
+        case Primitives::CUBE:
+            return std::make_unique<Model>(Mesh::CreateCube(), std::make_unique<ColoredCubeMaterial>());
+        case Primitives::SPHERE:
+            return std::make_unique<Model>(Mesh::CreateSphere(), std::make_unique<ColoredCubeMaterial>());
+        default:
+            return nullptr;
+    }
 }
 
 void Model::Draw(const DirectX::XMMATRIX& view, const DirectX::XMMATRIX& projection) {
@@ -52,6 +61,8 @@ void Model::Update(float dt) {
     theta += dtheta * dt;
     phi += dphi * dt;
     chi += dchi * dt;
+
+    UpdateTransform();
 }
 
 Transform& Model::GetTransform() { return transform; }

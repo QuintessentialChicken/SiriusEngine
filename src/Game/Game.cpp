@@ -4,18 +4,14 @@
 
 #include "Game.h"
 
-#include <iostream>
 #include <random>
 #include <External/imgui.h>
 
 #include "GameWorld.h"
-#include "Graphics/Camera.h"
 #include "Graphics/PointLight.h"
-#include "Graphics/Sphere.h"
-#include "Graphics/WndProc.h"
-#include "Input/Keyboard.h"
-#include "Input/Mouse.h"
 #include "Physics/Physics.h"
+static constexpr float PI = 3.14159265f;
+static constexpr float dtTarget = 16.67f;
 
 class Camera;
 class Drawable;
@@ -24,8 +20,26 @@ Timer Game::timer;
 float Game::speedFactor = 1.0f;
 
 void Game::Init() {
+    std::mt19937 rng{std::random_device{}()};
+    std::uniform_real_distribution adist{0.0f, PI * 2.0f};
+    std::uniform_real_distribution ddist{0.0f, PI * 0.5f};
+    std::uniform_real_distribution odist{0.0f, PI * 0.08f};
+    std::uniform_real_distribution rdist{6.0f, 20.0f};
+    std::uniform_int_distribution bdist{0, 1};
+
     for (int i = 0; i < 100; i++) {
-        GameWorld::GetInstance()->AddObject(Model::CreatePrimitive(Model::Primitives::CUBE));
+        auto model = Model::CreatePrimitive(static_cast<Model::Primitives>(bdist(rng)));
+        model->r = rdist(rng);
+        model->droll = ddist(rng);
+        model->dpitch = ddist(rng);
+        model->dyaw = ddist(rng);
+        model->dphi = odist(rng);
+        model->dtheta = odist(rng);
+        model->dchi = odist(rng);
+        model->chi = adist(rng);
+        model->theta = adist(rng);
+        model->phi = adist(rng);
+        GameWorld::GetInstance()->AddObject(std::move(model));
     }
     timer.Mark();
 }

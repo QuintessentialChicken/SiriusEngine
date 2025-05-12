@@ -9,6 +9,7 @@
 #include <DirectXMath.h>
 #include <dxgi.h>
 #include <wrl.h>
+#include "Core/SiriusException.h"
 
 
 class GfxDevice {
@@ -27,7 +28,38 @@ public:
     static Microsoft::WRL::ComPtr<ID3D11RenderTargetView> target;
     static Microsoft::WRL::ComPtr<ID3D11DepthStencilView> DSV;
 
-private:
+
+
+
+    class Exception : public SiriusException {
+        using SiriusException::SiriusException;
+
+    public:
+        static std::string TranslateErrorCode(HRESULT hr) noexcept;
+    };
+
+    class HrException : public Exception {
+    public:
+        HrException(int line, const char *file, HRESULT hr) noexcept;
+
+        const char *what() const noexcept override;
+
+        const char *GetType() const noexcept override;
+
+        HRESULT GetErrorCode() const noexcept;
+
+        std::string GetErrorDescription() const noexcept;
+
+    private:
+        HRESULT hr;
+    };
+
+    class NoGfxException : public Exception {
+    public:
+        using Exception::Exception;
+
+        const char *GetType() const noexcept override;
+    };
 };
 
 extern GfxDevice* pGfxDevice;

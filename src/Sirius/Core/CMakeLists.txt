@@ -3,8 +3,8 @@ add_library(Core STATIC
         dxerr.h
         DXGetErrorDescription.inl
         DXGetErrorString.inl
-#        DxgiInfoManager.cpp
-#        DxgiInfoManager.h
+        DxgiInfoManager.cpp
+        DxgiInfoManager.h
         DXTrace.inl
         Entrypoint_Engine.cpp
         Entrypoint_Engine.h

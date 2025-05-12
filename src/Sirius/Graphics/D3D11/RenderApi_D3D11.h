@@ -9,6 +9,8 @@
 #include <vector>
 #include <wrl/client.h>
 
+#include "Core/DxgiInfoManager.h"
+#include "Core/SiriusException.h"
 #include "Graphics/InputLayout.h"
 #include "Graphics/PipelineState.h"
 #include "Graphics/RenderApi.h"
@@ -27,6 +29,7 @@ public:
 
     void Shutdown() override;
 
+    void ResizeViewport(int width, int height) override;
 
     std::unique_ptr<IShader> CreateShader(ShaderType type, const std::wstring& path) override;
 
@@ -51,6 +54,45 @@ private:
     Microsoft::WRL::ComPtr<ID3D11DeviceContext> context;
     Microsoft::WRL::ComPtr<ID3D11RenderTargetView> target;
     Microsoft::WRL::ComPtr<ID3D11DepthStencilView> DSV;
+#ifndef NDEBUG
+    DxgiInfoManager infoManager;
+#endif
+
+public:
+    class Exception : public SiriusException {
+        using SiriusException::SiriusException;
+    };
+
+    class HrException : public Exception {
+    public:
+        HrException(int line, const char *file, HRESULT hr, const std::vector<std::string>& infoMsgs = {}) noexcept;
+
+        const char *what() const noexcept override;
+
+        const char *GetType() const noexcept override;
+
+        HRESULT GetErrorCode() const noexcept;
+
+        std::string GetErrorString() const noexcept;
+
+        std::string GetErrorDescription() const noexcept;
+
+        std::string GetErrorInfo() const noexcept;
+
+    private:
+        HRESULT hr;
+        std::string info;
+    };
+
+    class DeviceRemovedException : public HrException {
+        using HrException::HrException;
+
+    public:
+        const char *GetType() const noexcept override;
+
+    private:
+        std::string reason;
+    };
 };
 
 

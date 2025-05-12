@@ -82,7 +82,7 @@ void App::DoFrame() {
         obj->Draw(cam.GetMatrix(), projection);
     }
     cam.SpawnControlWindow();
-    // Game::SpawnControlWindow();
+    Game::SpawnControlWindow();
     // Physics::SpawnControlWindow();
     Renderer::EndFrame();
 }

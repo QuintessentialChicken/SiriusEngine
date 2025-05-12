@@ -21,6 +21,9 @@ public:
 
     static void Shutdown();
 
+    static void ResizeViewport(int width, int height);
+
+
     static std::unique_ptr<IShader> CreateShader(ShaderType type, const std::wstring& path);
     static std::unique_ptr<IInputLayout> CreateInputLayout(const std::vector<InputLayoutElement>& elements, const void* shaderBytecode, size_t bytecodeSize);
     static std::unique_ptr<IPipelineState> CreatePipelineState(const PipelineStateDesc& desc);

@@ -12,14 +12,6 @@
 #include "Graphics/Camera.h"
 #include "Graphics/ImguiManager.h"
 
-
-enum class PrimitiveType {
-    Cube,
-    Plane,
-    Sphere
-    // Add more as needed
-};
-
 class App : public Fsm {
 public:
 

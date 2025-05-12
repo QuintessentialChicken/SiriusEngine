@@ -24,6 +24,7 @@ public:
     virtual void EndFrame() = 0;
     virtual void DrawIndexed(UINT count) = 0;
     virtual void Shutdown() = 0;
+    virtual void ResizeViewport(int width, int height) = 0;
 
     virtual std::unique_ptr<IShader> CreateShader(ShaderType type, const std::wstring& path) = 0;
     virtual std::unique_ptr<IInputLayout> CreateInputLayout(const std::vector<InputLayoutElement>& elements, const void* shaderBytecode, size_t bytecodeSize) = 0;
