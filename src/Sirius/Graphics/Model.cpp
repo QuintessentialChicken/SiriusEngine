@@ -18,6 +18,8 @@ std::unique_ptr<Model> Model::CreatePrimitive(Primitives primitive) {
     switch (primitive) {
         case Primitives::CUBE:
             return std::make_unique<Model>(Mesh::CreateCube(), std::make_unique<ColoredCubeMaterial>());
+        case Primitives::CUBE_PHONG:
+            return std::make_unique<Model>(Mesh::CreateCube(), Material::CreatePhongMaterial());
         case Primitives::SPHERE:
             return std::make_unique<Model>(Mesh::CreateSphere(), std::make_unique<ColoredCubeMaterial>());
         default:

@@ -11,7 +11,8 @@ class Model {
 public:
     enum class Primitives {
         CUBE = 0,
-        SPHERE = 1
+        CUBE_PHONG = 1,
+        SPHERE = 2
     };
 
     Model(std::unique_ptr<Mesh> mesh, std::unique_ptr<Material> material);

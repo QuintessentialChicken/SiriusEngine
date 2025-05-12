@@ -8,6 +8,7 @@
 #include "InputLayout.h"
 #include "PipelineState.h"
 
+// TODO Make a better system to quickly create new materials
 class Material {
 public:
     virtual ~Material() = default;
@@ -17,7 +18,7 @@ public:
     virtual void Bind();
     
     // Factory method for creating a Phong material
-    static std::shared_ptr<Material> CreatePhongMaterial();
+    static std::unique_ptr<Material> CreatePhongMaterial();
     
 private:
     std::unique_ptr<IShader> vertexShader;
@@ -42,7 +43,7 @@ private:
         DirectX::XMFLOAT4 faceColors[6];
     };
 
-    ColorBufferData colorData;
+    ColorBufferData colorData{};
     std::unique_ptr<IConstantBuffer> colorBuffer;
     bool colorBufferDirty = true;
 };

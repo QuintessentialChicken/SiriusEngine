@@ -28,7 +28,7 @@ void Game::Init() {
     std::uniform_int_distribution bdist{0, 1};
 
     for (int i = 0; i < 100; i++) {
-        auto model = Model::CreatePrimitive(static_cast<Model::Primitives>(bdist(rng)));
+        auto model = Model::CreatePrimitive(Model::Primitives::CUBE);
         model->r = rdist(rng);
         model->droll = ddist(rng);
         model->dpitch = ddist(rng);

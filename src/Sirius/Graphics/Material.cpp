@@ -33,8 +33,8 @@ void Material::Bind() {
     pipelineState->Bind();
 }
 
-std::shared_ptr<Material> Material::CreatePhongMaterial() {
-    return std::make_shared<Material>(L"PhongVS.cso", L"PhongPS.cso");
+std::unique_ptr<Material> Material::CreatePhongMaterial() {
+    return std::make_unique<Material>(L"PhongVS.cso", L"PhongPS.cso");
 }
 
 ColoredCubeMaterial::ColoredCubeMaterial() : Material(L"VertexShader.cso", L"PixelShader.cso") {
