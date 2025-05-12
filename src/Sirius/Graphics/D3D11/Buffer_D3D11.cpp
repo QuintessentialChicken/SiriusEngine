@@ -4,6 +4,8 @@
 
 #include "Buffer_D3D11.h"
 
+#include <stdexcept>
+
 #include "RenderApi_D3D11.h"
 
 

@@ -4,7 +4,10 @@
 
 #ifndef INPUTLAYOUT_D3D11_H
 #define INPUTLAYOUT_D3D11_H
-#include "InputLayout.h"
+#include <vector>
+
+#include "Buffer_D3D11.h"
+#include "Graphics/InputLayout.h"
 
 
 // D3D11 implementation

@@ -26,7 +26,7 @@ public:
     [[nodiscard]] uint32_t GetIndexCount() const { return indexCount; }
     
     // Factory method for creating a cube mesh
-    static std::shared_ptr<Mesh> CreateCube();
+    static std::unique_ptr<Mesh> CreateCube();
     
 private:
     std::unique_ptr<IVertexBuffer> vertexBuffer;

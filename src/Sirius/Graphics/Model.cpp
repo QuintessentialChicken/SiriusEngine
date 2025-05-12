@@ -8,9 +8,13 @@
 
 #include "Renderer.h"
 
-Model::Model(std::shared_ptr<Mesh> mesh, std::shared_ptr<Material> material)
+Model::Model(std::unique_ptr<Mesh> mesh, std::unique_ptr<Material> material)
 : mesh(std::move(mesh)), material(std::move(material)), transformBuffer(std::make_unique<TransformBuffer>())
 {}
+
+std::unique_ptr<Model> Model::CreatePrimitive(Primitives primitive) {
+    return std::make_unique<Model>(Mesh::CreateCube(), std::make_unique<ColoredCubeMaterial>());
+}
 
 void Model::Draw(const DirectX::XMMATRIX& view, const DirectX::XMMATRIX& projection) {
     // Update transform buffer
@@ -25,4 +29,59 @@ void Model::Draw(const DirectX::XMMATRIX& view, const DirectX::XMMATRIX& project
     Renderer::DrawIndexed(mesh->GetIndexCount());
 }
 
+void Model::SetPosition(const DirectX::XMFLOAT3& pos) {
+    GetTransform().SetPosition(pos);
+}
+
+void Model::Translate(const DirectX::XMFLOAT3& offset) {
+    GetTransform().Translate(offset);
+}
+
+void Model::SetRotation(const DirectX::XMFLOAT3& rot) {
+    GetTransform().SetRotation(rot);
+}
+
+void Model::SetScale(const DirectX::XMFLOAT3& scl) {
+    GetTransform().SetScale(scl);
+}
+
+void Model::Update(float dt) {
+    roll += droll * dt;
+    pitch += dpitch * dt;
+    yaw += dyaw * dt;
+    theta += dtheta * dt;
+    phi += dphi * dt;
+    chi += dchi * dt;
+}
+
 Transform& Model::GetTransform() { return transform; }
+
+void Model::UpdateTransform() {
+    // Create a transform matrix that mimics the old behavior
+    DirectX::XMMATRIX rotMatrix = DirectX::XMMatrixRotationRollPitchYaw(pitch, yaw, roll);
+    DirectX::XMMATRIX transMatrix = DirectX::XMMatrixTranslation(r, 0.0f, 0.0f);
+    DirectX::XMMATRIX orbitMatrix = DirectX::XMMatrixRotationRollPitchYaw(theta, phi, chi);
+
+    // Combine transformations
+    DirectX::XMMATRIX worldMatrix = rotMatrix * transMatrix * orbitMatrix;
+
+    // Extract position, rotation, and scale from the matrix
+    DirectX::XMVECTOR scale;
+    DirectX::XMVECTOR rotation;
+    DirectX::XMVECTOR position;
+
+    DirectX::XMMatrixDecompose(&scale, &rotation, &position, worldMatrix);
+
+    // Convert to XMFLOAT3
+    DirectX::XMFLOAT3 pos{}, rot{}, scl{};
+    DirectX::XMStoreFloat3(&pos, position);
+    DirectX::XMStoreFloat3(&rot, rotation); // Note: this is a quaternion, not Euler angles
+    DirectX::XMStoreFloat3(&scl, scale);
+
+    // Update the model's transform
+    GetTransform().SetPosition(pos);
+    // For quaternion to Euler conversion, you might need more complex math
+    // This is a simplified approach:
+    GetTransform().SetRotation(DirectX::XMFLOAT3(pitch, yaw, roll));
+    GetTransform().SetScale(scl);
+}

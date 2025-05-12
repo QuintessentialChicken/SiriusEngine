@@ -2,11 +2,9 @@
 #include <random>
 
 #include "Game/GameWorld.h"
-#include "../Game/App.h"
+#include "Game/App.h"
 #include "Core/Entrypoint_Engine.h"
 #include "Game/Game.h"
-#include "Graphics/Cube.h"
-#include "Input/Mouse.h"
 #include "Physics/Physics.h"
 
 App my_app;

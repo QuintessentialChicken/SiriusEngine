@@ -12,7 +12,8 @@
 #include "InputLayout_D3D11.h"
 #include "PipelineState_D3D11.h"
 #include "Shader_D3D11.h"
-#include "WndProc.h"
+#include "Graphics/GfxDevice.h"
+#include "Graphics/WndProc.h"
 
 
 void RenderApi_D3D11::Init() {

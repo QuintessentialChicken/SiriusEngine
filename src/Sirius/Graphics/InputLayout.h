@@ -1,10 +1,7 @@
 #ifndef INPUT_LAYOUT_H
 #define INPUT_LAYOUT_H
 
-#include <vector>
-#include <d3d11.h>
 #include <string>
-#include <wrl/client.h>
 
 // API-agnostic format description
 enum class DataFormat {

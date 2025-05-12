@@ -7,10 +7,10 @@
 #include <memory>
 #include <vector>
 
+#include "Graphics/Model.h"
 #include "Graphics/PointLight.h"
 
 
-class Cube;
 
 class GameWorld {
 public:
@@ -19,15 +19,15 @@ public:
     static GameWorld* GetInstance();
 
     // void AddLightSource(std::unique_ptr<PointLight> light);
-    void AddObject(std::unique_ptr<Cube> object);
+    void AddObject(std::unique_ptr<Model> object);
 
     // std::vector<std::unique_ptr<PointLight>>& GetAllLightSources();
 
     // [[nodiscard]] Drawable& GetObjectAtIndex(int index) const;
-    std::vector<std::unique_ptr<Cube>>& GetAllObjects();
+    std::vector<std::unique_ptr<Model>>& GetAllObjects();
 private:
     static GameWorld* instance;
-    std::vector<std::unique_ptr<Cube>> objects;
+    std::vector<std::unique_ptr<Model>> objects;
     // std::vector<std::unique_ptr<PointLight>> lights;
 };
 

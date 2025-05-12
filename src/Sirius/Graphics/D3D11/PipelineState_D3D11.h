@@ -4,7 +4,7 @@
 
 #ifndef PIPELINESTATE_D3D11_H
 #define PIPELINESTATE_D3D11_H
-#include "PipelineState.h"
+#include "Graphics/PipelineState.h"
 
 
 class PipelineState_D3D11 : public IPipelineState {

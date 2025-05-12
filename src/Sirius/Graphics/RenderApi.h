@@ -7,6 +7,7 @@
 #include <DirectXMath.h>
 #include <intsafe.h>
 #include <memory>
+#include <vector>
 
 #include "Buffer.h"
 #include "InputLayout.h"

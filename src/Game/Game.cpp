@@ -10,7 +10,6 @@
 
 #include "GameWorld.h"
 #include "Graphics/Camera.h"
-#include "Graphics/Cube.h"
 #include "Graphics/PointLight.h"
 #include "Graphics/Sphere.h"
 #include "Graphics/WndProc.h"
@@ -26,7 +25,7 @@ float Game::speedFactor = 1.0f;
 
 void Game::Init() {
     for (int i = 0; i < 100; i++) {
-        GameWorld::GetInstance()->AddObject(std::make_unique<Cube>());
+        GameWorld::GetInstance()->AddObject(Model::CreatePrimitive(Model::Primitives::CUBE));
     }
     timer.Mark();
 }

@@ -4,7 +4,7 @@
 
 #ifndef SHADER_D3D11_H
 #define SHADER_D3D11_H
-#include "Shader.h"
+#include "Graphics/Shader.h"
 #include <d3d11.h>
 #include <string>
 #include <wrl/client.h>

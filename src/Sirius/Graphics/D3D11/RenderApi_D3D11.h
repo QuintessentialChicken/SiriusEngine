@@ -6,13 +6,13 @@
 #define RENDERDEVICE_D3D11_H
 #include <array>
 #include <dxgi.h>
+#include <vector>
 #include <wrl/client.h>
 
-#include "GfxDevice.h"
-#include "InputLayout.h"
-#include "PipelineState.h"
-#include "RenderApi.h"
-#include "Shader.h"
+#include "Graphics/InputLayout.h"
+#include "Graphics/PipelineState.h"
+#include "Graphics/RenderApi.h"
+#include "Graphics/Shader.h"
 
 
 class RenderApi_D3D11 : public IRenderApi {
@@ -43,7 +43,7 @@ public:
     [[nodiscard]] DirectX::XMMATRIX GetProjection() const noexcept override;
 
 private:
-    std::array<float, 4> color = {0.3f, 0.0f, 0.3f, 1.0f};
+    std::array<float, 4> color = {0.9f, 0.9f, 0.9f, 1.0f};
     DirectX::XMMATRIX projection = {};
     DirectX::XMMATRIX camera = {};
     Microsoft::WRL::ComPtr<IDXGISwapChain> swapChain;

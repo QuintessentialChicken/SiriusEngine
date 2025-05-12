@@ -1,8 +1,6 @@
 add_library(Graphics STATIC
         Camera.cpp
         Camera.h
-        Cube.cpp
-        Cube.h
         GfxDevice.h
         GfxDevice_Win32.cpp
         ImguiManager.cpp
@@ -22,14 +20,14 @@ add_library(Graphics STATIC
         Sphere.cpp
         Sphere.h
         RenderApi.h
-        RenderApi_D3D11.cpp
-        RenderApi_D3D11.h
+        D3D11/RenderApi_D3D11.cpp
+        D3D11/RenderApi_D3D11.h
         Renderer.cpp
         Renderer.h
         RenderApi.cpp
         Buffer.h
-        Buffer_D3D11.cpp
-        Buffer_D3D11.h
+        D3D11/Buffer_D3D11.cpp
+        D3D11/Buffer_D3D11.h
         Mesh.cpp
         Mesh.h
         Material.cpp
@@ -39,13 +37,13 @@ add_library(Graphics STATIC
         Model.cpp
         Model.h
         Shader.h
-        Shader_D3D11.cpp
-        Shader_D3D11.h
-        InputLayout_D3D11.cpp
-        InputLayout_D3D11.h
+        D3D11/Shader_D3D11.cpp
+        D3D11/Shader_D3D11.h
+        D3D11/InputLayout_D3D11.cpp
+        D3D11/InputLayout_D3D11.h
         PipelineState.h
-        PipelineState_D3D11.cpp
-        PipelineState_D3D11.h
+        D3D11/PipelineState_D3D11.cpp
+        D3D11/PipelineState_D3D11.h
         Buffer.cpp
 )
 

@@ -25,7 +25,7 @@ void Mesh::Bind() const {
     indexBuffer->Bind();
 }
 
-std::shared_ptr<Mesh> Mesh::CreateCube() {
+std::unique_ptr<Mesh> Mesh::CreateCube() {
     constexpr float side = 0.5f;
 
     // std::vector<Vertex> vertices = {
@@ -97,5 +97,5 @@ std::shared_ptr<Mesh> Mesh::CreateCube() {
     };
 
 
-    return std::make_shared<Mesh>(vertices, indices);
+    return std::make_unique<Mesh>(vertices, indices);
 }

@@ -6,9 +6,8 @@
 #define BUFFER_D3D11_H
 #include <wrl/client.h>
 #include <d3d11.h>
-#include <memory>
 
-#include "Buffer.h"
+#include "Graphics/Buffer.h"
 
 
 // D3D11 implementations

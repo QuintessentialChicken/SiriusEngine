@@ -10,7 +10,6 @@
 #include "Graphics/GfxDevice.h"
 #include "Graphics/Plane.h"
 #include "GameWorld.h"
-#include "Graphics/Cube.h"
 #include "Graphics/Renderer.h"
 #include "Input/Input.h"
 #include "Physics/Physics.h"

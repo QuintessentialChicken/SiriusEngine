@@ -3,10 +3,7 @@
 //
 
 #include "GameWorld.h"
-
 #include <random>
-
-#include "Graphics/Cube.h"
 
 GameWorld* GameWorld::instance = nullptr;
 
@@ -31,7 +28,7 @@ GameWorld* GameWorld::GetInstance() {
 //     lights.push_back(std::move(light));
 // }
 
-void GameWorld::AddObject(std::unique_ptr<Cube> object) {
+void GameWorld::AddObject(std::unique_ptr<Model> object) {
     objects.push_back(std::move(object));
 }
 
@@ -43,6 +40,6 @@ void GameWorld::AddObject(std::unique_ptr<Cube> object) {
 //     return *objects.at(index);
 // }
 
-std::vector<std::unique_ptr<Cube>>& GameWorld::GetAllObjects() {
+std::vector<std::unique_ptr<Model>>& GameWorld::GetAllObjects() {
     return objects;
 }
