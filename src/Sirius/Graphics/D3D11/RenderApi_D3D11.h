@@ -43,7 +43,7 @@ public:
     [[nodiscard]] DirectX::XMMATRIX GetProjection() const noexcept override;
 
 private:
-    std::array<float, 4> color = {0.9f, 0.9f, 0.9f, 1.0f};
+    std::array<float, 4> color = {0.95f, 0.95f, 0.95f, 1.0f};
     DirectX::XMMATRIX projection = {};
     DirectX::XMMATRIX camera = {};
     Microsoft::WRL::ComPtr<IDXGISwapChain> swapChain;
