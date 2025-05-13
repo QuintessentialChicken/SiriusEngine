@@ -5,10 +5,11 @@
 #include <vector>
 #include <memory>
 #include "Buffer.h"
+#include "Core/Component.h"
 
+enum class Primitives;
 
-
-class Mesh {
+class Mesh : public Component {
 public:
     struct Vertex {
         DirectX::XMFLOAT3 pos;
@@ -20,8 +21,12 @@ public:
         } tex;
     };
 
+    void Init() override {}
+
+    void Update() override {}
+
     Mesh(const std::vector<Vertex>& vertices, const std::vector<uint16_t>& indices);
-    
+
     void Bind() const;
     [[nodiscard]] uint32_t GetIndexCount() const { return indexCount; }
     

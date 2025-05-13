@@ -15,7 +15,7 @@ public:
     float yaw = 0.0f;
 private:
     float theta = 0.0f;
-    float r = 1.0f;
+    float r = 20.0f;
     float phi = 0.0f;
     float pitch = 0.0f;
     float roll = 0.0f;

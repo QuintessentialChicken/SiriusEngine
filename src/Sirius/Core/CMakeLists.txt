@@ -1,4 +1,5 @@
 add_library(Core STATIC
+        Component.h
         dxerr.cpp
         dxerr.h
         DXGetErrorDescription.inl
@@ -8,6 +9,8 @@ add_library(Core STATIC
         DXTrace.inl
         Entrypoint_Engine.cpp
         Entrypoint_Engine.h
+        Model.cpp
+        Model.h
         SiriusException.cpp
         SiriusException.h
         Timer.cpp

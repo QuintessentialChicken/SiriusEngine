@@ -6,28 +6,30 @@
 
 #include <utility>
 
-#include "Renderer.h"
+#include "../Graphics/Renderer.h"
 #include "../../Game/App.h"
 
 Model::Model(std::unique_ptr<Mesh> mesh, std::unique_ptr<Material> material)
-: mesh(std::move(mesh)), material(std::move(material)), transformBuffer(std::make_unique<TransformBuffer>())
-{}
+: material(std::move(material)), transformBuffer(std::make_unique<TransformBuffer>()) {
+    AddComponent<Mesh>(std::move(mesh));
+}
 
 std::unique_ptr<Model> Model::CreatePrimitive(Primitives primitive) {
-
     switch (primitive) {
         case Primitives::CUBE:
             return std::make_unique<Model>(Mesh::CreateCube(), std::make_unique<ColoredCubeMaterial>());
-        case Primitives::CUBE_PHONG:
-            return std::make_unique<Model>(Mesh::CreateCube(), Material::CreatePhongMaterial());
         case Primitives::SPHERE:
             return std::make_unique<Model>(Mesh::CreateSphere(), std::make_unique<ColoredCubeMaterial>());
+        case Primitives::CUBE_PHONG:
+            return std::make_unique<Model>(Mesh::CreateCube(), Material::CreatePhongMaterial());
         default:
             return nullptr;
     }
 }
 
 void Model::Draw(const DirectX::XMMATRIX& view, const DirectX::XMMATRIX& projection) {
+    auto mesh = GetComponent<Mesh>();
+    if (GetComponent<Mesh>() == nullptr) return;
     // Update transform buffer
     transformBuffer->Update(transform.GetMatrix(), view, projection);
 

@@ -7,7 +7,7 @@
 #include <memory>
 #include <vector>
 
-#include "Graphics/Model.h"
+#include "../Sirius/Core/Model.h"
 #include "Graphics/PointLight.h"
 
 
