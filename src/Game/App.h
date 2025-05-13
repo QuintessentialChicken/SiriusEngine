@@ -12,6 +12,8 @@
 #include "Graphics/Camera.h"
 #include "Graphics/ImguiManager.h"
 
+class Model;
+
 class App : public Fsm {
 public:
 
@@ -44,6 +46,7 @@ private:
     float speed_factor = 1.0f;
     ImguiManager imgui;
     Camera cam;
+    Model* closestModel = nullptr;
 };
 
 

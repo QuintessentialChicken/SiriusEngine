@@ -37,9 +37,9 @@ void GameWorld::AddObject(std::unique_ptr<Model> object) {
     objects.push_back(std::move(object));
 }
 
-// Drawable& GameWorld::GetObjectAtIndex(int index) const {
-//     return *objects.at(index);
-// }
+Model& GameWorld::GetObjectAtIndex(int index) const {
+    return *objects.at(index);
+}
 
 std::vector<std::unique_ptr<Model>>& GameWorld::GetAllObjects() {
     return objects;

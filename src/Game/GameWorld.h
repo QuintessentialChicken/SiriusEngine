@@ -23,7 +23,7 @@ public:
 
     std::vector<std::unique_ptr<Model>>& GetAllLightSources();
 
-    // [[nodiscard]] Drawable& GetObjectAtIndex(int index) const;
+    [[nodiscard]] Model& GetObjectAtIndex(int index) const;
     std::vector<std::unique_ptr<Model>>& GetAllObjects();
 private:
     static GameWorld* instance;

@@ -115,6 +115,7 @@ public:
     float r = 0.0f;
 private:
     void UpdateTransform();
+    bool userControlled = false;
 
 
     std::unique_ptr<Material> material;

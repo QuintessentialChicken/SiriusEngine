@@ -11,6 +11,7 @@ public:
     [[nodiscard]] DirectX::XMMATRIX GetMatrix() const noexcept;
     void SpawnControlWindow() noexcept;
     static DirectX::XMFLOAT2 ScreenToWorld(int x, int y);
+    static DirectX::XMFLOAT2 ScreenToWorldPerspective(int x, int y, DirectX::XMMATRIX view, DirectX::XMMATRIX projection);
     void Reset() noexcept;
     float yaw = 0.0f;
 private:

@@ -27,7 +27,7 @@ void Game::Init() {
     std::uniform_real_distribution rdist{6.0f, 20.0f};
     std::uniform_int_distribution bdist{0, 1};
 
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; i < 1; i++) {
         auto model = Model::CreatePrimitive(Primitives::CUBE_PHONG);
         model->r = rdist(rng);
         model->droll = ddist(rng);

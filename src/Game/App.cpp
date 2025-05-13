@@ -12,7 +12,10 @@
 #include "GameWorld.h"
 #include "Graphics/Renderer.h"
 #include "Input/Input.h"
-#include "Physics/Physics.h"
+#include "Input/Mouse.h"
+
+static bool spawnWindow = false;
+
 Fsm::Return App::UpdateState(const signed short state) {
     switch (state) {
         case INIT_SYSTEM:
@@ -80,6 +83,24 @@ void App::DoFrame() {
     for (const auto& obj : world->GetAllObjects()) {
         obj->Draw(cam.GetMatrix(), projection);
     }
+    if (Mouse::RightIsPressed()) {
+        DirectX::XMFLOAT2 worldCoords = Camera::ScreenToWorldPerspective(Mouse::GetX(), Mouse::GetY(), cam.GetMatrix(), projection);
+        float closestDist = INFINITY;
+        for (auto& obj : world->GetAllObjects()) {
+            float current;
+            DirectX::XMFLOAT2 vec1 = {obj->GetTransform().position.x, obj->GetTransform().position.y};
+            DirectX::XMVECTOR diff = DirectX::XMVectorSubtract(DirectX::XMLoadFloat2(&vec1), DirectX::XMLoadFloat2(&worldCoords));
+            DirectX::XMStoreFloat(&current,DirectX::XMVector2Length(diff));
+            if (current < closestDist) {
+                closestDist = current;
+                closestModel = obj.get();
+            }
+        }
+        if (closestModel != nullptr && closestDist < 7.0f) {
+            spawnWindow = true;
+        }
+    }
+    if (spawnWindow) closestModel->SpawnControlWindow();
     // cam.SpawnControlWindow();
     // Game::SpawnControlWindow();
     // Physics::SpawnControlWindow();
