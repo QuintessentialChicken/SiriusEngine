@@ -10,10 +10,13 @@
 #include "Graphics/Mesh.h"
 #include "Graphics/Material.h"
 #include "Graphics/Transform.h"
+class PointLight;
+
 enum class Primitives {
     CUBE = 0,
-    SPHERE = 1,
-    CUBE_PHONG = 2,
+    SPHERE,
+    CUBE_PHONG,
+    POINTLIGHT
 };
 class Model {
 public:
@@ -91,10 +94,12 @@ public:
         return false;
     }
 
+    void SpawnControlWindow();
+
     // Expose transform for manipulation
 
     Transform& GetTransform();
-
+    // TODO Make this not public
     float roll = 0.0f;
     float pitch = 0.0f;
     float yaw = 0.0f;

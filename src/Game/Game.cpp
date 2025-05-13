@@ -28,7 +28,7 @@ void Game::Init() {
     std::uniform_int_distribution bdist{0, 1};
 
     for (int i = 0; i < 100; i++) {
-        auto model = Model::CreatePrimitive(static_cast<Primitives>(bdist(rng)));
+        auto model = Model::CreatePrimitive(Primitives::CUBE_PHONG);
         model->r = rdist(rng);
         model->droll = ddist(rng);
         model->dpitch = ddist(rng);
@@ -41,6 +41,7 @@ void Game::Init() {
         model->phi = adist(rng);
         GameWorld::GetInstance()->AddObject(std::move(model));
     }
+    GameWorld::GetInstance()->AddLightSource(Model::CreatePrimitive(Primitives::POINTLIGHT));
     timer.Mark();
 }
 

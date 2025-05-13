@@ -5,9 +5,10 @@
 #include "Model.h"
 
 #include <utility>
+#include <External/imgui.h>
 
-#include "../Graphics/Renderer.h"
-#include "../../Game/App.h"
+#include "Graphics/Renderer.h"
+#include "Graphics/PointLight.h"
 
 Model::Model(std::unique_ptr<Mesh> mesh, std::unique_ptr<Material> material)
 : material(std::move(material)), transformBuffer(std::make_unique<TransformBuffer>()) {
@@ -22,6 +23,11 @@ std::unique_ptr<Model> Model::CreatePrimitive(Primitives primitive) {
             return std::make_unique<Model>(Mesh::CreateSphere(), std::make_unique<ColoredCubeMaterial>());
         case Primitives::CUBE_PHONG:
             return std::make_unique<Model>(Mesh::CreateCube(), Material::CreatePhongMaterial());
+        case Primitives::POINTLIGHT: {
+            auto light = std::make_unique<Model>(Mesh::CreateSphere(), std::make_unique<ColoredCubeMaterial>());
+            light->AddComponent<PointLight>(std::make_unique<PointLight>());
+            return light;
+        }
         default:
             return nullptr;
     }
@@ -59,6 +65,10 @@ void Model::SetScale(const DirectX::XMFLOAT3& scl) {
 }
 
 void Model::Update(float dt) {
+    for (const auto& component : components) {
+        component->Update();
+    }
+
     roll += droll * dt;
     pitch += dpitch * dt;
     yaw += dyaw * dt;
@@ -67,6 +77,15 @@ void Model::Update(float dt) {
     chi += dchi * dt;
 
     UpdateTransform();
+}
+
+void Model::SpawnControlWindow() {
+    if (ImGui::Begin("Transform")) {
+        ImGui::SliderFloat("X", &GetTransform().position.x, -20.0f, 20.0f);
+        ImGui::SliderFloat("Y", &GetTransform().position.y, -20.0f, 20.0f);
+        ImGui::SliderFloat("Z", &GetTransform().position.z, -20.0f, 20.0f);
+    }
+    ImGui::End();
 }
 
 Transform& Model::GetTransform() { return transform; }

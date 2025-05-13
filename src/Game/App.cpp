@@ -74,15 +74,14 @@ void App::DoFrame() {
     Renderer::BeginFrame();
     auto projection = Renderer::GetProjection();
     GameWorld* world = GameWorld::GetInstance();
-    // for (auto& light : world->GetAllLightSources()) {
-    //     light->Bind();
-    //     light->Draw();
-    // }
+    for (auto& light : world->GetAllLightSources()) {
+        light->Draw(cam.GetMatrix(), projection);
+    }
     for (const auto& obj : world->GetAllObjects()) {
         obj->Draw(cam.GetMatrix(), projection);
     }
-    cam.SpawnControlWindow();
-    Game::SpawnControlWindow();
+    // cam.SpawnControlWindow();
+    // Game::SpawnControlWindow();
     // Physics::SpawnControlWindow();
     Renderer::EndFrame();
 }
