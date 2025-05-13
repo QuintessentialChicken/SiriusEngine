@@ -69,14 +69,16 @@ void Model::Update(float dt) {
         component->Update();
     }
 
-    roll += droll * dt;
-    pitch += dpitch * dt;
-    yaw += dyaw * dt;
-    theta += dtheta * dt;
-    phi += dphi * dt;
-    chi += dchi * dt;
+    if (!userControlled) {
+        roll += droll * dt;
+        pitch += dpitch * dt;
+        yaw += dyaw * dt;
+        theta += dtheta * dt;
+        phi += dphi * dt;
+        chi += dchi * dt;
 
-    UpdateTransform();
+        UpdateTransform();
+    }
 }
 
 void Model::SpawnControlWindow() {
@@ -84,6 +86,8 @@ void Model::SpawnControlWindow() {
         ImGui::SliderFloat("X", &GetTransform().position.x, -20.0f, 20.0f);
         ImGui::SliderFloat("Y", &GetTransform().position.y, -20.0f, 20.0f);
         ImGui::SliderFloat("Z", &GetTransform().position.z, -20.0f, 20.0f);
+        ImGui::Checkbox("Take control", &userControlled);
+        GetTransform().UpdateMatrix();
     }
     ImGui::End();
 }

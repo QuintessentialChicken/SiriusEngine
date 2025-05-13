@@ -3,6 +3,9 @@
 //
 
 #include "Camera.h"
+
+#include <complex>
+
 #include "External/Imgui.h"
 
 namespace dx = DirectX;
@@ -49,6 +52,22 @@ DirectX::XMFLOAT2 Camera::ScreenToWorld(int x, int y) {
     float worldY = ndcY * (viewHeight / 2.0f) * zoom;
     return {worldX, worldY};
 }
+
+DirectX::XMFLOAT2 Camera::ScreenToWorldPerspective(int x, int y, DirectX::XMMATRIX view, DirectX::XMMATRIX projection) {
+    using namespace DirectX;
+    auto test = XMMatrixDeterminant(view *  projection);
+    XMMATRIX invProjectionView = XMMatrixInverse(&test, (view *  projection));
+    //invViewProjection = invView * invProjection;
+
+    float x_ = (((2.0f * x) / 800) - 1);
+    float y_ = -(((2.0f * y) / 600) - 1);
+
+    XMVECTOR mousePosition = XMVectorSet(x_, y_, 1.0f, 0.0f);
+
+    auto mouseInWorldSpace = XMVector3Transform(mousePosition, invProjectionView);
+    return {XMVectorGetX(mouseInWorldSpace), XMVectorGetY(mouseInWorldSpace)};
+}
+
 
 void Camera::Reset() noexcept {
     r = 20.0f;
