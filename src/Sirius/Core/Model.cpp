@@ -9,6 +9,7 @@
 
 #include "Graphics/Renderer.h"
 #include "Graphics/PointLight.h"
+#include "Input/Mouse.h"
 
 Model::Model(std::unique_ptr<Mesh> mesh, std::unique_ptr<Material> material)
 : material(std::move(material)), transformBuffer(std::make_unique<TransformBuffer>()) {

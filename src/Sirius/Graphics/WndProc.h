@@ -4,7 +4,8 @@
 
 #ifndef WNDPROC_H
 #define WNDPROC_H
-
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
 inline LRESULT (__stdcall * g_WindowProc)(HWND hWnd, UINT Msg, WPARAM wParam, LPARAM lParam) = DefWindowProc;
 
 inline HWND hwndMain = nullptr;

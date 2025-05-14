@@ -40,6 +40,8 @@ LRESULT HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept {
             // kbd.ClearState();
             break;
         case WM_SIZE:
+            windowWidth = LOWORD(lParam);
+            windowHeight = HIWORD(lParam);
             Renderer::ResizeViewport(LOWORD(lParam), HIWORD(lParam));
         default:
             {}
