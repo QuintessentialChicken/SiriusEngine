@@ -85,8 +85,10 @@ void App::DoFrame() {
     }
     if (Mouse::RightIsPressed()) {
         DirectX::XMFLOAT2 worldCoords = Camera::ScreenToWorldPerspective(Mouse::GetX(), Mouse::GetY(), cam.GetMatrix(), projection);
+        std::cout << worldCoords.x << " " << worldCoords.y << "\n";
         float closestDist = INFINITY;
         for (auto& obj : world->GetAllObjects()) {
+            // obj->SpawnControlWindow();
             float current;
             DirectX::XMFLOAT2 vec1 = {obj->GetTransform().position.x, obj->GetTransform().position.y};
             DirectX::XMVECTOR diff = DirectX::XMVectorSubtract(DirectX::XMLoadFloat2(&vec1), DirectX::XMLoadFloat2(&worldCoords));
@@ -100,7 +102,7 @@ void App::DoFrame() {
             spawnWindow = true;
         }
     }
-    if (spawnWindow) closestModel->SpawnControlWindow();
+    // if (spawnWindow) closestModel->SpawnControlWindow();
     // cam.SpawnControlWindow();
     // Game::SpawnControlWindow();
     // Physics::SpawnControlWindow();

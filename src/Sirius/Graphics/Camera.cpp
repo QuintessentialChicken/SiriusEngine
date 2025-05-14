@@ -4,9 +4,8 @@
 
 #include "Camera.h"
 
-#include <complex>
-
 #include "External/Imgui.h"
+#include "WndProc.h"
 
 namespace dx = DirectX;
 
@@ -54,18 +53,19 @@ DirectX::XMFLOAT2 Camera::ScreenToWorld(int x, int y) {
 }
 
 DirectX::XMFLOAT2 Camera::ScreenToWorldPerspective(int x, int y, DirectX::XMMATRIX view, DirectX::XMMATRIX projection) {
-    using namespace DirectX;
-    auto test = XMMatrixDeterminant(view *  projection);
-    XMMATRIX invProjectionView = XMMatrixInverse(&test, (view *  projection));
+    auto det = DirectX::XMMatrixDeterminant(view *  projection);
+    DirectX::XMMATRIX invProjectionView = DirectX::XMMatrixInverse(&det, (view *  projection));
     //invViewProjection = invView * invProjection;
 
-    float x_ = (((2.0f * x) / 800) - 1);
-    float y_ = -(((2.0f * y) / 600) - 1);
+    float x_n = (((2.0f * static_cast<float>(x)) / static_cast<float>(windowWidth) - 1));
+    float y_n = -(((2.0f * static_cast<float>(y)) / static_cast<float>(windowHeight)) - 1);
 
-    XMVECTOR mousePosition = XMVectorSet(x_, y_, 1.0f, 0.0f);
+    DirectX::XMVECTOR mousePosition = DirectX::XMVectorSet(x_n, y_n, 1.0f, 0.0f);
 
-    auto mouseInWorldSpace = XMVector3Transform(mousePosition, invProjectionView);
-    return {XMVectorGetX(mouseInWorldSpace), XMVectorGetY(mouseInWorldSpace)};
+    auto mouseInWorldSpace = DirectX::XMVector3Transform(mousePosition, invProjectionView);
+    float worldX = DirectX::XMVectorGetX(mouseInWorldSpace);
+    float worldY = DirectX::XMVectorGetY(mouseInWorldSpace); 
+    return {worldX, worldY};
 }
 
 
