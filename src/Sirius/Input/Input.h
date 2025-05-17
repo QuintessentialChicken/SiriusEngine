@@ -11,7 +11,6 @@
 LRESULT InputWindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 // TODO Implement Control Manager to abstract raw input data from in-game keybindings.
-// TODO Include some functionality to map mouse position to screen space coordinates
 class Input {
 public:
     static void Init();

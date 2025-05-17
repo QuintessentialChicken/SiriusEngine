@@ -8,6 +8,7 @@
 
 #include "Core/Fsm.h"
 #include "Core/GDIPlusManager.h"
+#include "Core/Model.h"
 #include "Core/Timer.h"
 #include "Graphics/Camera.h"
 #include "Graphics/ImguiManager.h"
@@ -45,7 +46,7 @@ private:
     GDIPlusManager gdipm;
     float speed_factor = 1.0f;
     ImguiManager imgui;
-    Camera cam;
+    std::unique_ptr<Model> cam;
     Model* closestModel = nullptr;
 };
 

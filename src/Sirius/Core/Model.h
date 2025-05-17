@@ -37,6 +37,7 @@ public:
        // Component management
     template<typename T>
     T* AddComponent(std::unique_ptr<T> comp) {
+        if (comp == nullptr) return nullptr;
         static_assert(std::is_base_of_v<Component, T>, "T must derive from Component");
 
         // Check if component of this type already exists
@@ -98,28 +99,14 @@ public:
 
     // Expose transform for manipulation
 
-    Transform& GetTransform();
-    // TODO Make this not public
+    // Transform& GetTransform();
     float roll = 0.0f;
     float pitch = 0.0f;
     float yaw = 0.0f;
-    float theta = 0.0f;
-    float phi = 0.0f;
-    float chi = 0.0f;
-    float droll = 0.0f;
-    float dpitch = 0.0f;
-    float dyaw = 0.0f;
-    float dtheta = 0.0f;
-    float dphi = 0.0f;
-    float dchi = 0.0f;
-    float r = 0.0f;
-private:
-    void UpdateTransform();
-    bool userControlled = false;
-
-
-    std::unique_ptr<Material> material;
     Transform transform;
+private:
+    bool userControlled = true;
+    std::unique_ptr<Material> material;
     std::unique_ptr<TransformBuffer> transformBuffer;
     std::vector<std::unique_ptr<Component>> components;
     std::unordered_map<std::type_index, Component*> componentMap;

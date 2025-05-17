@@ -6,20 +6,16 @@
 #define CAMERA_H
 #include <DirectXMath.h>
 
-class Camera {
+#include "Core/Component.h"
+
+class Camera : public Component {
 public:
-    [[nodiscard]] DirectX::XMMATRIX GetMatrix() const noexcept;
-    void SpawnControlWindow() noexcept;
+    void Init() override {};
+    void Update() override {};
+
+
     static DirectX::XMFLOAT2 ScreenToWorld(int x, int y);
-    static DirectX::XMFLOAT2 ScreenToWorldPerspective(int x, int y, DirectX::XMMATRIX view, DirectX::XMMATRIX projection);
-    void Reset() noexcept;
-    float yaw = 0.0f;
-private:
-    float theta = 0.0f;
-    float r = 20.0f;
-    float phi = 0.0f;
-    float pitch = 0.0f;
-    float roll = 0.0f;
+    static DirectX::XMFLOAT3 ScreenToWorldPerspective(int x, int y, DirectX::XMMATRIX view, DirectX::XMMATRIX projection);
 };
 
 

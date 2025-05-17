@@ -50,77 +50,36 @@ void Model::Draw(const DirectX::XMMATRIX& view, const DirectX::XMMATRIX& project
 }
 
 void Model::SetPosition(const DirectX::XMFLOAT3& pos) {
-    GetTransform().SetPosition(pos);
+    transform.SetPosition(pos);
 }
 
 void Model::Translate(const DirectX::XMFLOAT3& offset) {
-    GetTransform().Translate(offset);
+    transform.Translate(offset);
 }
 
 void Model::SetRotation(const DirectX::XMFLOAT3& rot) {
-    GetTransform().SetRotation(rot);
+    transform.SetRotation(rot);
 }
 
 void Model::SetScale(const DirectX::XMFLOAT3& scl) {
-    GetTransform().SetScale(scl);
+    transform.SetScale(scl);
 }
 
 void Model::Update(float dt) {
     for (const auto& component : components) {
         component->Update();
     }
-
-    if (!userControlled) {
-        roll += droll * dt;
-        pitch += dpitch * dt;
-        yaw += dyaw * dt;
-        theta += dtheta * dt;
-        phi += dphi * dt;
-        chi += dchi * dt;
-
-        UpdateTransform();
-    }
 }
 
 void Model::SpawnControlWindow() {
     if (ImGui::Begin("Transform")) {
-        ImGui::SliderFloat("X", &GetTransform().position.x, -20.0f, 20.0f);
-        ImGui::SliderFloat("Y", &GetTransform().position.y, -20.0f, 20.0f);
-        ImGui::SliderFloat("Z", &GetTransform().position.z, -20.0f, 20.0f);
+        ImGui::SliderFloat("X", &transform.position.x, -20.0f, 20.0f);
+        ImGui::SliderFloat("Y", &transform.position.y, -20.0f, 20.0f);
+        ImGui::SliderFloat("Z", &transform.position.z, -20.0f, 20.0f);
         ImGui::Checkbox("Take control", &userControlled);
-        GetTransform().UpdateMatrix();
+        transform.UpdateMatrix();
     }
     ImGui::End();
 }
 
-Transform& Model::GetTransform() { return transform; }
-
-void Model::UpdateTransform() {
-    // Create a transform matrix that mimics the old behavior
-    DirectX::XMMATRIX rotMatrix = DirectX::XMMatrixRotationRollPitchYaw(pitch, yaw, roll);
-    DirectX::XMMATRIX transMatrix = DirectX::XMMatrixTranslation(r, 0.0f, 0.0f);
-    DirectX::XMMATRIX orbitMatrix = DirectX::XMMatrixRotationRollPitchYaw(theta, phi, chi);
-
-    // Combine transformations
-    DirectX::XMMATRIX worldMatrix = rotMatrix * transMatrix * orbitMatrix;
-
-    // Extract position, rotation, and scale from the matrix
-    DirectX::XMVECTOR scale;
-    DirectX::XMVECTOR rotation;
-    DirectX::XMVECTOR position;
-
-    DirectX::XMMatrixDecompose(&scale, &rotation, &position, worldMatrix);
-
-    // Convert to XMFLOAT3
-    DirectX::XMFLOAT3 pos{}, rot{}, scl{};
-    DirectX::XMStoreFloat3(&pos, position);
-    DirectX::XMStoreFloat3(&rot, rotation); // Note: this is a quaternion, not Euler angles
-    DirectX::XMStoreFloat3(&scl, scale);
-
-    // Update the model's transform
-    GetTransform().SetPosition(pos);
-    // For quaternion to Euler conversion, you might need more complex math
-    // This is a simplified approach:
-    GetTransform().SetRotation(DirectX::XMFLOAT3(pitch, yaw, roll));
-    GetTransform().SetScale(scl);
-}
+// Transform& Model::GetTransform() { return transform; }
