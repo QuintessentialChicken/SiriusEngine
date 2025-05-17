@@ -31,9 +31,11 @@ Fsm::Return App::UpdateState(const signed short state) {
 
 Fsm::Return App::Init() {
     GfxDevice::SetWindowTitle("Fuzzy");
-    // GfxDevice::Init();
     Renderer::Init();
     Input::Init();
+    cam = std::make_unique<Model>(nullptr, nullptr);
+    cam->AddComponent(std::make_unique<Camera>());
+
     for (const auto& fun : startFunctions) {
         fun();
     }
@@ -42,7 +44,6 @@ Fsm::Return App::Init() {
 }
 
 Fsm::Return App::Shutdown() {
-    // GfxDevice::ShutdownClass();
     Renderer::Shutdown();
     GameWorld::DestroySingleton();
     return EXIT;
@@ -77,30 +78,31 @@ void App::DoFrame() {
     Renderer::BeginFrame();
     auto projection = Renderer::GetProjection();
     GameWorld* world = GameWorld::GetInstance();
-    for (auto& light : world->GetAllLightSources()) {
-        light->Draw(cam.GetMatrix(), projection);
+    for (auto& light : world->GetLights()) {
+        light->Draw(cam->transform.GetMatrix(), projection);
     }
     for (const auto& obj : world->GetAllObjects()) {
-        obj->Draw(cam.GetMatrix(), projection);
+        obj->Draw(cam->transform.GetMatrix(), projection);
     }
     if (Mouse::RightIsPressed()) {
-        DirectX::XMFLOAT2 worldCoords = Camera::ScreenToWorldPerspective(Mouse::GetX(), Mouse::GetY(), cam.GetMatrix(), projection);
-        std::cout << worldCoords.x << " " << worldCoords.y << "\n";
-        float closestDist = INFINITY;
-        for (auto& obj : world->GetAllObjects()) {
+        DirectX::XMFLOAT3 worldCoords = Camera::ScreenToWorldPerspective(Mouse::GetX(), Mouse::GetY(), cam->transform.GetMatrix(), projection);
+        GameWorld::GetInstance()->GetAllObjects()[0]->SetPosition(worldCoords);
+        std::cout << worldCoords.x << " " << worldCoords.y << " " << worldCoords.z << "\n";
+        // float closestDist = INFINITY;
+        // for (auto& obj : world->GetAllObjects()) {
             // obj->SpawnControlWindow();
-            float current;
-            DirectX::XMFLOAT2 vec1 = {obj->GetTransform().position.x, obj->GetTransform().position.y};
-            DirectX::XMVECTOR diff = DirectX::XMVectorSubtract(DirectX::XMLoadFloat2(&vec1), DirectX::XMLoadFloat2(&worldCoords));
-            DirectX::XMStoreFloat(&current,DirectX::XMVector2Length(diff));
-            if (current < closestDist) {
-                closestDist = current;
-                closestModel = obj.get();
-            }
-        }
-        if (closestModel != nullptr && closestDist < 7.0f) {
-            spawnWindow = true;
-        }
+            // float current;
+            // DirectX::XMFLOAT2 vec1 = {obj->transform.position.x, obj->transform.position.y};
+            // DirectX::XMVECTOR diff = DirectX::XMVectorSubtract(DirectX::XMLoadFloat2(&vec1), DirectX::XMLoadFloat2(&worldCoords));
+            // DirectX::XMStoreFloat(&current,DirectX::XMVector2Length(diff));
+            // if (current < closestDist) {
+            //     closestDist = current;
+            //     closestModel = obj.get();
+            // }
+        // }
+        // if (closestModel != nullptr && closestDist < 7.0f) {
+        //     spawnWindow = true;
+        // }
     }
     // if (spawnWindow) closestModel->SpawnControlWindow();
     // cam.SpawnControlWindow();

@@ -5,6 +5,7 @@
 #ifndef GAMEWORLD_H
 #define GAMEWORLD_H
 #include <memory>
+#include <span>
 #include <vector>
 
 #include "../Sirius/Core/Model.h"
@@ -18,11 +19,9 @@ public:
     static void DestroySingleton();
     static GameWorld* GetInstance();
 
-    void AddLightSource(std::unique_ptr<Model> light);
     void AddObject(std::unique_ptr<Model> object);
 
-    std::vector<std::unique_ptr<Model>>& GetAllLightSources();
-
+    std::vector<std::unique_ptr<Model>>& GetLights();
     [[nodiscard]] Model& GetObjectAtIndex(int index) const;
     std::vector<std::unique_ptr<Model>>& GetAllObjects();
 private:

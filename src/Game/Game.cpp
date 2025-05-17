@@ -9,6 +9,7 @@
 
 #include "GameWorld.h"
 #include "Graphics/PointLight.h"
+#include "Graphics/Vulkan/test.h"
 #include "Physics/Physics.h"
 static constexpr float PI = 3.14159265f;
 static constexpr float dtTarget = 16.67f;
@@ -20,53 +21,22 @@ Timer Game::timer;
 float Game::speedFactor = 1.0f;
 
 void Game::Init() {
-    std::mt19937 rng{std::random_device{}()};
-    std::uniform_real_distribution adist{0.0f, PI * 2.0f};
-    std::uniform_real_distribution ddist{0.0f, PI * 0.5f};
-    std::uniform_real_distribution odist{0.0f, PI * 0.08f};
-    std::uniform_real_distribution rdist{6.0f, 20.0f};
-    std::uniform_int_distribution bdist{0, 1};
-
-    for (int i = 0; i < 1; i++) {
-        auto model = Model::CreatePrimitive(Primitives::CUBE_PHONG);
-        model->r = rdist(rng);
-        model->droll = ddist(rng);
-        model->dpitch = ddist(rng);
-        model->dyaw = ddist(rng);
-        model->dphi = odist(rng);
-        model->dtheta = odist(rng);
-        model->dchi = odist(rng);
-        model->chi = adist(rng);
-        model->theta = adist(rng);
-        model->phi = adist(rng);
-        GameWorld::GetInstance()->AddObject(std::move(model));
-    }
-    GameWorld::GetInstance()->AddLightSource(Model::CreatePrimitive(Primitives::POINTLIGHT));
-    timer.Mark();
+    // for (int i = 0; i < 1; i++) {
+    //     auto model = Model::CreatePrimitive(Primitives::CUBE_PHONG);
+    //     model->SetPosition({10.0f, 0.0f, 10.0f});
+    //     GameWorld::GetInstance()->AddObject(std::move(model));
+    // }
+    // auto light = Model::CreatePrimitive(Primitives::POINTLIGHT);
+    // light->SetPosition({0.0f, 0.0f, 7.0f});
+    // GameWorld::GetInstance()->AddObject(std::move(light));
+    // timer.Mark();
 }
 
 void Game::Update() {
-    const auto dt = timer.Mark() * speedFactor;
-    for (auto& cube: GameWorld::GetInstance()->GetAllObjects()) {
-        cube->Update(dt);
-    }
-    // for (auto& obj: GameWorld::GetInstance()->GetAllObjects()) {
-    //     if (!obj->playerControlled) {
-    //         // DirectX::XMFLOAT2 worldCoords = Camera::ScreenToWorld(0, Mouse::GetY());
-    //         // obj->SetTransform({worldCoords.x, worldCoords.y, 0});
-    //         // std::cout << "World X: " << obj->position.x << " World Y: " << obj->position.y << " Screen X: " << Mouse::GetX() << " Screen Y: " << Mouse::GetY() << "\n";
-    //         obj->Update(dt);
-    //         continue;
-    //     }
-    //
-    //     if (Keyboard::IsKeyPressed('W')) obj->linearVelocity.y = 0.05f;
-    //     if (Keyboard::IsKeyPressed('S')) obj->linearVelocity.y = -0.05f;
-    //     if (!Keyboard::IsKeyPressed('W') && !Keyboard::IsKeyPressed('S')) obj->linearVelocity.y = 0;
-    //     obj->AddTransform({obj->linearVelocity.x, obj->linearVelocity.y, 0});
+    // const auto dt = timer.Mark() * speedFactor;
+    // for (auto& cube: GameWorld::GetInstance()->GetAllObjects()) {
+    //     cube->Update(dt);
     // }
-
-
-    // GameWorld::GetInstance()->GetObjectAtIndex(0).SetTransform({-15 + static_cast<float>(Mouse::GetX()) * 0.05f, 15 + static_cast<float>(Mouse::GetY()) * -0.05f, 0});
 }
 
 void Game::SpawnControlWindow() {

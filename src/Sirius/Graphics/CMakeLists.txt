@@ -1,3 +1,5 @@
+find_package(Vulkan REQUIRED)
+include_directories("$ENV{VULKAN_SDK}/Include")
 add_library(Graphics STATIC
         Buffer.cpp
         Buffer.h
@@ -41,6 +43,11 @@ add_library(Graphics STATIC
         Transform.cpp
         Transform.h
         WndProc.h
+        Vulkan/test.cpp
+        Vulkan/test.h
+        Vulkan/RenderApi_Vulkan.cpp
+        Vulkan/RenderApi_Vulkan.h
 )
 
-target_link_libraries(Graphics PRIVATE Gdiplus.lib)
+
+target_link_libraries(Graphics PRIVATE Gdiplus.lib Vulkan::Vulkan)

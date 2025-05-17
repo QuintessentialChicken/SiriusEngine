@@ -98,7 +98,6 @@ ConstantBuffer_D3D11::ConstantBuffer_D3D11(const void* data, size_t size, ID3D11
 }
 
 void ConstantBuffer_D3D11::Bind(ShaderStage stages, UINT slot) {
-    auto test = stages & ShaderStage::Vertex;
     if ((stages & ShaderStage::Vertex) == ShaderStage::Vertex) {
         context->VSSetConstantBuffers(slot, 1, constantBuffer.GetAddressOf());
     }
