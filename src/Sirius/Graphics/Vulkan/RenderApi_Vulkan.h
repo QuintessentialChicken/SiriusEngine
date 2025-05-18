@@ -43,15 +43,29 @@ private:
         "VK_LAYER_KHRONOS_validation"
     };
 
+    const std::vector<const char*> deviceExtensions = {
+        VK_KHR_SWAPCHAIN_EXTENSION_NAME
+    };
+
+    struct SwapChainSupportDetails {
+        VkSurfaceCapabilitiesKHR capabilities;
+        std::vector<VkSurfaceFormatKHR> formats;
+        std::vector<VkPresentModeKHR> presentModes;
+    };
+
     struct QueueFamilyIndices {
         std::optional<uint32_t> graphicsFamily;
+        std::optional<uint32_t> presentFamily;
+
 
         bool isComplete() {
-            return graphicsFamily.has_value();
+            return graphicsFamily.has_value() && presentFamily.has_value();
         }
     };
 
     void CreateInstance();
+
+    void createSurface();
 
     bool CheckValidationLayerSupport();
 
@@ -63,10 +77,18 @@ private:
 
     void CreateLogicalDevice();
 
+    bool CheckDeviceExtensionSupport(VkPhysicalDevice device);
+
+    SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device);
+
+
     VkInstance instance = VK_NULL_HANDLE;
     VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
     VkDevice device = VK_NULL_HANDLE;
     VkQueue graphicsQueue = VK_NULL_HANDLE;
+    VkSurfaceKHR surface = VK_NULL_HANDLE;
+    VkQueue presentQueue = VK_NULL_HANDLE;
+
 };
 
 
