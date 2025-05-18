@@ -65,7 +65,7 @@ private:
 
     void CreateInstance();
 
-    void createSurface();
+    void CreateSurface();
 
     bool CheckValidationLayerSupport();
 
@@ -81,6 +81,14 @@ private:
 
     SwapChainSupportDetails QuerySwapChainSupport(VkPhysicalDevice device);
 
+    VkSurfaceFormatKHR ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
+
+    VkPresentModeKHR ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
+
+    VkExtent2D ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
+
+    void CreateSwapChain();
+
 
     VkInstance instance = VK_NULL_HANDLE;
     VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
@@ -88,6 +96,11 @@ private:
     VkQueue graphicsQueue = VK_NULL_HANDLE;
     VkSurfaceKHR surface = VK_NULL_HANDLE;
     VkQueue presentQueue = VK_NULL_HANDLE;
+    VkSwapchainKHR swapChain = VK_NULL_HANDLE;
+    std::vector<VkImage> swapChainImages;
+    VkFormat swapChainImageFormat = {};
+    VkExtent2D swapChainExtent = {};
+
 
 };
 

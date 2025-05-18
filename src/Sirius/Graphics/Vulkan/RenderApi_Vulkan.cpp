@@ -4,16 +4,15 @@
 
 #include "RenderApi_Vulkan.h"
 
+#include <algorithm>
 #include <iostream>
 #include <optional>
 #include <set>
 #include <stdexcept>
 #include <vulkan/vulkan_win32.h>
 
+#include "Graphics/GfxDevice.h"
 #include "Graphics/WndProc.h"
-
-const uint32_t WIDTH = 800;
-const uint32_t HEIGHT = 600;
 
 #ifdef NDEBUG
 const bool enableValidationLayers = false;
@@ -22,9 +21,14 @@ const bool enableValidationLayers = true;
 #endif
 
 void RenderApi_Vulkan::Init() {
+    if (!hwndMain) {
+        hwndMain = GfxDevice::CreateDeviceWindow();
+    }
     CreateInstance();
+    CreateSurface();
     PickPhysicalDevice();
     CreateLogicalDevice();
+    CreateSwapChain();
 }
 
 
@@ -69,9 +73,10 @@ void RenderApi_Vulkan::DrawIndexed(UINT count) {
 }
 
 void RenderApi_Vulkan::Shutdown() {
+    vkDestroySwapchainKHR(device, swapChain, nullptr);
     vkDestroySurfaceKHR(instance, surface, nullptr);
-    vkDestroyInstance(instance, nullptr);
     vkDestroyDevice(device, nullptr);
+    vkDestroyInstance(instance, nullptr);
 
 }
 
@@ -109,10 +114,10 @@ void RenderApi_Vulkan::CreateInstance() {
     if (vkCreateInstance(&createInfo, nullptr, &instance) != VK_SUCCESS) {
         throw std::runtime_error("Failed to create Vulkan instance!");
     }
-    std::cout << "Vulkan instance created\n" << std::endl;
+    std::cout << "Vulkan: Instance created\n" << std::endl;
 }
 
-void RenderApi_Vulkan::createSurface() {
+void RenderApi_Vulkan::CreateSurface() {
     VkWin32SurfaceCreateInfoKHR createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
     createInfo.hwnd = hwndMain;
@@ -120,6 +125,8 @@ void RenderApi_Vulkan::createSurface() {
     if (vkCreateWin32SurfaceKHR(instance, &createInfo, nullptr, &surface) != VK_SUCCESS) {
         throw std::runtime_error("Failed to create window surface!");
     }
+    std::cout << "Vulkan: Surface created\n" << std::endl;
+
 }
 
 bool RenderApi_Vulkan::CheckValidationLayerSupport() {
@@ -260,6 +267,8 @@ void RenderApi_Vulkan::CreateLogicalDevice() {
     if (vkCreateDevice(physicalDevice, &createInfo, nullptr, &device) != VK_SUCCESS) {
         throw std::runtime_error("Failed to create logical device!");
     }
+    std::cout << "Vulkan: Logical Device created\n" << std::endl;
+
     vkGetDeviceQueue(device, indices.graphicsFamily.value(), 0, &graphicsQueue);
     vkGetDeviceQueue(device, indices.presentFamily.value(), 0, &presentQueue);
 }
@@ -301,4 +310,96 @@ RenderApi_Vulkan::SwapChainSupportDetails RenderApi_Vulkan::QuerySwapChainSuppor
     }
 
     return details;
+}
+
+VkSurfaceFormatKHR RenderApi_Vulkan::ChooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats) {
+    for (const auto& availableFormat : availableFormats) {
+        if (availableFormat.format == VK_FORMAT_B8G8R8A8_SRGB && availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
+            return availableFormat;
+        }
+    }
+    return availableFormats[0];
+}
+
+VkPresentModeKHR RenderApi_Vulkan::ChooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes) {
+    for (auto presentMode : availablePresentModes) {
+        if (presentMode == VK_PRESENT_MODE_MAILBOX_KHR) {
+            return presentMode;
+        }
+    }
+    return VK_PRESENT_MODE_FIFO_KHR;
+}
+
+VkExtent2D RenderApi_Vulkan::ChooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) {
+    // If the currentExtent is set to the maximum value of uint32_t it means that the extend of the swapchain determines the surface size
+    if (capabilities.currentExtent.width != (std::numeric_limits<uint32_t>::max)()) {
+        return capabilities.currentExtent;
+    }
+    VkExtent2D actualExtent = {
+        static_cast<uint32_t>(windowWidth),
+        static_cast<uint32_t>(windowHeight)
+    };
+
+    actualExtent.width = std::clamp(actualExtent.width, capabilities.minImageExtent.width, capabilities.maxImageExtent.width);
+    actualExtent.height = std::clamp(actualExtent.height, capabilities.minImageExtent.height, capabilities.maxImageExtent.height);
+    return actualExtent;
+}
+
+void RenderApi_Vulkan::CreateSwapChain() {
+    SwapChainSupportDetails swapChainSupport = QuerySwapChainSupport(physicalDevice);
+
+    VkSurfaceFormatKHR surfaceFormat = ChooseSwapSurfaceFormat(swapChainSupport.formats);
+    VkPresentModeKHR presentMode = ChooseSwapPresentMode(swapChainSupport.presentModes);
+    VkExtent2D extent = ChooseSwapExtent(swapChainSupport.capabilities);
+
+    // Request one more image than minimum to avoid having to potentially wait for the driver to
+    uint32_t imageCount = swapChainSupport.capabilities.minImageCount + 1;
+
+    // Make sure to not exceed the max image count. 0 is a special case that indicates that there's no maximum
+    if (swapChainSupport.capabilities.maxImageCount > 0 && imageCount > swapChainSupport.capabilities.maxImageCount) {
+        imageCount = swapChainSupport.capabilities.maxImageCount;
+    }
+
+    VkSwapchainCreateInfoKHR createInfo{};
+    createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
+    createInfo.surface = surface;
+    createInfo.minImageCount = imageCount;
+    createInfo.imageFormat = surfaceFormat.format;
+    createInfo.imageColorSpace = surfaceFormat.colorSpace;
+    createInfo.imageExtent = extent;
+    createInfo.imageArrayLayers = 1;
+    createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+
+    QueueFamilyIndices indices = FindQueueFamilies(physicalDevice);
+    uint32_t queueFamilyIndices[] = {indices.graphicsFamily.value(), indices.presentFamily.value()};
+
+    if (indices.graphicsFamily != indices.presentFamily) {
+        createInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
+        createInfo.queueFamilyIndexCount = 2;
+        createInfo.pQueueFamilyIndices = queueFamilyIndices;
+    } else {
+        createInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
+        createInfo.queueFamilyIndexCount = 0; // Optional
+        createInfo.pQueueFamilyIndices = nullptr; // Optional
+    }
+
+    createInfo.preTransform = swapChainSupport.capabilities.currentTransform;   // Don't rotate images in the swapchain
+    createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;  // Set to opaque to ignore alpha bit. Allows blending with other windows in the window system.
+    createInfo.presentMode = presentMode;
+    createInfo.clipped = VK_TRUE;   // Ignore pixels that are obscured (like by another window)
+    createInfo.oldSwapchain = VK_NULL_HANDLE;
+
+    if (vkCreateSwapchainKHR(device, &createInfo, nullptr, &swapChain) != VK_SUCCESS) {
+        throw std::runtime_error("failed to create swap chain!");
+    }
+    std::cout << "Vulkan: Swapchain created\n" << std::endl;
+
+    // Retrieve handles to the swapchain images
+    vkGetSwapchainImagesKHR(device, swapChain, &imageCount, nullptr);
+    swapChainImages.resize(imageCount);
+    vkGetSwapchainImagesKHR(device, swapChain, &imageCount, swapChainImages.data());
+
+    swapChainImageFormat = surfaceFormat.format;
+    swapChainExtent = extent;
+
 }

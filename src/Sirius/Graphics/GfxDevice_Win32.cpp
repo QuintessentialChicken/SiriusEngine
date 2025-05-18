@@ -34,6 +34,7 @@ LRESULT HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept {
     }
     switch (msg) {
         case WM_CLOSE:
+            ImGui_ImplWin32_Shutdown();
             PostQuitMessage(EXIT_SUCCESS);
             break;
         case WM_KILLFOCUS:
