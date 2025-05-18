@@ -159,6 +159,9 @@ void RenderApi_D3D11::EndFrame() {
     }
 }
 
+void RenderApi_D3D11::Draw() {
+}
+
 void RenderApi_D3D11::DrawIndexed(const UINT count) {
     context->DrawIndexed(count, 0, 0);
 }

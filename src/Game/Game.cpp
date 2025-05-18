@@ -9,7 +9,6 @@
 
 #include "GameWorld.h"
 #include "Graphics/PointLight.h"
-#include "Graphics/Vulkan/test.h"
 #include "Physics/Physics.h"
 static constexpr float PI = 3.14159265f;
 static constexpr float dtTarget = 16.67f;

@@ -20,6 +20,10 @@ void Renderer::EndFrame() {
     renderApi->EndFrame();
 }
 
+void Renderer::Draw() {
+    renderApi->Draw();
+}
+
 std::unique_ptr<IShader> Renderer::CreateShader(ShaderType type, const std::wstring& path) {
     return renderApi->CreateShader(type, path);
 }

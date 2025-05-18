@@ -43,8 +43,6 @@ add_library(Graphics STATIC
         Transform.cpp
         Transform.h
         WndProc.h
-        Vulkan/test.cpp
-        Vulkan/test.h
         Vulkan/RenderApi_Vulkan.cpp
         Vulkan/RenderApi_Vulkan.h
 )

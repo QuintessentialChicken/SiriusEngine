@@ -25,6 +25,8 @@ public:
 
     void EndFrame() override;
 
+    void Draw() override;
+
     void DrawIndexed(UINT count) override;
 
     void Shutdown() override;

@@ -17,6 +17,8 @@ public:
 
     static void EndFrame();
 
+    static void Draw();
+
     static void DrawIndexed(UINT count);
 
     static void Shutdown();

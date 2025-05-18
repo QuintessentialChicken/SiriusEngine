@@ -75,19 +75,19 @@ Fsm::Return App::RunGame() {
 
 
 void App::DoFrame() {
-    Renderer::BeginFrame();
-    auto projection = Renderer::GetProjection();
-    GameWorld* world = GameWorld::GetInstance();
-    for (auto& light : world->GetLights()) {
-        light->Draw(cam->transform.GetMatrix(), projection);
-    }
-    for (const auto& obj : world->GetAllObjects()) {
-        obj->Draw(cam->transform.GetMatrix(), projection);
-    }
-    if (Mouse::RightIsPressed()) {
-        DirectX::XMFLOAT3 worldCoords = Camera::ScreenToWorldPerspective(Mouse::GetX(), Mouse::GetY(), cam->transform.GetMatrix(), projection);
-        GameWorld::GetInstance()->GetAllObjects()[0]->SetPosition(worldCoords);
-        std::cout << worldCoords.x << " " << worldCoords.y << " " << worldCoords.z << "\n";
+    // Renderer::BeginFrame();
+    // auto projection = Renderer::GetProjection();
+    // GameWorld* world = GameWorld::GetInstance();
+    // for (auto& light : world->GetLights()) {
+    //     light->Draw(cam->transform.GetMatrix(), projection);
+    // }
+    // for (const auto& obj : world->GetAllObjects()) {
+    //     obj->Draw(cam->transform.GetMatrix(), projection);
+    // }
+    // if (Mouse::RightIsPressed()) {
+    //     DirectX::XMFLOAT3 worldCoords = Camera::ScreenToWorldPerspective(Mouse::GetX(), Mouse::GetY(), cam->transform.GetMatrix(), projection);
+    //     GameWorld::GetInstance()->GetAllObjects()[0]->SetPosition(worldCoords);
+    //     std::cout << worldCoords.x << " " << worldCoords.y << " " << worldCoords.z << "\n";
         // float closestDist = INFINITY;
         // for (auto& obj : world->GetAllObjects()) {
             // obj->SpawnControlWindow();
@@ -103,12 +103,14 @@ void App::DoFrame() {
         // if (closestModel != nullptr && closestDist < 7.0f) {
         //     spawnWindow = true;
         // }
-    }
+    // }
     // if (spawnWindow) closestModel->SpawnControlWindow();
     // cam.SpawnControlWindow();
     // Game::SpawnControlWindow();
     // Physics::SpawnControlWindow();
-    Renderer::EndFrame();
+    // Renderer::EndFrame();
+    Renderer::Draw();
+
 }
 
 void App::RegisterInitFunction(void(*fun)()) {

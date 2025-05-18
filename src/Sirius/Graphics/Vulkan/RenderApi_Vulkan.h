@@ -34,6 +34,8 @@ public:
 
     void EndFrame() override;
 
+    void Draw() override;
+
     void DrawIndexed(UINT count) override;
 
     void Shutdown() override;
@@ -89,6 +91,26 @@ private:
 
     void CreateSwapChain();
 
+    void CreateImageViews();
+
+    void CreateGraphicsPipeline();
+
+    VkShaderModule CreateShaderModule(const std::vector<char>& code);
+
+    void CreateRenderPass();
+
+    void CreateFramebuffers();
+
+    void CreateCommandPool();
+
+    void CreateCommandBuffer();
+
+    void RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
+
+    void CreateSyncObjects();
+
+
+    static std::vector<char> ReadFile(const std::string& filename);
 
     VkInstance instance = VK_NULL_HANDLE;
     VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
@@ -100,6 +122,16 @@ private:
     std::vector<VkImage> swapChainImages;
     VkFormat swapChainImageFormat = {};
     VkExtent2D swapChainExtent = {};
+    std::vector<VkImageView> swapChainImageViews;
+    VkPipelineLayout pipelineLayout = VK_NULL_HANDLE;
+    VkRenderPass renderPass = VK_NULL_HANDLE;
+    VkPipeline graphicsPipeline = VK_NULL_HANDLE;
+    std::vector<VkFramebuffer> swapChainFramebuffers;
+    VkCommandPool commandPool = VK_NULL_HANDLE;
+    VkCommandBuffer commandBuffer = VK_NULL_HANDLE;
+    VkSemaphore imageAvailableSemaphore = VK_NULL_HANDLE;
+    VkSemaphore renderFinishedSemaphore = VK_NULL_HANDLE;
+    VkFence inFlightFence = VK_NULL_HANDLE;
 
 
 };
