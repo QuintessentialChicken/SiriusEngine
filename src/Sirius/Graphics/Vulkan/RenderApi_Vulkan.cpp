@@ -81,18 +81,23 @@ void RenderApi_Vulkan::EndFrame() {
 }
 
 void RenderApi_Vulkan::Draw() {
+    // Wait for GPU to be done with the previous submission to the Queue (Rendering, potential memory operations, signaling semaphores, etc.)
     vkWaitForFences(device, 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
     vkResetFences(device, 1, &inFlightFences[currentFrame]);
 
+    // Get the index of the next image in the swapchain to which the GPU should write. Signal the respective imageAvailableSemaphore when done.
     uint32_t imageIndex;
     vkAcquireNextImageKHR(device, swapChain, UINT64_MAX, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &imageIndex);
 
+    // Reset the command buffer and record all the commands that the GPU should do
     vkResetCommandBuffer(commandBuffers[currentFrame], 0);
     RecordCommandBuffer(commandBuffers[currentFrame], imageIndex);
 
+    // Specify everything about the submission we're about to make
     VkSubmitInfo submitInfo{};
     submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
+    // Which semaphores to wait on and in which stage
     VkSemaphore waitSemaphores[] = {imageAvailableSemaphores[currentFrame]};
     VkPipelineStageFlags waitStages[] = {VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT};
     submitInfo.waitSemaphoreCount = 1;
@@ -101,7 +106,8 @@ void RenderApi_Vulkan::Draw() {
     submitInfo.commandBufferCount = 1;
     submitInfo.pCommandBuffers = &commandBuffers[currentFrame];
 
-    VkSemaphore signalSemaphores[] = {renderFinishedSemaphores[imageIndex]};
+    // Which semaphores to signal after the commands in the queue are done
+    VkSemaphore signalSemaphores[] = {renderFinishedSemaphores[currentFrame]};
     submitInfo.signalSemaphoreCount = 1;
     submitInfo.pSignalSemaphores = signalSemaphores;
 
@@ -109,6 +115,7 @@ void RenderApi_Vulkan::Draw() {
         throw std::runtime_error("Failed to submit draw command buffer!");
     }
 
+    // Specify the info for the presentation of the image
     VkPresentInfoKHR presentInfo{};
     presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
 
@@ -120,7 +127,10 @@ void RenderApi_Vulkan::Draw() {
     presentInfo.pSwapchains = swapChains;
     presentInfo.pImageIndices = &imageIndex;
 
+    // Add the present command to a queue.
     vkQueuePresentKHR(presentQueue, &presentInfo);
+
+    // Cycle all our resources to the next frame (semaphores, command buffer, ...)
     currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 }
 
@@ -129,6 +139,7 @@ void RenderApi_Vulkan::DrawIndexed(UINT count) {
 }
 
 void RenderApi_Vulkan::Shutdown() {
+    vkDeviceWaitIdle(device);
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
         vkDestroySemaphore(device, renderFinishedSemaphores[i], nullptr);
         vkDestroySemaphore(device, imageAvailableSemaphores[i], nullptr);
@@ -705,11 +716,13 @@ void RenderApi_Vulkan::CreateCommandPool() {
 }
 
 void RenderApi_Vulkan::RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex) {
+    // Specify infos about the usage of this command buffer. Inheritance can be used for secondary command buffers
     VkCommandBufferBeginInfo beginInfo{};
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
     beginInfo.flags = 0; // Optional
     beginInfo.pInheritanceInfo = nullptr; // Optional
 
+    // Start recording commands into the buffer. Each function that starts with vkCmd records a command.
     if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS) {
         throw std::runtime_error("Failed to begin recording command buffer!");
     }
@@ -729,7 +742,7 @@ void RenderApi_Vulkan::RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32
     vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
     vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
 
-    // Viewport and scissor state need to be set now since we specified them as dynamic earlier
+    // Viewport and scissor state need to be set now, since we specified them as dynamic earlier
     VkViewport viewport{};
     viewport.x = 0.0f;
     viewport.y = 0.0f;
