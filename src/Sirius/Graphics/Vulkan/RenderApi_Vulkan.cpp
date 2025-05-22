@@ -83,11 +83,22 @@ void RenderApi_Vulkan::EndFrame() {
 void RenderApi_Vulkan::Draw() {
     // Wait for GPU to be done with the previous submission to the Queue (Rendering, potential memory operations, signaling semaphores, etc.)
     vkWaitForFences(device, 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
-    vkResetFences(device, 1, &inFlightFences[currentFrame]);
 
     // Get the index of the next image in the swapchain to which the GPU should write. Signal the respective imageAvailableSemaphore when done.
     uint32_t imageIndex;
-    vkAcquireNextImageKHR(device, swapChain, UINT64_MAX, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &imageIndex);
+    VkResult result = vkAcquireNextImageKHR(device, swapChain, UINT64_MAX, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &imageIndex);
+
+    // Check if the swapchain is out of date. If so, recreate it and try next frame again.
+    if (result == VK_ERROR_OUT_OF_DATE_KHR) {
+        RecreateSwapChain();
+        return;
+    }
+    if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
+        throw std::runtime_error("Failed to acquire swap chain image!");
+    }
+
+    // Only reset fences when we know that we are submitting work and aren't returning due to an out-of-date swapchain
+    vkResetFences(device, 1, &inFlightFences[currentFrame]);
 
     // Reset the command buffer and record all the commands that the GPU should do
     vkResetCommandBuffer(commandBuffers[currentFrame], 0);
@@ -128,7 +139,15 @@ void RenderApi_Vulkan::Draw() {
     presentInfo.pImageIndices = &imageIndex;
 
     // Add the present command to a queue.
-    vkQueuePresentKHR(presentQueue, &presentInfo);
+    result = vkQueuePresentKHR(presentQueue, &presentInfo);
+
+    // frameBufferResized: Could be implemented to explicitly check for resizing as the below flags are not guaranteed to be returned by all platforms/drivers
+    if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR) { // || framebufferResized) {
+        // framebufferResized = false;
+        RecreateSwapChain();
+    } else if (result != VK_SUCCESS) {
+        throw std::runtime_error("Failed to present swap chain image!");
+    }
 
     // Cycle all our resources to the next frame (semaphores, command buffer, ...)
     currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
@@ -140,6 +159,13 @@ void RenderApi_Vulkan::DrawIndexed(UINT count) {
 
 void RenderApi_Vulkan::Shutdown() {
     vkDeviceWaitIdle(device);
+    CleanupSwapChain();
+
+    vkDestroyPipeline(device, graphicsPipeline, nullptr);
+    vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
+
+    vkDestroyRenderPass(device, renderPass, nullptr);
+
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
         vkDestroySemaphore(device, renderFinishedSemaphores[i], nullptr);
         vkDestroySemaphore(device, imageAvailableSemaphores[i], nullptr);
@@ -148,24 +174,10 @@ void RenderApi_Vulkan::Shutdown() {
 
     vkDestroyCommandPool(device, commandPool, nullptr);
 
-    for (auto framebuffer : swapChainFramebuffers) {
-        vkDestroyFramebuffer(device, framebuffer, nullptr);
-    }
-
-    vkDestroyPipeline(device, graphicsPipeline, nullptr);
-    vkDestroyPipelineLayout(device, pipelineLayout, nullptr);
-    vkDestroyRenderPass(device, renderPass, nullptr);
-
-    for (auto imageView : swapChainImageViews) {
-        vkDestroyImageView(device, imageView, nullptr);
-    }
-
-    vkDestroySwapchainKHR(device, swapChain, nullptr);
     vkDestroyDevice(device, nullptr);
 
     vkDestroySurfaceKHR(instance, surface, nullptr);
     vkDestroyInstance(instance, nullptr);
-
 }
 
 void RenderApi_Vulkan::CreateInstance() {
@@ -488,6 +500,36 @@ void RenderApi_Vulkan::CreateSwapChain() {
 
     swapChainImageFormat = surfaceFormat.format;
     swapChainExtent = extent;
+}
+
+/*
+ Called if the surface is no longer compatible with the swapchain (e.g., due to resizing)
+ */
+void RenderApi_Vulkan::RecreateSwapChain() {
+    // Minimizing the window results in width and height being 0 which triggers this function. But an imageExtend must be non-zero.
+    // Probably best to just pause rendering until the window is not minimized again.
+
+    // Wait for stuff to not be in use before we mess with it
+    vkDeviceWaitIdle(device);
+
+    CleanupSwapChain();
+    // Recreate everything that depends on the swapchain or window size
+    CreateSwapChain();
+    CreateImageViews();
+    CreateFramebuffers();
+}
+
+void RenderApi_Vulkan::CleanupSwapChain() {
+    for (auto framebuffer : swapChainFramebuffers) {
+        vkDestroyFramebuffer(device, framebuffer, nullptr);
+    }
+
+
+    for (auto imageView : swapChainImageViews) {
+        vkDestroyImageView(device, imageView, nullptr);
+    }
+
+    vkDestroySwapchainKHR(device, swapChain, nullptr);
 }
 
 void RenderApi_Vulkan::CreateImageViews() {
