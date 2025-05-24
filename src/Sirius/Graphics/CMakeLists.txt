@@ -45,6 +45,8 @@ add_library(Graphics STATIC
         WndProc.h
         Vulkan/RenderApi_Vulkan.cpp
         Vulkan/RenderApi_Vulkan.h
+        Vulkan/Buffer_Vulkan.cpp
+        Vulkan/Buffer_Vulkan.h
 )
 
 
