@@ -1,5 +1,7 @@
 find_package(Vulkan REQUIRED)
 include_directories("$ENV{VULKAN_SDK}/Include")
+include_directories("$ENV{VULKAN_SDK}/Include/glm")
+
 add_library(Graphics STATIC
         Buffer.cpp
         Buffer.h

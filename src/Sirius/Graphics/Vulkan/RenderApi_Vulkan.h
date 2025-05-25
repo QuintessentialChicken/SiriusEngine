@@ -9,7 +9,9 @@
 
 #include "Graphics/RenderApi.h"
 #include <vulkan/vulkan.h>
+#include <glm/glm.hpp>
 
+#include "Core/Timer.h"
 
 // TODO Split up implementations over the appropriate classes
 class RenderApi_Vulkan : public IRenderApi {
@@ -98,6 +100,12 @@ private:
         }
     };
 
+    struct UniformBufferObject {
+        glm::mat4 model;
+        glm::mat4 view;
+        glm::mat4 proj;
+    };
+
     void CreateInstance();
 
     void CreateSurface();
@@ -154,8 +162,18 @@ private:
 
     void CreateIndexBuffer();
 
-    uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
+    void CreateDescriptorSetLayout();
 
+    void CreateUniformBuffers();
+
+    void UpdateUniformBuffer(uint32_t currentImage);
+
+    void CreateDescriptorPool();
+
+    void CreateDescriptorSets();
+
+
+    uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 
     static std::vector<char> ReadFile(const std::string& filename);
 
@@ -170,6 +188,7 @@ private:
     VkFormat swapChainImageFormat = {};
     VkExtent2D swapChainExtent = {};
     std::vector<VkImageView> swapChainImageViews;
+    VkDescriptorSetLayout descriptorSetLayout = VK_NULL_HANDLE;
     VkPipelineLayout pipelineLayout = VK_NULL_HANDLE;
     VkRenderPass renderPass = VK_NULL_HANDLE;
     VkPipeline graphicsPipeline = VK_NULL_HANDLE;
@@ -196,6 +215,11 @@ private:
     VkDeviceMemory vertexBufferMemory = VK_NULL_HANDLE;
     VkBuffer indexBuffer = VK_NULL_HANDLE;
     VkDeviceMemory indexBufferMemory = VK_NULL_HANDLE;
+    std::vector<VkBuffer> uniformBuffers;
+    std::vector<VkDeviceMemory> uniformBuffersMemory;
+    std::vector<void*> uniformBuffersMapped;
+    VkDescriptorPool descriptorPool = VK_NULL_HANDLE;
+    std::vector<VkDescriptorSet> descriptorSets;
 };
 
 
