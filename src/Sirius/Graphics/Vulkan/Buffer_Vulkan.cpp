@@ -3,3 +3,7 @@
 //
 
 #include "Buffer_Vulkan.h"
+
+VertexBuffer_Vulkan::VertexBuffer_Vulkan(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties) {
+
+}

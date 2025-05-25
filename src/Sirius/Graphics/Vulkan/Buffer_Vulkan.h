@@ -5,19 +5,22 @@
 #ifndef BUFFER_VULKAN_H
 #define BUFFER_VULKAN_H
 
+#include <vulkan/vulkan_core.h>
+
 #include "Graphics/Buffer.h"
 
 
 class VertexBuffer_Vulkan : public IVertexBuffer {
 public:
-    VertexBuffer_Vulkan(uint32_t stride);
+    VertexBuffer_Vulkan(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties);
 
     void Bind() override;
 
     void Update(const void *data, size_t size) override;
 
 private:
-
+    VkBuffer buffer;
+    VkDeviceMemory memory;
 };
 
 
