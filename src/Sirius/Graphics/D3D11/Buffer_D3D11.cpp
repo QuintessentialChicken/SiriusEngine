@@ -33,6 +33,7 @@ void VertexBuffer_D3D11::Bind() {
 }
 
 void VertexBuffer_D3D11::Update(const void* data, size_t size) {
+    throw std::logic_error("Not implemented");
     constexpr UINT offset = 0u;
     context->IASetVertexBuffers(0, 1, vertexBuffer.GetAddressOf(), &stride, &offset);
 }

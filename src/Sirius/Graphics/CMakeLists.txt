@@ -49,6 +49,8 @@ add_library(Graphics STATIC
         Vulkan/RenderApi_Vulkan.h
         Vulkan/Buffer_Vulkan.cpp
         Vulkan/Buffer_Vulkan.h
+        Vulkan/Shader_Vulkan.cpp
+        Vulkan/Shader_Vulkan.h
 )
 
 
