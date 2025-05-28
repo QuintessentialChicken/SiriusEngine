@@ -11,6 +11,7 @@
 #include <vulkan/vulkan.h>
 #include <glm/glm.hpp>
 
+#include "Buffer_Vulkan.h"
 #include "Core/Timer.h"
 
 // TODO Split up implementations over the appropriate classes
@@ -131,9 +132,7 @@ public:
 
     void CreateImageViews();
 
-    void CreateGraphicsPipeline();
-
-    VkShaderModule CreateShaderModule(const std::vector<char>& code);
+    void CreateGraphicsPipeline(const PipelineStateDesc& desc);
 
     void CreateRenderPass();
 
@@ -152,9 +151,6 @@ public:
     void CreateDescriptorPool();
 
     void CreateDescriptorSets();
-
-
-    uint32_t FindMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
 
     static std::vector<char> ReadFile(const std::string& filename);
 
@@ -192,8 +188,18 @@ public:
         0, 1, 2, 2, 3, 0
     };
 
+    std::vector<ConstantBuffer_Vulkan> constantBuffers;
+    struct UniformBufferObject {
+        glm::mat4 model;
+        glm::mat4 view;
+        glm::mat4 proj;
+    };
+
     VkDescriptorPool descriptorPool = VK_NULL_HANDLE;
     std::vector<VkDescriptorSet> descriptorSets;
+
+    std::unique_ptr<VertexBuffer_Vulkan> vertexBuffer;
+    std::unique_ptr<VertexBuffer_Vulkan> indexBuffer;
 };
 
 

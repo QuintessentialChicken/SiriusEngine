@@ -7,6 +7,8 @@
 #include <fstream>
 #include <stdexcept>
 
+// Can just be an empty shell containing type and path.
+// Since shader modules only need to live until the pipeline is created, PipelineState can create them on the spot and destroy them afterwards
 Shader_Vulkan::Shader_Vulkan(ShaderType type, const std::string& path, VkDevice device) {
     std::vector<char> code = ReadFile(path);
 
@@ -17,6 +19,28 @@ Shader_Vulkan::Shader_Vulkan(ShaderType type, const std::string& path, VkDevice 
         case ShaderType::Pixel:
             fragShader = CreateShaderModule(code, device);
         default: break;
+    }
+}
+
+void Shader_Vulkan::Bind() {
+}
+
+const void* Shader_Vulkan::GetBytecode() const {
+    return nullptr;
+}
+
+size_t Shader_Vulkan::GetBytecodeSize() const {
+    return 0;
+}
+
+VkShaderModule Shader_Vulkan::GetShaderModule() const {
+    switch (type) {
+        case ShaderType::Vertex:
+            return vertShader;
+            break;
+        case ShaderType::Pixel:
+            return fragShader;
+        default: return nullptr;
     }
 }
 

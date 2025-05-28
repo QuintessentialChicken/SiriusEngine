@@ -17,6 +17,8 @@
 #include <glm/glm.hpp>
 
 #include "Buffer_Vulkan.h"
+#include "PipelineState_Vulkan.h"
+#include "Shader_Vulkan.h"
 #include "Graphics/GfxDevice.h"
 #include "Graphics/WndProc.h"
 
@@ -41,11 +43,11 @@ void RenderApi_Vulkan::Init() {
     CreateSwapChain();
     CreateImageViews();
     CreateRenderPass();
-
     CreateDescriptorSetLayout();
-    CreateGraphicsPipeline();
     CreateFramebuffers();
     CreateCommandPool();
+    vertexBuffer = std::make_unique<VertexBuffer_Vulkan>(vertices.data(), sizeof(vertices[0]) * vertices.size(), device, physicalDevice, graphicsQueue, commandPool);
+    indexBuffer = std::make_unique<VertexBuffer_Vulkan>(indices.data(), sizeof(indices[0]) * indices.size(), device, physicalDevice, graphicsQueue, commandPool);
     CreateDescriptorPool();
     CreateDescriptorSets();
     CreateCommandBuffers();
@@ -68,7 +70,8 @@ std::unique_ptr<IInputLayout> RenderApi_Vulkan::CreateInputLayout(const std::vec
 }
 
 std::unique_ptr<IPipelineState> RenderApi_Vulkan::CreatePipelineState(const PipelineStateDesc& desc) {
-    return nullptr;
+    CreateGraphicsPipeline(desc);
+    return std::make_unique<PipelineState_Vulkan>();    // Dummy object
 }
 
 std::unique_ptr<IVertexBuffer> RenderApi_Vulkan::CreateVertexBuffer(const void* data, size_t size, UINT stride) {
@@ -106,7 +109,6 @@ void RenderApi_Vulkan::Draw() {
     if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
         throw std::runtime_error("Failed to acquire swap chain image!");
     }
-    UpdateUniformBuffer(currentFrame);
 
     // Only reset fences when we know that we are submitting work and aren't returning due to an out-of-date swapchain
     vkResetFences(device, 1, &inFlightFences[currentFrame]);
@@ -571,25 +573,20 @@ void RenderApi_Vulkan::CreateImageViews() {
     }
 }
 
-void RenderApi_Vulkan::CreateGraphicsPipeline() {
-    auto vertShaderCode = ReadFile("../../Sirius/Shaders/vert.spv");
-    auto fragShaderCode = ReadFile("../../Sirius/Shaders/frag.spv");
+void RenderApi_Vulkan::CreateGraphicsPipeline(const PipelineStateDesc& desc) {
     auto bindingDescription = Vertex::getBindingDescription();
     auto attributeDescriptions = Vertex::getAttributeDescriptions();
-
-
-    VkShaderModule vertShaderModule = CreateShaderModule(vertShaderCode);
-    VkShaderModule fragShaderModule = CreateShaderModule(fragShaderCode);
-
+    Shader_Vulkan vertShader = Shader_Vulkan(ShaderType::Vertex, "../../Sirius/Shaders/vert.spv", device);
+    Shader_Vulkan fragShader = Shader_Vulkan(ShaderType::Pixel, "../../Sirius/Shaders/frag.spv", device);
     VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
     vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
     vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-    vertShaderStageInfo.module = vertShaderModule;
+    vertShaderStageInfo.module = vertShader.GetShaderModule();//dynamic_cast<Shader_Vulkan*>(desc.vertexShader)->GetShaderModule();;
     vertShaderStageInfo.pName = "main";
     VkPipelineShaderStageCreateInfo fragShaderStageInfo{};
     fragShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
     fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-    fragShaderStageInfo.module = fragShaderModule;
+    fragShaderStageInfo.module = fragShader.GetShaderModule();//dynamic_cast<Shader_Vulkan*>(desc.pixelShader)->GetShaderModule();;
     fragShaderStageInfo.pName = "main";
     VkPipelineShaderStageCreateInfo shaderStages[] = {vertShaderStageInfo, fragShaderStageInfo};
 
@@ -679,12 +676,7 @@ void RenderApi_Vulkan::CreateGraphicsPipeline() {
     if (vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline) != VK_SUCCESS) {
         throw std::runtime_error("Failed to create graphics pipeline!");
     }
-
-    vkDestroyShaderModule(device, fragShaderModule, nullptr);
-    vkDestroyShaderModule(device, vertShaderModule, nullptr);
 }
-
-
 
 void RenderApi_Vulkan::CreateRenderPass() {
     VkAttachmentDescription colorAttachment{};
@@ -793,10 +785,10 @@ void RenderApi_Vulkan::RecordCommandBuffer(VkCommandBuffer commandBuffer, uint32
     vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
     vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
 
-    VkBuffer vertexBuffers[] = {vertexBuffer};
+    VkBuffer vertexBuffers[] = {vertexBuffer->buffer};
     VkDeviceSize offsets[] = {0};
     vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
-    vkCmdBindIndexBuffer(commandBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT16);
+    vkCmdBindIndexBuffer(commandBuffer, indexBuffer->buffer, 0, VK_INDEX_TYPE_UINT16);
 
 
     // Viewport and scissor state need to be set now, since we specified them as dynamic earlier
@@ -879,7 +871,12 @@ void RenderApi_Vulkan::CreateDescriptorPool() {
 }
 
 void RenderApi_Vulkan::CreateDescriptorSets() {
-    std::vector<VkDescriptorSetLayout> layouts(MAX_FRAMES_IN_FLIGHT, descriptorSetLayout);
+    for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+        constantBuffers.emplace_back(ConstantBuffer_Vulkan(sizeof(UniformBufferObject), device, physicalDevice));
+    }
+
+
+    std::vector layouts(MAX_FRAMES_IN_FLIGHT, descriptorSetLayout);
     VkDescriptorSetAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
     allocInfo.descriptorPool = descriptorPool;
@@ -893,7 +890,7 @@ void RenderApi_Vulkan::CreateDescriptorSets() {
 
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
         VkDescriptorBufferInfo bufferInfo{};
-        bufferInfo.buffer = uniformBuffers[i];
+        bufferInfo.buffer = constantBuffers[i].buffer;
         bufferInfo.offset = 0;
         bufferInfo.range = sizeof(UniformBufferObject);
 

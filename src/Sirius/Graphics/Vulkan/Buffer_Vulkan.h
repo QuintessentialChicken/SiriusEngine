@@ -19,7 +19,7 @@ public:
 };
 class VertexBuffer_Vulkan : public IVertexBuffer {
 public:
-    VertexBuffer_Vulkan(const void* data, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkDevice device, VkPhysicalDevice physicalDevice, VkQueue graphicsQueue, VkCommandPool commandPool);
+    VertexBuffer_Vulkan(const void* data, VkDeviceSize size, VkDevice device, VkPhysicalDevice physicalDevice, VkQueue graphicsQueue, VkCommandPool commandPool);
 
     ~VertexBuffer_Vulkan() override;
 
@@ -27,15 +27,15 @@ public:
 
     void Update(const void *data, size_t size) override;
 
+    VkBuffer buffer;
 private:
     VkDevice device;
-    VkBuffer buffer;
     VkDeviceMemory memory;
 };
 
 class IndexBuffer_Vulkan : public IIndexBuffer {
 public:
-    IndexBuffer_Vulkan(const void* data, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkDevice device, VkPhysicalDevice physicalDevice, VkQueue graphicsQueue, VkCommandPool commandPool);
+    IndexBuffer_Vulkan(const void* data, VkDeviceSize size, VkDevice device, VkPhysicalDevice physicalDevice, VkQueue graphicsQueue, VkCommandPool commandPool);
 
     ~IndexBuffer_Vulkan() override;
 
@@ -43,25 +43,27 @@ public:
 
     [[nodiscard]] UINT GetCount() const override;
 
+    VkBuffer buffer;
 private:
     VkDevice device;
-    VkBuffer buffer;
     VkDeviceMemory memory;
     UINT count;
 };
 
 class ConstantBuffer_Vulkan : public IConstantBuffer {
 public:
-    ConstantBuffer_Vulkan(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, int framesInFlight, VkDevice device, VkPhysicalDevice physicalDevice, VkQueue graphicsQueue, VkCommandPool commandPool);
+    ConstantBuffer_Vulkan(VkDeviceSize size, VkDevice device, VkPhysicalDevice physicalDevice);
 
     ~ConstantBuffer_Vulkan() override;
 
+    void Bind(ShaderStage stages, UINT slot) override;
+
     void Update(const void* data, size_t size) override;
+    VkBuffer buffer;
 private:
     VkDevice device;
-    std::vector<VkBuffer> uniformBuffers;
-    std::vector<VkDeviceMemory> uniformBuffersMemory;
-    std::vector<void*> uniformBuffersMapped;
+    VkDeviceMemory uniformBufferMemory = VK_NULL_HANDLE;
+    void* uniformBufferMapped;
 };
 
 

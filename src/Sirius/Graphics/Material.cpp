@@ -18,12 +18,12 @@ Material::Material(const std::wstring& vertexShaderPath, const std::wstring& pix
         {"Position", 0, DataFormat::Float3, 0, 0},
         {"Normal", 0, DataFormat::Float3, 0, 12}
     };
-    inputLayout = Renderer::CreateInputLayout(elements, vertexShader->GetBytecode(), vertexShader->GetBytecodeSize());
+    // inputLayout = Renderer::CreateInputLayout(elements, vertexShader->GetBytecode(), vertexShader->GetBytecodeSize());
 
     // Create pipeline state
     PipelineStateDesc pipelineDesc;
     pipelineDesc.topology = PrimitiveTopology::TriangleList;
-    pipelineDesc.inputLayout = inputLayout.get();
+    // pipelineDesc.inputLayout = inputLayout.get();
     pipelineDesc.vertexShader = vertexShader.get();
     pipelineDesc.pixelShader = pixelShader.get();
     pipelineState = Renderer::CreatePipelineState(pipelineDesc);

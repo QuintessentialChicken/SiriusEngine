@@ -21,9 +21,11 @@ public:
 
     [[nodiscard]] size_t GetBytecodeSize() const override;
 
+    [[nodiscard]] VkShaderModule GetShaderModule() const;
+
+    static VkShaderModule CreateShaderModule(const std::vector<char>& code, VkDevice device);
+    static std::vector<char> ReadFile(const std::string& filename);
 private:
-    VkShaderModule CreateShaderModule(const std::vector<char>& code, VkDevice device);
-    std::vector<char> ReadFile(const std::string& filename);
     ShaderType type;
     VkShaderModule vertShader;
     VkShaderModule fragShader;

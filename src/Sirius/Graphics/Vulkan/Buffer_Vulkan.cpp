@@ -9,7 +9,7 @@
 #include "RenderApi_Vulkan.h"
 
 void Buffer_Vulkan::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer,
-                  VkDeviceMemory& bufferMemory, VkDevice device, VkPhysicalDevice physicalDevice) {
+                                 VkDeviceMemory& bufferMemory, VkDevice device, VkPhysicalDevice physicalDevice) {
     VkBufferCreateInfo bufferInfo{};
     bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
     bufferInfo.size = size;
@@ -34,6 +34,7 @@ void Buffer_Vulkan::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, Vk
     for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) {
         if ((memRequirements.memoryTypeBits & (1 << i)) && (memProperties.memoryTypes[i].propertyFlags & properties) == properties) {
             allocInfo.memoryTypeIndex = i;
+            break;
         }
     }
 
@@ -82,7 +83,7 @@ void Buffer_Vulkan::CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceS
 }
 
 /***************************** Vertex Buffer *****************************/
-VertexBuffer_Vulkan::VertexBuffer_Vulkan(const void* data, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkDevice device, VkPhysicalDevice physicalDevice, VkQueue graphicsQueue, VkCommandPool commandPool): device{device} {
+VertexBuffer_Vulkan::VertexBuffer_Vulkan(const void* data, VkDeviceSize size, VkDevice device, VkPhysicalDevice physicalDevice, VkQueue graphicsQueue, VkCommandPool commandPool): device{device} {
     // Create a staging buffer to transfer data from the CPU to the actual vertex buffer, which is device local (i.e., not accessible by the CPU)
     VkDeviceSize bufferSize = size;
     VkBuffer stagingBuffer;
@@ -109,9 +110,14 @@ VertexBuffer_Vulkan::~VertexBuffer_Vulkan() {
     vkFreeMemory(device, memory, nullptr);
 }
 
+void VertexBuffer_Vulkan::Bind() {
+}
+
+void VertexBuffer_Vulkan::Update(const void* data, size_t size) {
+}
 
 /***************************** Index Buffer *****************************/
-IndexBuffer_Vulkan::IndexBuffer_Vulkan(const void* data, VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkDevice device, VkPhysicalDevice physicalDevice, VkQueue graphicsQueue, VkCommandPool commandPool) : device{device}, count{static_cast<UINT>(size / sizeof(unsigned short))} {
+IndexBuffer_Vulkan::IndexBuffer_Vulkan(const void* data, VkDeviceSize size, VkDevice device, VkPhysicalDevice physicalDevice, VkQueue graphicsQueue, VkCommandPool commandPool) : device{device}, count{static_cast<UINT>(size / sizeof(unsigned short))} {
     VkDeviceSize bufferSize = size;
 
     VkBuffer stagingBuffer;
@@ -145,28 +151,22 @@ UINT IndexBuffer_Vulkan::GetCount() const {
 
 
 /***************************** Constant Buffer *****************************/
-ConstantBuffer_Vulkan::ConstantBuffer_Vulkan(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, int framesInFlight, VkDevice device, VkPhysicalDevice physicalDevice, VkQueue graphicsQueue, VkCommandPool commandPool) : device{device} {
+ConstantBuffer_Vulkan::ConstantBuffer_Vulkan(VkDeviceSize size, VkDevice device, VkPhysicalDevice physicalDevice) : device{device} {
     VkDeviceSize bufferSize = size;
 
-    uniformBuffers.resize(framesInFlight);
-    uniformBuffersMemory.resize(framesInFlight);
-    uniformBuffersMapped.resize(framesInFlight);
+    Buffer_Vulkan::CreateBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, buffer, uniformBufferMemory, device, physicalDevice);
 
-    for (size_t i = 0; i < framesInFlight; i++) {
-        Buffer_Vulkan::CreateBuffer(bufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, uniformBuffers[i], uniformBuffersMemory[i], device, physicalDevice);
-
-        vkMapMemory(device, uniformBuffersMemory[i], 0, bufferSize, 0, &uniformBuffersMapped[i]);
-    }
+    vkMapMemory(device, uniformBufferMemory, 0, bufferSize, 0, &uniformBufferMapped);
 }
 
 ConstantBuffer_Vulkan::~ConstantBuffer_Vulkan() {
-    for (size_t i = 0; i < uniformBuffers.size(); i++) {
-        vkDestroyBuffer(device, uniformBuffers[i], nullptr);
-        vkFreeMemory(device, uniformBuffersMemory[i], nullptr);
-    }
+    vkDestroyBuffer(device, buffer, nullptr);
+    vkFreeMemory(device, uniformBufferMemory, nullptr);
 }
 
 void ConstantBuffer_Vulkan::Update(const void* data, size_t size) {
-    memcpy(uniformBuffersMapped[0], &data, size);
+    memcpy(uniformBufferMapped, &data, size);
 }
 
+void ConstantBuffer_Vulkan::Bind(ShaderStage stages, UINT slot) {
+}
