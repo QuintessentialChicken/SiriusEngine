@@ -8,7 +8,6 @@
 #include <optional>
 
 #include "Graphics/RenderApi.h"
-#include <vulkan/vulkan.h>
 #include <glm/glm.hpp>
 
 #include "Buffer_Vulkan.h"
@@ -188,7 +187,7 @@ public:
         0, 1, 2, 2, 3, 0
     };
 
-    std::vector<ConstantBuffer_Vulkan> constantBuffers;
+    std::vector<std::unique_ptr<ConstantBuffer_Vulkan>> constantBuffers;
     struct UniformBufferObject {
         glm::mat4 model;
         glm::mat4 view;
@@ -199,7 +198,7 @@ public:
     std::vector<VkDescriptorSet> descriptorSets;
 
     std::unique_ptr<VertexBuffer_Vulkan> vertexBuffer;
-    std::unique_ptr<VertexBuffer_Vulkan> indexBuffer;
+    std::unique_ptr<IndexBuffer_Vulkan> indexBuffer;
 };
 
 

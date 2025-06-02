@@ -47,7 +47,7 @@ void RenderApi_Vulkan::Init() {
     CreateFramebuffers();
     CreateCommandPool();
     vertexBuffer = std::make_unique<VertexBuffer_Vulkan>(vertices.data(), sizeof(vertices[0]) * vertices.size(), device, physicalDevice, graphicsQueue, commandPool);
-    indexBuffer = std::make_unique<VertexBuffer_Vulkan>(indices.data(), sizeof(indices[0]) * indices.size(), device, physicalDevice, graphicsQueue, commandPool);
+    indexBuffer = std::make_unique<IndexBuffer_Vulkan>(indices.data(), sizeof(indices[0]) * indices.size(), device, physicalDevice, graphicsQueue, commandPool);
     CreateDescriptorPool();
     CreateDescriptorSets();
     CreateCommandBuffers();
@@ -131,7 +131,7 @@ void RenderApi_Vulkan::Draw() {
     submitInfo.pCommandBuffers = &commandBuffers[currentFrame];
 
     // Which semaphores to signal after the commands in the queue are done
-    VkSemaphore signalSemaphores[] = {renderFinishedSemaphores[currentFrame]};
+    VkSemaphore signalSemaphores[] = {renderFinishedSemaphores[imageIndex]};
     submitInfo.signalSemaphoreCount = 1;
     submitInfo.pSignalSemaphores = signalSemaphores;
 
@@ -871,9 +871,16 @@ void RenderApi_Vulkan::CreateDescriptorPool() {
 }
 
 void RenderApi_Vulkan::CreateDescriptorSets() {
+    UniformBufferObject ubo{};
+    ubo.model = glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+    ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+    ubo.proj = glm::perspective(glm::radians(45.0f), static_cast<float>(swapChainExtent.width) / static_cast<float>(swapChainExtent.height), 0.1f, 10.0f);
+    ubo.proj[1][1] *= -1;
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-        constantBuffers.emplace_back(ConstantBuffer_Vulkan(sizeof(UniformBufferObject), device, physicalDevice));
+        constantBuffers.emplace_back(std::make_unique<ConstantBuffer_Vulkan>(sizeof(UniformBufferObject), device, physicalDevice));
+        constantBuffers[i]->Update(&ubo, sizeof(ubo));
     }
+
 
 
     std::vector layouts(MAX_FRAMES_IN_FLIGHT, descriptorSetLayout);
@@ -890,7 +897,7 @@ void RenderApi_Vulkan::CreateDescriptorSets() {
 
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
         VkDescriptorBufferInfo bufferInfo{};
-        bufferInfo.buffer = constantBuffers[i].buffer;
+        bufferInfo.buffer = constantBuffers[i]->buffer;
         bufferInfo.offset = 0;
         bufferInfo.range = sizeof(UniformBufferObject);
 
