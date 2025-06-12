@@ -63,7 +63,7 @@ public:
 private:
     VkDevice device;
     VkDeviceMemory uniformBufferMemory = VK_NULL_HANDLE;
-    void* uniformBufferMapped;
+    void* uniformBufferMapped = nullptr;
 };
 
 
