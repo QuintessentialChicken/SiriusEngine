@@ -196,9 +196,6 @@ public:
 
     VkDescriptorPool descriptorPool = VK_NULL_HANDLE;
     std::vector<VkDescriptorSet> descriptorSets;
-    VkBuffer uniformBuffer = VK_NULL_HANDLE;
-    VkDeviceMemory uniformBufferMemory = VK_NULL_HANDLE;
-    void* uniformBufferMapped = nullptr;
 
     std::unique_ptr<VertexBuffer_Vulkan> vertexBuffer;
     std::unique_ptr<IndexBuffer_Vulkan> indexBuffer;

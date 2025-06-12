@@ -175,6 +175,10 @@ void RenderApi_Vulkan::Shutdown() {
     vkDeviceWaitIdle(device);
     CleanupSwapChain();
 
+    constantBuffers.clear();
+    vertexBuffer.reset();
+    indexBuffer.reset();
+
     vkDestroyDescriptorPool(device, descriptorPool, nullptr);
     vkDestroyDescriptorSetLayout(device, descriptorSetLayout, nullptr);
 
@@ -590,6 +594,7 @@ void RenderApi_Vulkan::CreateGraphicsPipeline(const PipelineStateDesc& desc) {
     fragShaderStageInfo.pName = "main";
     VkPipelineShaderStageCreateInfo shaderStages[] = {vertShaderStageInfo, fragShaderStageInfo};
 
+
     VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
     vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
     vertexInputInfo.vertexBindingDescriptionCount = 1;
@@ -676,6 +681,9 @@ void RenderApi_Vulkan::CreateGraphicsPipeline(const PipelineStateDesc& desc) {
     if (vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline) != VK_SUCCESS) {
         throw std::runtime_error("Failed to create graphics pipeline!");
     }
+
+    vkDestroyShaderModule(device, vertShader.GetShaderModule(), nullptr);
+    vkDestroyShaderModule(device, fragShader.GetShaderModule(), nullptr);
 }
 
 void RenderApi_Vulkan::CreateRenderPass() {
@@ -880,8 +888,6 @@ void RenderApi_Vulkan::CreateDescriptorSets() {
         constantBuffers.emplace_back(std::make_unique<ConstantBuffer_Vulkan>(sizeof(UniformBufferObject), device, physicalDevice));
         constantBuffers[i]->Update(&ubo, sizeof(ubo));
     }
-
-
 
     std::vector layouts(MAX_FRAMES_IN_FLIGHT, descriptorSetLayout);
     VkDescriptorSetAllocateInfo allocInfo{};
