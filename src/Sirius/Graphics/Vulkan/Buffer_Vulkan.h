@@ -60,10 +60,10 @@ public:
 
     void Update(const void* data, size_t size) override;
     VkBuffer buffer = VK_NULL_HANDLE;
-private:
-    VkDevice device;
     VkDeviceMemory uniformBufferMemory = VK_NULL_HANDLE;
     void* uniformBufferMapped = nullptr;
+private:
+    VkDevice device;
 };
 
 

@@ -895,13 +895,9 @@ void RenderApi_Vulkan::CreateDescriptorSets() {
         throw std::runtime_error("Failed to allocate descriptor sets!");
     }
 
-    Buffer_Vulkan::CreateBuffer(sizeof(UniformBufferObject), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, uniformBuffer, uniformBufferMemory, device, physicalDevice);
-    vkMapMemory(device, uniformBufferMemory, 0, sizeof(UniformBufferObject), 0, &uniformBufferMapped);
-    memcpy(uniformBufferMapped, &ubo, sizeof(ubo));
-
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
         VkDescriptorBufferInfo bufferInfo{};
-        bufferInfo.buffer = uniformBuffer;//constantBuffers[i]->buffer;
+        bufferInfo.buffer = constantBuffers[i]->buffer;
         bufferInfo.offset = 0;
         bufferInfo.range = sizeof(UniformBufferObject);
 

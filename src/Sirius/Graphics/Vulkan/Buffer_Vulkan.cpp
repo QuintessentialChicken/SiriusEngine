@@ -165,7 +165,7 @@ ConstantBuffer_Vulkan::~ConstantBuffer_Vulkan() {
 }
 
 void ConstantBuffer_Vulkan::Update(const void* data, size_t size) {
-    memcpy(uniformBufferMapped, &data, size);
+    memcpy(uniformBufferMapped, data, size);
 }
 
 void ConstantBuffer_Vulkan::Bind(ShaderStage stages, UINT slot) {
