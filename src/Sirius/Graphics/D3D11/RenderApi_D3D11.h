@@ -33,7 +33,7 @@ public:
 
     void ResizeViewport(int width, int height) override;
 
-    std::unique_ptr<IShader> CreateShader(ShaderType type, const std::wstring& path) override;
+    std::unique_ptr<IShader> CreateShader(ShaderType type, const std::string& path) override;
 
     std::unique_ptr<IInputLayout> CreateInputLayout(const std::vector<InputLayoutElement>& elements, const void* shaderBytecode, size_t bytecodeSize) override;
 

@@ -13,7 +13,7 @@ class Material {
 public:
     virtual ~Material() = default;
 
-    Material(const std::wstring& vertexShaderPath, const std::wstring& pixelShaderPath);
+    Material(const std::string& vertexShaderPath, const std::string& pixelShaderPath);
 
     virtual void Bind();
     

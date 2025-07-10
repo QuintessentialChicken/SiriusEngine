@@ -5,7 +5,9 @@
 #include "RenderApi_D3D11.h"
 
 #include <array>
+#include <codecvt>
 #include <dxgi1_2.h>
+#include <locale>
 #include <External/imgui_impl_dx11.h>
 #include <External/imgui_impl_win32.h>
 
@@ -257,8 +259,11 @@ void RenderApi_D3D11::ResizeViewport(int width, int height) {
     projection = DirectX::XMMatrixPerspectiveLH(1.0f, aspectRatio, 0.5f, 40.0f);
 }
 
-std::unique_ptr<IShader> RenderApi_D3D11::CreateShader(ShaderType type, const std::wstring& path) {
-    return std::make_unique<Shader_D3D11>(type, path, device.Get(), context.Get());
+std::unique_ptr<IShader> RenderApi_D3D11::CreateShader(ShaderType type, const std::string& path) {
+    int count = MultiByteToWideChar(CP_UTF8, 0, path.c_str(), path.length(), nullptr, 0);
+    std::wstring wpath(count, 0);
+    MultiByteToWideChar(CP_UTF8, 0, path.c_str(), path.length(), &wpath[0], count);
+    return std::make_unique<Shader_D3D11>(type, wpath, device.Get(), context.Get());
 }
 
 std::unique_ptr<IInputLayout> RenderApi_D3D11::CreateInputLayout(const std::vector<InputLayoutElement>& elements, const void* shaderBytecode, size_t bytecodeSize) {

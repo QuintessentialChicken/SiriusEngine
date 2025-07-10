@@ -61,8 +61,9 @@ void RenderApi_Vulkan::BeginFrame() {
 void RenderApi_Vulkan::ResizeViewport(int width, int height) {
 }
 
-std::unique_ptr<IShader> RenderApi_Vulkan::CreateShader(ShaderType type, const std::wstring& path) {
-    return nullptr;
+//TODO Actually use the shader created with this in the pipeline creation (using the PipelineDescription)
+std::unique_ptr<IShader> RenderApi_Vulkan::CreateShader(ShaderType type, const std::string& path) {
+    return std::make_unique<Shader_Vulkan>(type, path, device);
 }
 
 std::unique_ptr<IInputLayout> RenderApi_Vulkan::CreateInputLayout(const std::vector<InputLayoutElement>& elements, const void* shaderBytecode, size_t bytecodeSize) {
@@ -580,17 +581,17 @@ void RenderApi_Vulkan::CreateImageViews() {
 void RenderApi_Vulkan::CreateGraphicsPipeline(const PipelineStateDesc& desc) {
     auto bindingDescription = Vertex::getBindingDescription();
     auto attributeDescriptions = Vertex::getAttributeDescriptions();
-    Shader_Vulkan vertShader = Shader_Vulkan(ShaderType::Vertex, "../../Sirius/Shaders/vert.spv", device);
-    Shader_Vulkan fragShader = Shader_Vulkan(ShaderType::Pixel, "../../Sirius/Shaders/frag.spv", device);
+    VkShaderModule vertShaderModule = Shader_Vulkan(ShaderType::Vertex, "../../Sirius/Shaders/vert.spv", device).GetShaderModule();
+    VkShaderModule fragShaderModule = Shader_Vulkan(ShaderType::Pixel, "../../Sirius/Shaders/frag.spv", device).GetShaderModule();
     VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
     vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
     vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;
-    vertShaderStageInfo.module = vertShader.GetShaderModule();//dynamic_cast<Shader_Vulkan*>(desc.vertexShader)->GetShaderModule();;
+    vertShaderStageInfo.module = vertShaderModule;
     vertShaderStageInfo.pName = "main";
     VkPipelineShaderStageCreateInfo fragShaderStageInfo{};
     fragShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
     fragShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-    fragShaderStageInfo.module = fragShader.GetShaderModule();//dynamic_cast<Shader_Vulkan*>(desc.pixelShader)->GetShaderModule();;
+    fragShaderStageInfo.module = fragShaderModule;
     fragShaderStageInfo.pName = "main";
     VkPipelineShaderStageCreateInfo shaderStages[] = {vertShaderStageInfo, fragShaderStageInfo};
 
@@ -682,8 +683,8 @@ void RenderApi_Vulkan::CreateGraphicsPipeline(const PipelineStateDesc& desc) {
         throw std::runtime_error("Failed to create graphics pipeline!");
     }
 
-    vkDestroyShaderModule(device, vertShader.GetShaderModule(), nullptr);
-    vkDestroyShaderModule(device, fragShader.GetShaderModule(), nullptr);
+    vkDestroyShaderModule(device, vertShaderModule, nullptr);
+    vkDestroyShaderModule(device, fragShaderModule, nullptr);
 }
 
 void RenderApi_Vulkan::CreateRenderPass() {

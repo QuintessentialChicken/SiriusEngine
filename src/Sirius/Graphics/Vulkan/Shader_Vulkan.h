@@ -13,7 +13,7 @@
 
 class Shader_Vulkan : public IShader {
 public:
-    Shader_Vulkan(ShaderType type, const std::string& path, VkDevice device);
+    Shader_Vulkan(ShaderType type, std::string  path, VkDevice device);
 
     void Bind() override;
 
@@ -25,10 +25,15 @@ public:
 
     static VkShaderModule CreateShaderModule(const std::vector<char>& code, VkDevice device);
     static std::vector<char> ReadFile(const std::string& filename);
+
+    struct ShaderPaths {
+        std::string vertex;
+        std::string fragment;
+    };
 private:
+    VkDevice device;
     ShaderType type;
-    VkShaderModule vertShader;
-    VkShaderModule fragShader;
+    ShaderPaths shaderPaths;
 };
 
 

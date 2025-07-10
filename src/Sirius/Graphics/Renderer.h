@@ -26,7 +26,7 @@ public:
     static void ResizeViewport(int width, int height);
 
 
-    static std::unique_ptr<IShader> CreateShader(ShaderType type, const std::wstring& path);
+    static std::unique_ptr<IShader> CreateShader(ShaderType type, const std::string& path);
     static std::unique_ptr<IInputLayout> CreateInputLayout(const std::vector<InputLayoutElement>& elements, const void* shaderBytecode, size_t bytecodeSize);
     static std::unique_ptr<IPipelineState> CreatePipelineState(const PipelineStateDesc& desc);
     static std::unique_ptr<IVertexBuffer> CreateVertexBuffer(const void* data, size_t size, UINT stride);

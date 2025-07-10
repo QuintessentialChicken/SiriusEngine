@@ -24,7 +24,7 @@ void Renderer::Draw() {
     renderApi->Draw();
 }
 
-std::unique_ptr<IShader> Renderer::CreateShader(ShaderType type, const std::wstring& path) {
+std::unique_ptr<IShader> Renderer::CreateShader(ShaderType type, const std::string& path) {
     return renderApi->CreateShader(type, path);
 }
 

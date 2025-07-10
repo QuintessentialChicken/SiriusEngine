@@ -8,7 +8,7 @@
 
 #include "Renderer.h"
 
-Material::Material(const std::wstring& vertexShaderPath, const std::wstring& pixelShaderPath) {
+Material::Material(const std::string& vertexShaderPath, const std::string& pixelShaderPath) {
     // Create shaders
     vertexShader = Renderer::CreateShader(ShaderType::Vertex, vertexShaderPath);
     pixelShader = Renderer::CreateShader(ShaderType::Pixel, pixelShaderPath);
@@ -34,10 +34,10 @@ void Material::Bind() {
 }
 
 std::unique_ptr<Material> Material::CreatePhongMaterial() {
-    return std::make_unique<Material>(L"PhongVS.cso", L"PhongPS.cso");
+    return std::make_unique<Material>("PhongVS.cso", "PhongPS.cso");
 }
 
-ColoredCubeMaterial::ColoredCubeMaterial() : Material(L"VertexShader.cso", L"PixelShader.cso") {
+ColoredCubeMaterial::ColoredCubeMaterial() : Material("../../Sirius/Shaders/vert.spv", "../../Sirius/Shaders/frag.spv") {//"VertexShader.cso", "PixelShader.cso") {
     colorData = {
         DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f),
         DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f),
