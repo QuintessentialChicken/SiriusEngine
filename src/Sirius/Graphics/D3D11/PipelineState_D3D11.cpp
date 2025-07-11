@@ -8,6 +8,7 @@ PipelineState_D3D11::PipelineState_D3D11(const PipelineStateDesc& desc, ID3D11De
 : context{context}, desc{desc} {
     // D3D11 doesn't have a monolithic pipeline state object
     // State objects are bound separately
+    //TODO Bind all things in here and remove Bind function?
 }
 
 void PipelineState_D3D11::Bind() {

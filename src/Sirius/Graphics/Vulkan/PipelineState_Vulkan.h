@@ -13,13 +13,15 @@
 
 class PipelineState_Vulkan : public IPipelineState {
 public:
-    PipelineState_Vulkan() = default;
+    PipelineState_Vulkan(PipelineStateDesc desc, VkDescriptorSetLayout descriptorSetLayout, VkRenderPass renderPass, VkDevice device);
     void Bind() override;
+    VkPipeline GetPipeline();
 
 private:
-    VkPipeline graphicsPipeline;
-    VkPipelineLayout pipelineLayout;
+    VkPipeline graphicsPipeline = VK_NULL_HANDLE;
+    VkPipelineLayout pipelineLayout = VK_NULL_HANDLE;
     VkDevice device;
+
     struct Vertex {
         DirectX::XMFLOAT2 position;
         DirectX::XMFLOAT3 color;
