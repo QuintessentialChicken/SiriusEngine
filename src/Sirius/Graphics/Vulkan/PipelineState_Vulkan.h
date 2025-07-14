@@ -17,9 +17,11 @@ public:
     void Bind() override;
     VkPipeline GetPipeline();
 
+    // Temporary to give RenderApi_Vulkan access and not break the other parts of rendering
+    VkDescriptorSetLayout descriptorSetLayout;
+    VkPipelineLayout pipelineLayout = VK_NULL_HANDLE;
 private:
     VkPipeline graphicsPipeline = VK_NULL_HANDLE;
-    VkPipelineLayout pipelineLayout = VK_NULL_HANDLE;
     VkDevice device;
 
     struct Vertex {

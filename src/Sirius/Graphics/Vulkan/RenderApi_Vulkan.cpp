@@ -61,7 +61,6 @@ void RenderApi_Vulkan::BeginFrame() {
 void RenderApi_Vulkan::ResizeViewport(int width, int height) {
 }
 
-//TODO Actually use the shader created with this in the pipeline creation (using the PipelineDescription)
 std::unique_ptr<IShader> RenderApi_Vulkan::CreateShader(ShaderType type, const std::string& path) {
     return std::make_unique<Shader_Vulkan>(type, path, device);
 }
@@ -73,7 +72,10 @@ std::unique_ptr<IInputLayout> RenderApi_Vulkan::CreateInputLayout(const std::vec
 std::unique_ptr<IPipelineState> RenderApi_Vulkan::CreatePipelineState(const PipelineStateDesc& desc) {
     // CreateGraphicsPipeline(desc);
     auto pipeline = std::make_unique<PipelineState_Vulkan>(desc, descriptorSetLayout, renderPass, device);
+    // Temporary
     graphicsPipeline = pipeline->GetPipeline();
+    descriptorSetLayout = pipeline->descriptorSetLayout;
+    pipelineLayout = pipeline->pipelineLayout;
     return pipeline;
 }
 
