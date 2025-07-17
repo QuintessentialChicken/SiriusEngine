@@ -6,11 +6,17 @@
 #include <typeindex>
 #include <unordered_map>
 
-#include "Component.h"
-#include "Graphics/Mesh.h"
-#include "Graphics/Material.h"
 #include "Graphics/Transform.h"
-class PointLight;
+
+class TransformBuffer;
+class Component;
+class Material;
+class Mesh;
+
+namespace DirectX {
+    struct XMMATRIX;
+    struct XMFLOAT3;
+}
 
 enum class Primitives {
     CUBE = 0,

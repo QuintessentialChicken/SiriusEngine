@@ -8,11 +8,9 @@
 #include "Game.h"
 #include "External/imgui_impl_dx11.h"
 #include "Graphics/GfxDevice.h"
-#include "Graphics/Plane.h"
 #include "GameWorld.h"
 #include "Graphics/Renderer.h"
 #include "Input/Input.h"
-#include "Input/Mouse.h"
 
 static bool spawnWindow = false;
 
@@ -75,8 +73,7 @@ Fsm::Return App::RunGame() {
 
 
 void App::DoFrame() {
-    Renderer::Draw();
-
+    Renderer::Draw(GameWorld::GetInstance()->GetAllObjects());
 }
 
 void App::RegisterInitFunction(void(*fun)()) {

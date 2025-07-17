@@ -5,8 +5,9 @@
 #ifndef BUFFER_H
 #define BUFFER_H
 #include <DirectXMath.h>
-#include <intsafe.h>
-#include <memory>
+
+#include "Vulkan/Buffer_Vulkan.h"
+
 
 enum class ShaderStage {
     Vertex = 1,
@@ -27,37 +28,6 @@ inline ShaderStage operator&(ShaderStage a, ShaderStage b) {
     return static_cast<ShaderStage>(static_cast<int>(a) & static_cast<int>(b));
 }
 
-// Abstract buffer interfaces
-class IVertexBuffer {
-public:
-    virtual ~IVertexBuffer() = default;
-
-    virtual void Bind() = 0;
-
-    virtual void Update(const void* data, size_t size) = 0;
-};
-
-class IIndexBuffer {
-public:
-    virtual ~IIndexBuffer() = default;
-
-    virtual void Bind() = 0;
-
-    // virtual void Update(const void* data, size_t size) = 0;
-    [[nodiscard]] virtual UINT GetCount() const = 0;
-};
-
-class IConstantBuffer {
-public:
-    virtual ~IConstantBuffer() = default;
-
-    virtual void Bind(ShaderStage stages, UINT slot) = 0;
-
-    void Bind(UINT slot) { Bind(ShaderStage::All, slot); }
-
-    virtual void Update(const void* data, size_t size) = 0;
-};
-
 class TransformBuffer {
 public:
     struct Transforms {
@@ -67,12 +37,12 @@ public:
 
     TransformBuffer();
 
-    void Update(const DirectX::XMMATRIX& model, const DirectX::XMMATRIX& view, const DirectX::XMMATRIX& projection) const;
+    void Update(const DirectX::XMMATRIX& model, const DirectX::XMMATRIX& view, const DirectX::XMMATRIX& projection);
 
     void Bind() const;
 
 private:
-    std::unique_ptr<IConstantBuffer> constBuffer;
+    ConstantBuffer_Vulkan constBuffer;
 };
 
 #endif //BUFFER_H

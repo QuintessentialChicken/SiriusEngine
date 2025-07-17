@@ -8,7 +8,6 @@
 #include "DxgiInfoManager.h"
 #include "WindowsThrowMacros.h"
 #include "Graphics/GfxDevice.h"
-#include "Graphics/D3D11/RenderApi_D3D11.h"
 
 #define GFX_THROW_NOINFO(hrcall) if( FAILED( hr = (hrcall) ) ) throw RenderApi_D3D11::HrException( __LINE__,__FILE__,hr )
 

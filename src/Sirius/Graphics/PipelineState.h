@@ -2,10 +2,7 @@
 #ifndef PIPELINE_STATE_H
 #define PIPELINE_STATE_H
 
-#include <d3d11.h>
-#include <wrl/client.h>
 #include "InputLayout.h"
-#include "Shader.h"
 
 // Primitive topology
 enum class PrimitiveTopology {
@@ -17,14 +14,14 @@ enum class PrimitiveTopology {
 };
 
 // Pipeline state description
-struct PipelineStateDesc {
+class PipelineStateDesc {
     PrimitiveTopology topology = PrimitiveTopology::TriangleList;
     IInputLayout* inputLayout = nullptr;
-    IShader* vertexShader = nullptr;
-    IShader* pixelShader = nullptr;
-    IShader* geometryShader = nullptr;
-    IShader* hullShader = nullptr;
-    IShader* domainShader = nullptr;
+    Shader_Vulkan* vertexShader = nullptr;
+    Shader_Vulkan* pixelShader = nullptr;
+    Shader_Vulkan* geometryShader = nullptr;
+    Shader_Vulkan* hullShader = nullptr;
+    Shader_Vulkan* domainShader = nullptr;
 };
 
 // Pipeline state interface

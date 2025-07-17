@@ -1,22 +1,11 @@
 find_package(Vulkan REQUIRED)
 include_directories("$ENV{VULKAN_SDK}/Include")
-include_directories("$ENV{VULKAN_SDK}/Include/glm")
 
 add_library(Graphics STATIC
         Buffer.cpp
         Buffer.h
         Camera.cpp
         Camera.h
-        D3D11/Buffer_D3D11.cpp
-        D3D11/Buffer_D3D11.h
-        D3D11/InputLayout_D3D11.cpp
-        D3D11/InputLayout_D3D11.h
-        D3D11/PipelineState_D3D11.cpp
-        D3D11/PipelineState_D3D11.h
-        D3D11/RenderApi_D3D11.cpp
-        D3D11/RenderApi_D3D11.h
-        D3D11/Shader_D3D11.cpp
-        D3D11/Shader_D3D11.h
         GfxDevice.h
         GfxDevice_Win32.cpp
         ImguiManager.cpp
@@ -31,8 +20,6 @@ add_library(Graphics STATIC
         Plane.h
         PointLight.cpp
         PointLight.h
-        RenderApi.cpp
-        RenderApi.h
         Renderer.cpp
         Renderer.h
         Sampler.cpp
@@ -49,10 +36,10 @@ add_library(Graphics STATIC
         Vulkan/RenderApi_Vulkan.h
         Vulkan/Buffer_Vulkan.cpp
         Vulkan/Buffer_Vulkan.h
-        Vulkan/Shader_Vulkan.cpp
-        Vulkan/Shader_Vulkan.h
         Vulkan/PipelineState_Vulkan.cpp
         Vulkan/PipelineState_Vulkan.h
+        Vulkan/Shader_Vulkan.cpp
+        Vulkan/Shader_Vulkan.h
 )
 
 

@@ -6,8 +6,6 @@
 
 #include <stdexcept>
 
-#include "RenderApi_Vulkan.h"
-
 void Buffer_Vulkan::CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer,
                                  VkDeviceMemory& bufferMemory, VkDevice device, VkPhysicalDevice physicalDevice) {
     VkBufferCreateInfo bufferInfo{};

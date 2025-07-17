@@ -2,8 +2,9 @@
 // Created by Leon on 17/05/2025.
 //
 
+#define GLM_FORCE_RADIANS
+#define GLM_FORCE_DEFAULT_ALIGNED_GENTYPES
 #include "RenderApi_Vulkan.h"
-
 #include <algorithm>
 #include <fstream>
 #include <iostream>
@@ -12,9 +13,6 @@
 #include <stdexcept>
 #include <vulkan/vulkan_win32.h>
 #include <glm/gtc/matrix_transform.hpp>
-#define GLM_FORCE_RADIANS
-#define GLM_FORCE_DEFAULT_ALIGNED_GENTYPES
-#include <glm/glm.hpp>
 
 #include "Buffer_Vulkan.h"
 #include "PipelineState_Vulkan.h"
@@ -61,34 +59,30 @@ void RenderApi_Vulkan::BeginFrame() {
 void RenderApi_Vulkan::ResizeViewport(int width, int height) {
 }
 
-std::unique_ptr<IShader> RenderApi_Vulkan::CreateShader(ShaderType type, const std::string& path) {
-    return std::make_unique<Shader_Vulkan>(type, path, device);
+Shader_Vulkan RenderApi_Vulkan::CreateShader(ShaderType type, const std::string& path) {
+    return Shader_Vulkan(type, path, device);
 }
 
-std::unique_ptr<IInputLayout> RenderApi_Vulkan::CreateInputLayout(const std::vector<InputLayoutElement>& elements, const void* shaderBytecode, size_t bytecodeSize) {
-    return nullptr;
-}
-
-std::unique_ptr<IPipelineState> RenderApi_Vulkan::CreatePipelineState(const PipelineStateDesc& desc) {
+PipelineState_Vulkan RenderApi_Vulkan::CreatePipelineState(const PipelineStateDesc& desc) {
     // CreateGraphicsPipeline(desc);
-    auto pipeline = std::make_unique<PipelineState_Vulkan>(desc, descriptorSetLayout, renderPass, device);
+    auto pipeline = PipelineState_Vulkan(desc, descriptorSetLayout, renderPass, device);
     // Temporary
-    graphicsPipeline = pipeline->GetPipeline();
-    descriptorSetLayout = pipeline->descriptorSetLayout;
-    pipelineLayout = pipeline->pipelineLayout;
+    graphicsPipeline = pipeline.GetPipeline();
+    descriptorSetLayout = pipeline.descriptorSetLayout;
+    pipelineLayout = pipeline.pipelineLayout;
     return pipeline;
 }
 
-std::unique_ptr<IVertexBuffer> RenderApi_Vulkan::CreateVertexBuffer(const void* data, size_t size, UINT stride) {
-    return nullptr;
+VertexBuffer_Vulkan RenderApi_Vulkan::CreateVertexBuffer(const void* data, size_t size, UINT stride) {
+    return VertexBuffer_Vulkan{data, size, device, physicalDevice, graphicsQueue, commandPool};
 }
 
-std::unique_ptr<IIndexBuffer> RenderApi_Vulkan::CreateIndexBuffer(const void* indices, size_t size) {
-    return nullptr;
+IndexBuffer_Vulkan RenderApi_Vulkan::CreateIndexBuffer(const void* indices, size_t size) {
+    return IndexBuffer_Vulkan{indices, size, device, physicalDevice, graphicsQueue, commandPool};
 }
 
-std::unique_ptr<IConstantBuffer> RenderApi_Vulkan::CreateConstantBuffer(const void* data, size_t size) {
-    return nullptr;
+ConstantBuffer_Vulkan RenderApi_Vulkan::CreateConstantBuffer(const void* data, size_t size) {
+    return ConstantBuffer_Vulkan{size, device, physicalDevice};
 }
 
 DirectX::XMMATRIX RenderApi_Vulkan::GetProjection() const noexcept {
@@ -98,7 +92,7 @@ DirectX::XMMATRIX RenderApi_Vulkan::GetProjection() const noexcept {
 void RenderApi_Vulkan::EndFrame() {
 }
 
-void RenderApi_Vulkan::Draw() {
+void RenderApi_Vulkan::Draw(const std::vector<Model>& model) {
     // Wait for GPU to be done with the previous submission to the Queue (Rendering, potential memory operations, signaling semaphores, etc.)
     vkWaitForFences(device, 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
 

@@ -10,8 +10,8 @@ PipelineState_Vulkan::PipelineState_Vulkan(
     ) : descriptorSetLayout{descriptorSetLayout}, device{device} {
     auto bindingDescription = Vertex::getBindingDescription();
     auto attributeDescriptions = Vertex::getAttributeDescriptions();
-    VkShaderModule vertShaderModule = dynamic_cast<Shader_Vulkan *>(desc.vertexShader)->GetShaderModule(); //Shader_Vulkan(ShaderType::Vertex, "../../Sirius/Shaders/vert.spv", device).GetShaderModule();
-    VkShaderModule fragShaderModule = dynamic_cast<Shader_Vulkan *>(desc.pixelShader)->GetShaderModule(); //Shader_Vulkan(ShaderType::Pixel, "../../Sirius/Shaders/frag.spv", device).GetShaderModule();
+    VkShaderModule vertShaderModule = desc.vertexShader->GetShaderModule(); //Shader_Vulkan(ShaderType::Vertex, "../../Sirius/Shaders/vert.spv", device).GetShaderModule();
+    VkShaderModule fragShaderModule = desc.pixelShader->GetShaderModule(); //Shader_Vulkan(ShaderType::Pixel, "../../Sirius/Shaders/frag.spv", device).GetShaderModule();
     VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
     vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
     vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;

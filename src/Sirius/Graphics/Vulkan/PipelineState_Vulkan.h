@@ -4,11 +4,11 @@
 
 #ifndef PIPELINESTATE_VULKAN_H
 #define PIPELINESTATE_VULKAN_H
+#include "Graphics/PipelineState.h"
 #include <array>
 #include <DirectXMath.h>
 #include <vulkan/vulkan_core.h>
 
-#include "Graphics/PipelineState.h"
 
 
 class PipelineState_Vulkan : public IPipelineState {

@@ -7,9 +7,10 @@
 #include <utility>
 #include <External/imgui.h>
 
-#include "Graphics/Renderer.h"
+#include "Graphics/Material.h"
+#include "Graphics/Mesh.h"
 #include "Graphics/PointLight.h"
-#include "Input/Mouse.h"
+#include "Graphics/Renderer.h"
 
 Model::Model(std::unique_ptr<Mesh> mesh, std::unique_ptr<Material> material)
 : material(std::move(material)), transformBuffer(std::make_unique<TransformBuffer>()) {

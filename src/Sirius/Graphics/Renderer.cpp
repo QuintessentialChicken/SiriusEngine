@@ -4,9 +4,13 @@
 
 #include "Renderer.h"
 
-struct PipelineStateDesc;
+#include "Vulkan/Buffer_Vulkan.h"
+#include "Vulkan/PipelineState_Vulkan.h"
+#include "Vulkan/RenderApi_Vulkan.h"
+#include "Vulkan/Shader_Vulkan.h"
+
 class IPipelineState;
-std::unique_ptr<IRenderApi> Renderer::renderApi = IRenderApi::Create();
+std::unique_ptr<RenderApi_Vulkan> Renderer::renderApi = std::make_unique<RenderApi_Vulkan>();
 
 void Renderer::Init() {
     renderApi->Init();
@@ -20,19 +24,15 @@ void Renderer::EndFrame() {
     renderApi->EndFrame();
 }
 
-void Renderer::Draw() {
-    renderApi->Draw();
+void Renderer::Draw(const std::vector<Model>& models) {
+    renderApi->Draw(models);
 }
 
-std::unique_ptr<IShader> Renderer::CreateShader(ShaderType type, const std::string& path) {
+Shader_Vulkan Renderer::CreateShader(ShaderType type, const std::string& path) {
     return renderApi->CreateShader(type, path);
 }
 
-std::unique_ptr<IInputLayout> Renderer::CreateInputLayout(const std::vector<InputLayoutElement>& elements, const void* shaderBytecode, size_t bytecodeSize) {
-    return renderApi->CreateInputLayout(elements, shaderBytecode, bytecodeSize);
-}
-
-std::unique_ptr<IPipelineState> Renderer::CreatePipelineState(const PipelineStateDesc& desc) {
+PipelineState_Vulkan Renderer::CreatePipelineState(const PipelineStateDesc& desc) {
     return renderApi->CreatePipelineState(desc);
 }
 
@@ -48,15 +48,15 @@ void Renderer::ResizeViewport(int width, int height) {
     renderApi->ResizeViewport(width, height);
 }
 
-std::unique_ptr<IVertexBuffer> Renderer::CreateVertexBuffer(const void* data, size_t size, UINT stride) {
+VertexBuffer_Vulkan Renderer::CreateVertexBuffer(const void* data, size_t size, UINT stride) {
     return renderApi->CreateVertexBuffer(data, size, stride);
 }
 
-std::unique_ptr<IIndexBuffer> Renderer::CreateIndexBuffer(const void* indices, size_t size) {
+IndexBuffer_Vulkan Renderer::CreateIndexBuffer(const void* indices, size_t size) {
     return renderApi->CreateIndexBuffer(indices, size);
 }
 
-std::unique_ptr<IConstantBuffer> Renderer::CreateConstantBuffer(const void* data, size_t size) {
+ConstantBuffer_Vulkan Renderer::CreateConstantBuffer(const void* data, size_t size) {
     return renderApi->CreateConstantBuffer(data, size);
 }
 

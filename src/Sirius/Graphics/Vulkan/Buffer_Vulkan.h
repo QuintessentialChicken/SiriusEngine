@@ -4,11 +4,10 @@
 
 #ifndef BUFFER_VULKAN_H
 #define BUFFER_VULKAN_H
-
-#include <vector>
+#include <intsafe.h>
 #include <vulkan/vulkan_core.h>
 
-#include "Graphics/Buffer.h"
+enum class ShaderStage;
 
 class Buffer_Vulkan {
 public:
@@ -17,15 +16,15 @@ public:
 
     static void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size, VkDevice device, VkQueue graphicsQueue, VkCommandPool commandPool);
 };
-class VertexBuffer_Vulkan : public IVertexBuffer {
+class VertexBuffer_Vulkan {
 public:
     VertexBuffer_Vulkan(const void* data, VkDeviceSize size, VkDevice device, VkPhysicalDevice physicalDevice, VkQueue graphicsQueue, VkCommandPool commandPool);
 
-    ~VertexBuffer_Vulkan() override;
+    ~VertexBuffer_Vulkan();
 
-    void Bind() override;
+    void Bind();
 
-    void Update(const void *data, size_t size) override;
+    void Update(const void *data, size_t size);
 
     VkBuffer buffer;
 private:
@@ -33,15 +32,15 @@ private:
     VkDeviceMemory memory;
 };
 
-class IndexBuffer_Vulkan : public IIndexBuffer {
+class IndexBuffer_Vulkan {
 public:
     IndexBuffer_Vulkan(const void* data, VkDeviceSize size, VkDevice device, VkPhysicalDevice physicalDevice, VkQueue graphicsQueue, VkCommandPool commandPool);
 
-    ~IndexBuffer_Vulkan() override;
+    ~IndexBuffer_Vulkan();
 
-    void Bind() override;
+    void Bind();
 
-    [[nodiscard]] UINT GetCount() const override;
+    [[nodiscard]] UINT GetCount() const;
 
     VkBuffer buffer;
 private:
@@ -50,15 +49,15 @@ private:
     UINT count;
 };
 
-class ConstantBuffer_Vulkan : public IConstantBuffer {
+class ConstantBuffer_Vulkan {
 public:
     ConstantBuffer_Vulkan(VkDeviceSize size, VkDevice device, VkPhysicalDevice physicalDevice);
 
-    ~ConstantBuffer_Vulkan() override;
+    ~ConstantBuffer_Vulkan();
 
-    void Bind(ShaderStage stages, UINT slot) override;
+    void Bind(ShaderStage stages, UINT slot);
 
-    void Update(const void* data, size_t size) override;
+    void Update(const void* data, size_t size);
     VkBuffer buffer = VK_NULL_HANDLE;
     VkDeviceMemory uniformBufferMemory = VK_NULL_HANDLE;
     void* uniformBufferMapped = nullptr;

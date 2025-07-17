@@ -4,8 +4,8 @@
 #include <DirectXMath.h>
 #include <vector>
 #include <memory>
-#include "Buffer.h"
 #include "Core/Component.h"
+#include "Vulkan/Buffer_Vulkan.h"
 
 enum class Primitives;
 
@@ -35,8 +35,8 @@ public:
     static std::unique_ptr<Mesh> CreateSphere();
 
 private:
-    std::unique_ptr<IVertexBuffer> vertexBuffer;
-    std::unique_ptr<IIndexBuffer> indexBuffer;
+    VertexBuffer_Vulkan vertexBuffer;
+    IndexBuffer_Vulkan indexBuffer;
     uint32_t indexCount;
 };
 

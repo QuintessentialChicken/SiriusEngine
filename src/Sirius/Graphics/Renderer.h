@@ -4,10 +4,21 @@
 
 #ifndef RENDERER_H
 #define RENDERER_H
+#include <DirectXMath.h>
 #include <intsafe.h>
 #include <memory>
+#include <string>
+#include <vector>
 
-#include "RenderApi.h"
+class RenderApi_Vulkan;
+class Model;
+class Shader_Vulkan;
+class PipelineState_Vulkan;
+class PipelineStateDesc;
+class VertexBuffer_Vulkan;
+class IndexBuffer_Vulkan;
+class ConstantBuffer_Vulkan;
+class ShaderType;
 
 class Renderer {
 public:
@@ -17,7 +28,7 @@ public:
 
     static void EndFrame();
 
-    static void Draw();
+    static void Draw(const std::vector<Model>& model);
 
     static void DrawIndexed(UINT count);
 
@@ -25,19 +36,17 @@ public:
 
     static void ResizeViewport(int width, int height);
 
-
-    static std::unique_ptr<IShader> CreateShader(ShaderType type, const std::string& path);
-    static std::unique_ptr<IInputLayout> CreateInputLayout(const std::vector<InputLayoutElement>& elements, const void* shaderBytecode, size_t bytecodeSize);
-    static std::unique_ptr<IPipelineState> CreatePipelineState(const PipelineStateDesc& desc);
-    static std::unique_ptr<IVertexBuffer> CreateVertexBuffer(const void* data, size_t size, UINT stride);
-    static std::unique_ptr<IIndexBuffer> CreateIndexBuffer(const void* indices, size_t size);
-    static std::unique_ptr<IConstantBuffer> CreateConstantBuffer(const void* data, size_t size);
+    static Shader_Vulkan CreateShader(ShaderType type, const std::string& path);
+    static PipelineState_Vulkan CreatePipelineState(const PipelineStateDesc& desc);
+    static VertexBuffer_Vulkan CreateVertexBuffer(const void* data, size_t size, UINT stride);
+    static IndexBuffer_Vulkan CreateIndexBuffer(const void* indices, size_t size);
+    static ConstantBuffer_Vulkan CreateConstantBuffer(const void* data, size_t size);
 
     static DirectX::XMMATRIX GetProjection();
 
 
 private:
-    static std::unique_ptr<IRenderApi> renderApi;
+    static std::unique_ptr<RenderApi_Vulkan> renderApi;
 };
 
 

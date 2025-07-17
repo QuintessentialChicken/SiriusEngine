@@ -5,44 +5,50 @@
 #ifndef RENDERAPI_VULKAN_H
 #define RENDERAPI_VULKAN_H
 #include <array>
+#include <DirectXMath.h>
+#include <intsafe.h>
 #include <optional>
+#include <vulkan/vulkan_core.h>
 
-#include "Graphics/RenderApi.h"
-#include <glm/glm.hpp>
-
-#include "Buffer_Vulkan.h"
 #include "Core/Timer.h"
 
+class ShaderType;
+class Shader_Vulkan;
+class PipelineState_Vulkan;
+class PipelineStateDesc;
+class VertexBuffer_Vulkan;
+class IndexBuffer_Vulkan;
+class ConstantBuffer_Vulkan;
+class Model;
+
 // TODO Split up implementations over the appropriate classes
-class RenderApi_Vulkan : public IRenderApi {
+class RenderApi_Vulkan {
 public:
-    void Init() override;
+    void Init();
 
-    void BeginFrame() override;
+    void BeginFrame();
 
-    void ResizeViewport(int width, int height) override;
+    void ResizeViewport(int width, int height);
 
-    std::unique_ptr<IShader> CreateShader(ShaderType type, const std::string& path) override;
+    Shader_Vulkan CreateShader(ShaderType type, const std::string& path);
 
-    std::unique_ptr<IInputLayout> CreateInputLayout(const std::vector<InputLayoutElement>& elements, const void* shaderBytecode, size_t bytecodeSize) override;
+    PipelineState_Vulkan CreatePipelineState(const PipelineStateDesc& desc);
 
-    std::unique_ptr<IPipelineState> CreatePipelineState(const PipelineStateDesc& desc) override;
+    VertexBuffer_Vulkan CreateVertexBuffer(const void* data, size_t size, UINT stride);
 
-    std::unique_ptr<IVertexBuffer> CreateVertexBuffer(const void* data, size_t size, UINT stride) override;
+    IndexBuffer_Vulkan CreateIndexBuffer(const void* indices, size_t size);
 
-    std::unique_ptr<IIndexBuffer> CreateIndexBuffer(const void* indices, size_t size) override;
+    ConstantBuffer_Vulkan CreateConstantBuffer(const void* data, size_t size);
 
-    std::unique_ptr<IConstantBuffer> CreateConstantBuffer(const void* data, size_t size) override;
+    [[nodiscard]] DirectX::XMMATRIX GetProjection() const noexcept;
 
-    [[nodiscard]] DirectX::XMMATRIX GetProjection() const noexcept override;
+    void EndFrame();
 
-    void EndFrame() override;
+    void Draw(const std::vector<Model>& model);
 
-    void Draw() override;
+    void DrawIndexed(UINT count);
 
-    void DrawIndexed(UINT count) override;
-
-    void Shutdown() override;
+    void Shutdown();
 
     const std::vector<const char*> validationLayers = {
         "VK_LAYER_KHRONOS_validation"

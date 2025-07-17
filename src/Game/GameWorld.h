@@ -19,15 +19,15 @@ public:
     static void DestroySingleton();
     static GameWorld* GetInstance();
 
-    void AddObject(std::unique_ptr<Model> object);
+    void AddObject(Model object);
 
-    std::vector<std::unique_ptr<Model>>& GetLights();
-    [[nodiscard]] Model& GetObjectAtIndex(int index) const;
-    std::vector<std::unique_ptr<Model>>& GetAllObjects();
+    std::vector<Model>& GetLights();
+    [[nodiscard]] Model& GetObjectAtIndex(int index);
+    std::vector<Model>& GetAllObjects();
 private:
     static GameWorld* instance;
-    std::vector<std::unique_ptr<Model>> objects;
-    std::vector<std::unique_ptr<Model>> lights;
+    std::vector<Model> objects;
+    std::vector<Model> lights;
 };
 
 

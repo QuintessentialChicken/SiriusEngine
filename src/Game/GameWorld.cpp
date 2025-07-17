@@ -24,19 +24,19 @@ GameWorld* GameWorld::GetInstance() {
     return instance;
 }
 
-void GameWorld::AddObject(std::unique_ptr<Model> object) {
-    if (object->GetComponent<PointLight>()) lights.push_back(std::move(object));
+void GameWorld::AddObject(Model object) {
+    if (object.GetComponent<PointLight>()) lights.push_back(object);
     else objects.push_back(std::move(object));
 }
 
-std::vector<std::unique_ptr<Model>>& GameWorld::GetLights() {
+std::vector<Model>& GameWorld::GetLights() {
     return lights;
 }
 
-Model& GameWorld::GetObjectAtIndex(int index) const {
-    return *objects.at(index);
+Model& GameWorld::GetObjectAtIndex(int index) {
+    return objects.at(index);
 }
 
-std::vector<std::unique_ptr<Model>>& GameWorld::GetAllObjects() {
+std::vector<Model>& GameWorld::GetAllObjects() {
     return objects;
 }
