@@ -53,6 +53,11 @@ add_library(Graphics STATIC
         Vulkan/Shader_Vulkan.h
         Vulkan/PipelineState_Vulkan.cpp
         Vulkan/PipelineState_Vulkan.h
+        Vulkan/Material_Vulkan.cpp
+        Vulkan/Material_Vulkan.h
+        Vulkan/MaterialSystem.cpp
+        Vulkan/MaterialSystem.h
+        Vulkan/Types_Vulkan.h
 )
 
 

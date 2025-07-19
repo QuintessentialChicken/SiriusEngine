@@ -74,3 +74,24 @@ std::vector<char> Shader_Vulkan::ReadFile(const std::string &filename) {
 
     return buffer;
 }
+
+void ShaderEffect::add_stage(ShaderModule *shaderModule, VkShaderStageFlagBits stage) {
+    ShaderStage newStage = {shaderModule, stage};
+    stages.push_back(newStage);
+}
+
+void ShaderEffect::fill_stages(std::vector<VkPipelineShaderStageCreateInfo> &pipelineStages) {
+    for (auto &s: stages) {
+        VkPipelineShaderStageCreateInfo info{};
+        info.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+        info.pNext = nullptr;
+
+        //shader stage
+        info.stage = s.stage;
+        //module containing the code for this shader stage
+        info.module = s.shaderModule->module;
+        //the entry point of the shader
+        info.pName = "main";
+        pipelineStages.push_back(info);
+    }
+}

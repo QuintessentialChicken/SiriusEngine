@@ -4,6 +4,7 @@
 
 #ifndef SHADER_VULKAN_H
 #define SHADER_VULKAN_H
+#include <array>
 #include <string>
 #include <vector>
 #include <vulkan/vulkan_core.h>
@@ -34,6 +35,33 @@ private:
     VkDevice device;
     ShaderType type;
     ShaderPaths shaderPaths;
+};
+
+struct ShaderModule {
+    // std::vector<uint32_t> code;
+    VkShaderModule module;
+};
+
+struct ShaderEffect {
+    struct ReflectionOverrides {
+        const char* name;
+        VkDescriptorType overriddenType;
+    };
+
+    VkPipelineLayout builtLayout;
+    std::array<VkDescriptorSetLayout, 4> setLayouts;
+
+    void add_stage(ShaderModule* shaderModule, VkShaderStageFlagBits stage);
+    void fill_stages(std::vector<VkPipelineShaderStageCreateInfo>& pipelineStages);
+
+private:
+    struct ShaderStage {
+        ShaderModule* shaderModule;
+        VkShaderStageFlagBits stage;
+    };
+
+    std::vector<ShaderStage> stages;
+
 };
 
 
