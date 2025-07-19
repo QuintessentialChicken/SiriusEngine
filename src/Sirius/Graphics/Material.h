@@ -8,7 +8,8 @@
 #include "InputLayout.h"
 #include "PipelineState.h"
 
-// TODO Make a better system to quickly create new materials
+
+// TODO Probably will have to make separate materials per render api to avoid casting during draw/binding
 class Material {
 public:
     virtual ~Material() = default;
