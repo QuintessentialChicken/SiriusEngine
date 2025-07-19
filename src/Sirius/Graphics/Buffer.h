@@ -5,28 +5,63 @@
 #ifndef BUFFER_H
 #define BUFFER_H
 #include <DirectXMath.h>
+#include <intsafe.h>
+#include <vulkan/vulkan.h>
 
-#include "Vulkan/Buffer_Vulkan.h"
+class Buffer {
+public:
+    static void CreateBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties,
+                             VkBuffer& buffer, VkDeviceMemory& bufferMemory, VkDevice device, VkPhysicalDevice physicalDevice);
 
-
-enum class ShaderStage {
-    Vertex = 1,
-    Pixel = 2,
-    Geometry = 4,
-    Hull = 8,
-    Domain = 16,
-    Compute = 32,
-    All = Vertex | Pixel | Geometry | Hull | Domain | Compute
+    static void CopyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size, VkDevice device, VkQueue graphicsQueue, VkCommandPool commandPool);
 };
 
-// Allow bitwise operations on ShaderStage
-inline ShaderStage operator|(ShaderStage a, ShaderStage b) {
-    return static_cast<ShaderStage>(static_cast<int>(a) | static_cast<int>(b));
-}
+class VertexBuffer {
+public:
+    VertexBuffer(const void* data, VkDeviceSize size, VkDevice device, VkPhysicalDevice physicalDevice, VkQueue graphicsQueue, VkCommandPool commandPool);
 
-inline ShaderStage operator&(ShaderStage a, ShaderStage b) {
-    return static_cast<ShaderStage>(static_cast<int>(a) & static_cast<int>(b));
-}
+    ~VertexBuffer();
+
+    void Bind();
+
+    void Update(const void *data, size_t size);
+
+    VkBuffer buffer;
+private:
+    VkDevice device;
+    VkDeviceMemory memory;
+};
+
+class IndexBuffer {
+public:
+    IndexBuffer(const void* data, VkDeviceSize size, VkDevice device, VkPhysicalDevice physicalDevice, VkQueue graphicsQueue, VkCommandPool commandPool);
+
+    ~IndexBuffer();
+
+    void Bind();
+
+    [[nodiscard]] UINT GetCount() const;
+
+    VkBuffer buffer;
+private:
+    VkDevice device;
+    VkDeviceMemory memory;
+    UINT count;
+};
+
+class ConstantBuffer {
+public:
+    ConstantBuffer(VkDeviceSize size, VkDevice device, VkPhysicalDevice physicalDevice);
+
+    ~ConstantBuffer();
+
+    void Update(const void* data, size_t size);
+    VkBuffer buffer = VK_NULL_HANDLE;
+    VkDeviceMemory uniformBufferMemory = VK_NULL_HANDLE;
+    void* uniformBufferMapped = nullptr;
+private:
+    VkDevice device;
+};
 
 class TransformBuffer {
 public:
@@ -42,7 +77,7 @@ public:
     void Bind() const;
 
 private:
-    ConstantBuffer_Vulkan constBuffer;
+    ConstantBuffer constBuffer;
 };
 
 #endif //BUFFER_H

@@ -6,12 +6,9 @@
 #include <typeindex>
 #include <unordered_map>
 
+#include "Graphics/Material.h"
+#include "Graphics/Mesh.h"
 #include "Graphics/Transform.h"
-
-class TransformBuffer;
-class Component;
-class Material;
-class Mesh;
 
 namespace DirectX {
     struct XMMATRIX;

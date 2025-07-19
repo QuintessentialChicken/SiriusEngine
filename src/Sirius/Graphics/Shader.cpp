@@ -2,15 +2,14 @@
 // Created by Leon on 26/05/2025.
 //
 
-#include "Shader_Vulkan.h"
+#include "Shader.h"
 
 #include <fstream>
 #include <stdexcept>
-#include <utility>
 
 // Can just be an empty shell containing type and path.
 // Since shader modules only need to live until the pipeline is created, PipelineState can create them on the spot and destroy them afterwards
-Shader_Vulkan::Shader_Vulkan(ShaderType type, std::string path, VkDevice device): type{type}, device{device} {
+Shader::Shader(ShaderType type, std::string path, VkDevice device): type{type}, device{device} {
     switch (type) {
         case ShaderType::Vertex:
             shaderPaths.vertex = std::move(path);
@@ -22,20 +21,7 @@ Shader_Vulkan::Shader_Vulkan(ShaderType type, std::string path, VkDevice device)
     }
 }
 
-void Shader_Vulkan::Bind() {
-    // Not used in Vulkan
-    throw std::runtime_error("Bind is not used in Vulkan Shaders");
-}
-
-const void *Shader_Vulkan::GetBytecode() const {
-    throw std::runtime_error("Not used in Vulkan Shaders");
-}
-
-size_t Shader_Vulkan::GetBytecodeSize() const {
-    throw std::runtime_error("Not used in Vulkan Shaders");
-}
-
-VkShaderModule Shader_Vulkan::GetShaderModule() const {
+VkShaderModule Shader::GetShaderModule() const {
     switch (type) {
         case ShaderType::Vertex:
             return CreateShaderModule(ReadFile(shaderPaths.vertex), device);
@@ -45,7 +31,7 @@ VkShaderModule Shader_Vulkan::GetShaderModule() const {
     }
 }
 
-VkShaderModule Shader_Vulkan::CreateShaderModule(const std::vector<char> &code, VkDevice device) {
+VkShaderModule Shader::CreateShaderModule(const std::vector<char> &code, VkDevice device) {
     VkShaderModuleCreateInfo createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
     createInfo.codeSize = code.size();
@@ -57,7 +43,7 @@ VkShaderModule Shader_Vulkan::CreateShaderModule(const std::vector<char> &code, 
     return shaderModule;
 }
 
-std::vector<char> Shader_Vulkan::ReadFile(const std::string &filename) {
+std::vector<char> Shader::ReadFile(const std::string &filename) {
     std::ifstream file(filename, std::ios::ate | std::ios::binary);
 
     if (!file.is_open()) {

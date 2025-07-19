@@ -5,6 +5,7 @@
 #ifndef SHADER_H
 #define SHADER_H
 
+#include <string>
 
 enum class ShaderType {
     Vertex,
@@ -15,15 +16,26 @@ enum class ShaderType {
     Domain
 };
 
-class IShader {
+class Shader {
 public:
-    virtual ~IShader() = default;
-    virtual void Bind() = 0;
-    [[nodiscard]] virtual const void* GetBytecode() const = 0;
-    [[nodiscard]] virtual size_t GetBytecodeSize() const = 0;
+    Shader(ShaderType type, std::string path, VkDevice device);
+
+    [[nodiscard]] VkShaderModule GetShaderModule() const;
+
+    static VkShaderModule CreateShaderModule(const std::vector<char> &code, VkDevice device);
+
+    static std::vector<char> ReadFile(const std::string &filename);
+
+    struct ShaderPaths {
+        std::string vertex;
+        std::string fragment;
+    };
+
+private:
+    VkDevice device;
+    ShaderType type;
+    ShaderPaths shaderPaths;
 };
-
-
 
 
 #endif //SHADER_H

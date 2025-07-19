@@ -12,11 +12,8 @@
 #include <set>
 #include <stdexcept>
 #include <vulkan/vulkan_win32.h>
-#include <glm/gtc/matrix_transform.hpp>
 
-#include "Buffer_Vulkan.h"
-#include "PipelineState_Vulkan.h"
-#include "Shader_Vulkan.h"
+#include "Shader.h"
 #include "Graphics/GfxDevice.h"
 #include "Graphics/WndProc.h"
 
@@ -44,8 +41,8 @@ void RenderApi_Vulkan::Init() {
     CreateDescriptorSetLayout();
     CreateFramebuffers();
     CreateCommandPool();
-    vertexBuffer = std::make_unique<VertexBuffer_Vulkan>(vertices.data(), sizeof(vertices[0]) * vertices.size(), device, physicalDevice, graphicsQueue, commandPool);
-    indexBuffer = std::make_unique<IndexBuffer_Vulkan>(indices.data(), sizeof(indices[0]) * indices.size(), device, physicalDevice, graphicsQueue, commandPool);
+    vertexBuffer = std::make_unique<VertexBuffer>(vertices.data(), sizeof(vertices[0]) * vertices.size(), device, physicalDevice, graphicsQueue, commandPool);
+    indexBuffer = std::make_unique<IndexBuffer>(indices.data(), sizeof(indices[0]) * indices.size(), device, physicalDevice, graphicsQueue, commandPool);
     CreateDescriptorPool();
     CreateDescriptorSets();
     CreateCommandBuffers();
@@ -59,8 +56,8 @@ void RenderApi_Vulkan::BeginFrame() {
 void RenderApi_Vulkan::ResizeViewport(int width, int height) {
 }
 
-Shader_Vulkan RenderApi_Vulkan::CreateShader(ShaderType type, const std::string& path) {
-    return Shader_Vulkan(type, path, device);
+Shader RenderApi_Vulkan::CreateShader(ShaderType type, const std::string& path) {
+    return Shader(type, path, device);
 }
 
 PipelineState_Vulkan RenderApi_Vulkan::CreatePipelineState(const PipelineStateDesc& desc) {
@@ -73,16 +70,16 @@ PipelineState_Vulkan RenderApi_Vulkan::CreatePipelineState(const PipelineStateDe
     return pipeline;
 }
 
-VertexBuffer_Vulkan RenderApi_Vulkan::CreateVertexBuffer(const void* data, size_t size, UINT stride) {
-    return VertexBuffer_Vulkan{data, size, device, physicalDevice, graphicsQueue, commandPool};
+VertexBuffer RenderApi_Vulkan::CreateVertexBuffer(const void* data, size_t size, UINT stride) {
+    return VertexBuffer{data, size, device, physicalDevice, graphicsQueue, commandPool};
 }
 
-IndexBuffer_Vulkan RenderApi_Vulkan::CreateIndexBuffer(const void* indices, size_t size) {
-    return IndexBuffer_Vulkan{indices, size, device, physicalDevice, graphicsQueue, commandPool};
+IndexBuffer RenderApi_Vulkan::CreateIndexBuffer(const void* indices, size_t size) {
+    return IndexBuffer{indices, size, device, physicalDevice, graphicsQueue, commandPool};
 }
 
-ConstantBuffer_Vulkan RenderApi_Vulkan::CreateConstantBuffer(const void* data, size_t size) {
-    return ConstantBuffer_Vulkan{size, device, physicalDevice};
+ConstantBuffer RenderApi_Vulkan::CreateConstantBuffer(const void* data, size_t size) {
+    return ConstantBuffer{size, device, physicalDevice};
 }
 
 DirectX::XMMATRIX RenderApi_Vulkan::GetProjection() const noexcept {
@@ -778,7 +775,7 @@ void RenderApi_Vulkan::CreateDescriptorSets() {
     ubo.proj = glm::perspective(glm::radians(45.0f), static_cast<float>(swapChainExtent.width) / static_cast<float>(swapChainExtent.height), 0.1f, 10.0f);
     ubo.proj[1][1] *= -1;
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-        constantBuffers.emplace_back(std::make_unique<ConstantBuffer_Vulkan>(sizeof(UniformBufferObject), device, physicalDevice));
+        constantBuffers.emplace_back(std::make_unique<ConstantBuffer>(sizeof(UniformBufferObject), device, physicalDevice));
         constantBuffers[i]->Update(&ubo, sizeof(ubo));
     }
 

@@ -5,10 +5,12 @@
 #ifndef POINTLIGHT_H
 #define POINTLIGHT_H
 #include <DirectXMath.h>
+#include <memory>
 
-#include "Buffer.h"
 #include "Core/Component.h"
 
+
+class ConstantBuffer;
 
 class PointLight : public Component {
 public:
@@ -26,7 +28,7 @@ private:
 
     PointLightCBuf cbufData{};
     DirectX::XMFLOAT3 pos = {0.0f, 0.0f, 0.0f};;
-    mutable std::unique_ptr<IConstantBuffer> cbuf;
+    mutable std::unique_ptr<ConstantBuffer> cbuf;
 };
 
 

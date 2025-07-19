@@ -32,14 +32,10 @@ add_library(Graphics STATIC
         Transform.cpp
         Transform.h
         WndProc.h
-        Vulkan/RenderApi_Vulkan.cpp
-        Vulkan/RenderApi_Vulkan.h
-        Vulkan/Buffer_Vulkan.cpp
-        Vulkan/Buffer_Vulkan.h
-        Vulkan/PipelineState_Vulkan.cpp
-        Vulkan/PipelineState_Vulkan.h
-        Vulkan/Shader_Vulkan.cpp
-        Vulkan/Shader_Vulkan.h
+        RenderApi_Vulkan.cpp
+        RenderApi_Vulkan.h
+        PipelineState.cpp
+        Shader.cpp
 )
 
 

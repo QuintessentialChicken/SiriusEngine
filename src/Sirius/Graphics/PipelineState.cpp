@@ -1,11 +1,11 @@
 
-#include "PipelineState_Vulkan.h"
+#include "PipelineState.h"
 
 #include <stdexcept>
+#include <vector>
 
-#include "Shader_Vulkan.h"
 
-PipelineState_Vulkan::PipelineState_Vulkan(
+PipelineState::PipelineState(
     PipelineStateDesc desc, VkDescriptorSetLayout descriptorSetLayout, VkRenderPass renderPass, VkDevice device
     ) : descriptorSetLayout{descriptorSetLayout}, device{device} {
     auto bindingDescription = Vertex::getBindingDescription();
@@ -116,6 +116,6 @@ PipelineState_Vulkan::PipelineState_Vulkan(
     vkDestroyShaderModule(device, fragShaderModule, nullptr);
 }
 
-VkPipeline PipelineState_Vulkan::GetPipeline() {
+VkPipeline PipelineState::GetPipeline() {
     return graphicsPipeline;
 }

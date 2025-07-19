@@ -8,17 +8,15 @@
 #include <DirectXMath.h>
 #include <intsafe.h>
 #include <optional>
-#include <vulkan/vulkan_core.h>
 
+#include "Shader.h"
 #include "Core/Timer.h"
 
-class ShaderType;
-class Shader_Vulkan;
 class PipelineState_Vulkan;
 class PipelineStateDesc;
-class VertexBuffer_Vulkan;
-class IndexBuffer_Vulkan;
-class ConstantBuffer_Vulkan;
+class VertexBuffer;
+class IndexBuffer;
+class ConstantBuffer;
 class Model;
 
 // TODO Split up implementations over the appropriate classes
@@ -30,15 +28,15 @@ public:
 
     void ResizeViewport(int width, int height);
 
-    Shader_Vulkan CreateShader(ShaderType type, const std::string& path);
+    Shader CreateShader(ShaderType type, const std::string& path);
 
     PipelineState_Vulkan CreatePipelineState(const PipelineStateDesc& desc);
 
-    VertexBuffer_Vulkan CreateVertexBuffer(const void* data, size_t size, UINT stride);
+    VertexBuffer CreateVertexBuffer(const void* data, size_t size, UINT stride);
 
-    IndexBuffer_Vulkan CreateIndexBuffer(const void* indices, size_t size);
+    IndexBuffer CreateIndexBuffer(const void* indices, size_t size);
 
-    ConstantBuffer_Vulkan CreateConstantBuffer(const void* data, size_t size);
+    ConstantBuffer CreateConstantBuffer(const void* data, size_t size);
 
     [[nodiscard]] DirectX::XMMATRIX GetProjection() const noexcept;
 
@@ -193,7 +191,7 @@ public:
         0, 1, 2, 2, 3, 0
     };
 
-    std::vector<std::unique_ptr<ConstantBuffer_Vulkan>> constantBuffers;
+    std::vector<std::unique_ptr<ConstantBuffer>> constantBuffers;
     struct UniformBufferObject {
         glm::mat4 model;
         glm::mat4 view;
@@ -203,8 +201,8 @@ public:
     VkDescriptorPool descriptorPool = VK_NULL_HANDLE;
     std::vector<VkDescriptorSet> descriptorSets;
 
-    std::unique_ptr<VertexBuffer_Vulkan> vertexBuffer;
-    std::unique_ptr<IndexBuffer_Vulkan> indexBuffer;
+    std::unique_ptr<VertexBuffer> vertexBuffer;
+    std::unique_ptr<IndexBuffer> indexBuffer;
 };
 
 

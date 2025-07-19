@@ -6,9 +6,6 @@
 
 #include <utility>
 #include <External/imgui.h>
-
-#include "Graphics/Material.h"
-#include "Graphics/Mesh.h"
 #include "Graphics/PointLight.h"
 #include "Graphics/Renderer.h"
 

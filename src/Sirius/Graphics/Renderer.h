@@ -10,15 +10,13 @@
 #include <string>
 #include <vector>
 
-class RenderApi_Vulkan;
+#include "Buffer.h"
+#include "PipelineState.h"
+#include "RenderApi_Vulkan.h"
+
+
+enum class ShaderType;
 class Model;
-class Shader_Vulkan;
-class PipelineState_Vulkan;
-class PipelineStateDesc;
-class VertexBuffer_Vulkan;
-class IndexBuffer_Vulkan;
-class ConstantBuffer_Vulkan;
-class ShaderType;
 
 class Renderer {
 public:
@@ -36,11 +34,11 @@ public:
 
     static void ResizeViewport(int width, int height);
 
-    static Shader_Vulkan CreateShader(ShaderType type, const std::string& path);
-    static PipelineState_Vulkan CreatePipelineState(const PipelineStateDesc& desc);
-    static VertexBuffer_Vulkan CreateVertexBuffer(const void* data, size_t size, UINT stride);
-    static IndexBuffer_Vulkan CreateIndexBuffer(const void* indices, size_t size);
-    static ConstantBuffer_Vulkan CreateConstantBuffer(const void* data, size_t size);
+    static Shader CreateShader(ShaderType type, const std::string& path);
+    static PipelineState CreatePipelineState(const PipelineStateDesc& desc);
+    static VertexBuffer CreateVertexBuffer(const void* data, size_t size, UINT stride);
+    static IndexBuffer CreateIndexBuffer(const void* indices, size_t size);
+    static ConstantBuffer CreateConstantBuffer(const void* data, size_t size);
 
     static DirectX::XMMATRIX GetProjection();
 

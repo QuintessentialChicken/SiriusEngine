@@ -5,7 +5,6 @@
 #include <vector>
 #include <memory>
 #include "Core/Component.h"
-#include "Vulkan/Buffer_Vulkan.h"
 
 enum class Primitives;
 

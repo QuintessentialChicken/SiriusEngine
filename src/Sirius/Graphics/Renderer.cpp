@@ -4,10 +4,6 @@
 
 #include "Renderer.h"
 
-#include "Vulkan/Buffer_Vulkan.h"
-#include "Vulkan/PipelineState_Vulkan.h"
-#include "Vulkan/RenderApi_Vulkan.h"
-#include "Vulkan/Shader_Vulkan.h"
 
 class IPipelineState;
 std::unique_ptr<RenderApi_Vulkan> Renderer::renderApi = std::make_unique<RenderApi_Vulkan>();
@@ -28,11 +24,11 @@ void Renderer::Draw(const std::vector<Model>& models) {
     renderApi->Draw(models);
 }
 
-Shader_Vulkan Renderer::CreateShader(ShaderType type, const std::string& path) {
+Shader Renderer::CreateShader(ShaderType type, const std::string& path) {
     return renderApi->CreateShader(type, path);
 }
 
-PipelineState_Vulkan Renderer::CreatePipelineState(const PipelineStateDesc& desc) {
+PipelineState Renderer::CreatePipelineState(const PipelineStateDesc& desc) {
     return renderApi->CreatePipelineState(desc);
 }
 
@@ -48,15 +44,15 @@ void Renderer::ResizeViewport(int width, int height) {
     renderApi->ResizeViewport(width, height);
 }
 
-VertexBuffer_Vulkan Renderer::CreateVertexBuffer(const void* data, size_t size, UINT stride) {
+VertexBuffer Renderer::CreateVertexBuffer(const void* data, size_t size, UINT stride) {
     return renderApi->CreateVertexBuffer(data, size, stride);
 }
 
-IndexBuffer_Vulkan Renderer::CreateIndexBuffer(const void* indices, size_t size) {
+IndexBuffer Renderer::CreateIndexBuffer(const void* indices, size_t size) {
     return renderApi->CreateIndexBuffer(indices, size);
 }
 
-ConstantBuffer_Vulkan Renderer::CreateConstantBuffer(const void* data, size_t size) {
+ConstantBuffer Renderer::CreateConstantBuffer(const void* data, size_t size) {
     return renderApi->CreateConstantBuffer(data, size);
 }
 
