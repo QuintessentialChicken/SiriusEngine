@@ -13,6 +13,8 @@
 #include "Buffer_Vulkan.h"
 #include "Core/Timer.h"
 
+class MaterialSystem;
+
 // TODO Split up implementations over the appropriate classes
 class RenderApi_Vulkan : public IRenderApi {
 public:
@@ -131,8 +133,6 @@ public:
 
     void CreateImageViews();
 
-    void CreateGraphicsPipeline(const PipelineStateDesc& desc);
-
     void CreateRenderPass();
 
     void CreateFramebuffers();
@@ -150,6 +150,8 @@ public:
     void CreateDescriptorPool();
 
     void CreateDescriptorSets();
+
+    void InitPipelines();
 
     static std::vector<char> ReadFile(const std::string& filename);
 
@@ -175,6 +177,8 @@ public:
     std::vector<VkSemaphore> renderFinishedSemaphores;
     std::vector<VkFence> inFlightFences;
     bool framebufferResized = false;
+	MaterialSystem* materialSystem;
+
 
     const std::vector<Vertex> vertices = {
         {{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},

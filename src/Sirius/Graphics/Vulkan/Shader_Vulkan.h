@@ -6,6 +6,7 @@
 #define SHADER_VULKAN_H
 #include <array>
 #include <string>
+#include <unordered_map>
 #include <vector>
 #include <vulkan/vulkan_core.h>
 
@@ -38,8 +39,14 @@ private:
 };
 
 struct ShaderModule {
-    // std::vector<uint32_t> code;
+    std::vector<uint32_t> code;
     VkShaderModule module;
+};
+
+struct DescriptorSetLayoutData {
+    uint32_t set_number;
+    VkDescriptorSetLayoutCreateInfo create_info;
+    std::vector<VkDescriptorSetLayoutBinding> bindings;
 };
 
 struct ShaderEffect {
@@ -53,6 +60,15 @@ struct ShaderEffect {
 
     void add_stage(ShaderModule* shaderModule, VkShaderStageFlagBits stage);
     void fill_stages(std::vector<VkPipelineShaderStageCreateInfo>& pipelineStages);
+	void reflect_layout(VkDevice device, ReflectionOverrides* overrides, int overrideCount);
+
+
+    struct ReflectedBinding {
+        uint32_t set;
+        uint32_t binding;
+        VkDescriptorType type;
+    };
+	std::unordered_map<std::string, ReflectedBinding> bindings;
 
 private:
     struct ShaderStage {

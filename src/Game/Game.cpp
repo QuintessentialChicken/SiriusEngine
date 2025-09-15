@@ -29,8 +29,6 @@ void Game::Init() {
     // light->SetPosition({0.0f, 0.0f, 7.0f});
     // GameWorld::GetInstance()->AddObject(std::move(light));
     // timer.Mark();
-    auto model = Model::CreatePrimitive(Primitives::CUBE);
-    GameWorld::GetInstance()->AddObject(std::move(model));
 }
 
 void Game::Update() {

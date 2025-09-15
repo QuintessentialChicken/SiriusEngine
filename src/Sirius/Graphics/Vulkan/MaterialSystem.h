@@ -12,7 +12,11 @@
 #include "Types_Vulkan.h"
 
 struct ShaderEffect;
-enum class TransparencyMode : uint8_t;
+enum class TransparencyMode:uint8_t {
+    Opaque,
+    Transparent,
+    Masked
+};
 
 class PipelineBuilder {
 public:
@@ -109,9 +113,9 @@ struct EffectTemplate {
 
 class MaterialSystem {
 public:
-    MaterialSystem(VkDevice device);
+    MaterialSystem(VkDevice device, VkRenderPass renderPass);
 
-    ShaderPass* build_shader(VkRenderPass renderPass,PipelineBuilder& builder, ShaderEffect* effect);
+    ShaderPass* build_shader(PipelineBuilder& builder, ShaderEffect* effect);
 
 
     void build_default_templates();
@@ -123,6 +127,7 @@ private:
     PipelineBuilder shadowBuilder;
 
     VkDevice device;
+    VkRenderPass renderPass{};
 };
 
 

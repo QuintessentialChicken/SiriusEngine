@@ -17,6 +17,7 @@
 #include <glm/glm.hpp>
 
 #include "Buffer_Vulkan.h"
+#include "MaterialSystem.h"
 #include "PipelineState_Vulkan.h"
 #include "Shader_Vulkan.h"
 #include "Graphics/GfxDevice.h"
@@ -52,6 +53,7 @@ void RenderApi_Vulkan::Init() {
     CreateDescriptorSets();
     CreateCommandBuffers();
     CreateSyncObjects();
+    InitPipelines();
 }
 
 
@@ -582,9 +584,6 @@ void RenderApi_Vulkan::CreateImageViews() {
     }
 }
 
-void RenderApi_Vulkan::CreateGraphicsPipeline(const PipelineStateDesc& desc) {
-}
-
 void RenderApi_Vulkan::CreateRenderPass() {
     VkAttachmentDescription colorAttachment{};
     colorAttachment.format = swapChainImageFormat;
@@ -819,6 +818,10 @@ void RenderApi_Vulkan::CreateDescriptorSets() {
 
         vkUpdateDescriptorSets(device, 1, &descriptorWrite, 0, nullptr);
     }
+}
+
+void RenderApi_Vulkan::InitPipelines() {
+    materialSystem = new MaterialSystem{device, renderPass};
 }
 
 void RenderApi_Vulkan::CreateCommandBuffers() {

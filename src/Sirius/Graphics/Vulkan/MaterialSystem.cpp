@@ -23,6 +23,7 @@ VkPipeline PipelineBuilder::build_pipeline(VkDevice device, VkRenderPass pass) {
 
     _vertexInputInfo.vertexBindingDescriptionCount = 1;
     _vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
+    _vertexInputInfo.flags = 0;
 
 
     //make viewport state from our stored viewport and scissor.
@@ -82,10 +83,8 @@ VkPipeline PipelineBuilder::build_pipeline(VkDevice device, VkRenderPass pass) {
 
     //its easy to error out on create graphics pipeline, so we handle it a bit better than the common VK_CHECK case
     VkPipeline newPipeline;
-    if (vkCreateGraphicsPipelines(
-            device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &newPipeline) != VK_SUCCESS) {
+    if (vkCreateGraphicsPipelines(device, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &newPipeline) != VK_SUCCESS) {
         throw std::runtime_error("Failed to build graphics pipeline");
-        return VK_NULL_HANDLE;
     } else {
         return newPipeline;
     }
@@ -99,20 +98,20 @@ void PipelineBuilder::clear_vertex_input() {
     _vertexInputInfo.vertexBindingDescriptionCount = 0;
 }
 
-void PipelineBuilder::setShaders(ShaderEffect *effect) {
+void PipelineBuilder::setShaders(ShaderEffect* effect) {
     _shaderStages.clear();
     effect->fill_stages(_shaderStages);
 
     _pipelineLayout = effect->builtLayout;
 }
 
-ShaderEffect *build_effect(std::string_view vertexShader, std::string_view fragmentShader, VkDevice device) {
+ShaderEffect* build_effect(std::string_view vertexShader, std::string_view fragmentShader, VkDevice device) {
     ShaderEffect::ReflectionOverrides overrides[] = {
         {"sceneData", VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC},
         {"cameraData", VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC}
     };
     //textured defaultlit shader
-    ShaderEffect *effect = new ShaderEffect();
+    auto* effect = new ShaderEffect();
     ShaderModule vertexModule{Shader_Vulkan::CreateShaderModule(Shader_Vulkan::ReadFile(vertexShader.data()), device)};
 
     effect->add_stage(&vertexModule, VK_SHADER_STAGE_VERTEX_BIT);
@@ -123,16 +122,18 @@ ShaderEffect *build_effect(std::string_view vertexShader, std::string_view fragm
     }
 
     // TODO Implement (or replace) shader reflection
-    // effect->reflect_layout(eng->_device, overrides, 2);
+    effect->reflect_layout(device, overrides, 2);
 
     return effect;
 }
 
 
-MaterialSystem::MaterialSystem(VkDevice device) : device{device} {}
+MaterialSystem::MaterialSystem(VkDevice device, VkRenderPass renderPass) : device{device}, renderPass{renderPass} {
+    build_default_templates();
+}
 
-ShaderPass * MaterialSystem::build_shader(VkRenderPass renderPass, PipelineBuilder &builder, ShaderEffect *effect) {
-    ShaderPass* pass = new ShaderPass();
+ShaderPass* MaterialSystem::build_shader(PipelineBuilder& builder, ShaderEffect* effect) {
+    auto* pass = new ShaderPass();
 
     pass->effect = effect;
     pass->layout = effect->builtLayout;
@@ -147,9 +148,19 @@ ShaderPass * MaterialSystem::build_shader(VkRenderPass renderPass, PipelineBuild
 }
 
 void MaterialSystem::build_default_templates() {
-    ShaderEffect *defaultLit = build_effect("tri_mesh_ssbo_instanced.vert.spv", "default_lit.frag.spv", device);
-    ShaderPass* defaultLitPass = build_shader(TODO, forwardBuilder, defaultLit);
+    fill_builders();
 
+    ShaderEffect* defaultLit = build_effect("tri_mesh_ssbo_instanced.vert.spv", "default_lit.frag.spv", device);
+    ShaderPass* defaultLitPass = build_shader(forwardBuilder, defaultLit);
+
+
+    EffectTemplate defaultColored;
+
+    defaultColored.passShaders[MeshpassType::Transparency] = nullptr;
+    defaultColored.passShaders[MeshpassType::DirectionalShadow] = nullptr;
+    defaultColored.passShaders[MeshpassType::Forward] = defaultLitPass;
+    defaultColored.defaultParameters = nullptr;
+    defaultColored.transparency = TransparencyMode::Opaque;
 }
 
 void MaterialSystem::fill_builders() {
