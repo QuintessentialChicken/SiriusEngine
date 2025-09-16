@@ -21,7 +21,7 @@ void Renderer::EndFrame() {
 }
 
 void Renderer::Draw() {
-    renderApi->Draw();
+    // renderApi->Draw();
 }
 
 std::unique_ptr<IShader> Renderer::CreateShader(ShaderType type, const std::string& path) {

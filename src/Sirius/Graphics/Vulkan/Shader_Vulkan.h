@@ -43,6 +43,11 @@ struct ShaderModule {
     VkShaderModule module;
 };
 
+namespace vkutil {
+	bool load_shader_module(VkDevice device, const char* filePath, ShaderModule* outShaderModule);
+    uint32_t hash_descriptor_layout_info(VkDescriptorSetLayoutCreateInfo* info);
+}
+
 struct DescriptorSetLayoutData {
     uint32_t set_number;
     VkDescriptorSetLayoutCreateInfo create_info;
@@ -69,7 +74,7 @@ struct ShaderEffect {
         VkDescriptorType type;
     };
 	std::unordered_map<std::string, ReflectedBinding> bindings;
-
+    std::array<uint32_t, 4> setHashes;
 private:
     struct ShaderStage {
         ShaderModule* shaderModule;
@@ -80,6 +85,16 @@ private:
 
 };
 
+class ShaderCache {
+public:
+	void init(VkDevice vk_device) { device = vk_device; };
+
+    ShaderModule* get_shader(const std::string& path);
+
+private:
+    VkDevice device;
+	std::unordered_map<std::string, ShaderModule> module_cache;
+};
 
 
 #endif //SHADER_VULKAN_H

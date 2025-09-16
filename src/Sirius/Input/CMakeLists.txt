@@ -7,3 +7,6 @@ add_library(Input
         Input.h
 )
 
+target_include_directories(Input PRIVATE "${CMAKE_SOURCE_DIR}/Sirius")
+
+

@@ -13,6 +13,6 @@ add_library(External
         imstb_rectpack.h
         imstb_textedit.h
         imstb_truetype.h
-        spirv_reflect.h
-        spirv_reflect.c
+        spirv-reflect/spirv_reflect.c
+        spirv-reflect/spirv_reflect.h
 )

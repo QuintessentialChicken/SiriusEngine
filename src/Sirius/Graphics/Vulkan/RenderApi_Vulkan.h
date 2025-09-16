@@ -11,6 +11,7 @@
 #include <glm/glm.hpp>
 
 #include "Buffer_Vulkan.h"
+#include "Shader_Vulkan.h"
 #include "Core/Timer.h"
 
 class MaterialSystem;
@@ -178,6 +179,7 @@ public:
     std::vector<VkFence> inFlightFences;
     bool framebufferResized = false;
 	MaterialSystem* materialSystem;
+	ShaderCache shaderCache;
 
 
     const std::vector<Vertex> vertices = {

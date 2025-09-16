@@ -821,7 +821,8 @@ void RenderApi_Vulkan::CreateDescriptorSets() {
 }
 
 void RenderApi_Vulkan::InitPipelines() {
-    materialSystem = new MaterialSystem{device, renderPass};
+    shaderCache.init(device);
+    materialSystem = new MaterialSystem{device, renderPass, shaderCache};
 }
 
 void RenderApi_Vulkan::CreateCommandBuffers() {

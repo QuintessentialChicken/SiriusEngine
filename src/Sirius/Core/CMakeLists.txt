@@ -21,4 +21,6 @@ add_library(Core STATIC
         Fsm.cpp
         Fsm.h
 )
+target_include_directories(Core PRIVATE "${CMAKE_SOURCE_DIR}/Sirius")
+
 target_link_libraries(Core PRIVATE d3d11.lib dxguid.lib D3DCompiler.lib)

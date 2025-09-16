@@ -9,8 +9,7 @@
 #include "Shader_Vulkan.h"
 
 VkPipeline PipelineBuilder::build_pipeline(VkDevice device, VkRenderPass pass) {
-    auto attributeDescription = Vertex::getAttributeDescriptions();
-    auto bindingDescription = Vertex::getBindingDescription();
+    _vertexInputInfo = VkPipelineVertexInputStateCreateInfo{};
     _vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
     _vertexInputInfo.pNext = nullptr;
 
@@ -18,11 +17,11 @@ VkPipeline PipelineBuilder::build_pipeline(VkDevice device, VkRenderPass pass) {
     _vertexInputInfo.vertexBindingDescriptionCount = 0;
     _vertexInputInfo.vertexAttributeDescriptionCount = 0;
     //connect the pipeline builder vertex input info to the one we get from Vertex
-    _vertexInputInfo.vertexAttributeDescriptionCount = 1;
-    _vertexInputInfo.pVertexAttributeDescriptions = attributeDescription.data();
+    _vertexInputInfo.pVertexAttributeDescriptions = vertexDescription.attributes.data();
+    _vertexInputInfo.vertexAttributeDescriptionCount = (uint32_t)vertexDescription.attributes.size();
 
-    _vertexInputInfo.vertexBindingDescriptionCount = 1;
-    _vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
+    _vertexInputInfo.pVertexBindingDescriptions = vertexDescription.bindings.data();
+    _vertexInputInfo.vertexBindingDescriptionCount = (uint32_t)vertexDescription.bindings.size();
     _vertexInputInfo.flags = 0;
 
 
@@ -105,30 +104,74 @@ void PipelineBuilder::setShaders(ShaderEffect* effect) {
     _pipelineLayout = effect->builtLayout;
 }
 
-ShaderEffect* build_effect(std::string_view vertexShader, std::string_view fragmentShader, VkDevice device) {
+VertexInputDescription Vertex::get_vertex_description() {
+    VertexInputDescription description;
+
+    //we will have just 1 vertex buffer binding, with a per-vertex rate
+    VkVertexInputBindingDescription mainBinding = {};
+    mainBinding.binding = 0;
+    mainBinding.stride = sizeof(Vertex);
+    mainBinding.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+
+    description.bindings.push_back(mainBinding);
+
+    //Position will be stored at Location 0
+    VkVertexInputAttributeDescription positionAttribute = {};
+    positionAttribute.binding = 0;
+    positionAttribute.location = 0;
+    positionAttribute.format = VK_FORMAT_R32G32B32_SFLOAT;
+    positionAttribute.offset = offsetof(Vertex, position);
+
+    //Normal will be stored at Location 1
+    VkVertexInputAttributeDescription normalAttribute = {};
+    normalAttribute.binding = 0;
+    normalAttribute.location = 1;
+    normalAttribute.format = VK_FORMAT_R8G8_UNORM;//VK_FORMAT_R32G32B32_SFLOAT;
+    normalAttribute.offset = offsetof(Vertex, oct_normal);
+
+    //Position will be stored at Location 2
+    VkVertexInputAttributeDescription colorAttribute = {};
+    colorAttribute.binding = 0;
+    colorAttribute.location = 2;
+    colorAttribute.format = VK_FORMAT_R8G8B8_UNORM;//VK_FORMAT_R32G32B32_SFLOAT;
+    colorAttribute.offset = offsetof(Vertex, color);
+
+    //UV will be stored at Location 2
+    VkVertexInputAttributeDescription uvAttribute = {};
+    uvAttribute.binding = 0;
+    uvAttribute.location = 3;
+    uvAttribute.format = VK_FORMAT_R32G32_SFLOAT;
+    uvAttribute.offset = offsetof(Vertex, uv);
+
+
+    description.attributes.push_back(positionAttribute);
+    description.attributes.push_back(normalAttribute);
+    description.attributes.push_back(colorAttribute);
+    description.attributes.push_back(uvAttribute);
+    return description;
+}
+
+ShaderEffect* build_effect(std::string_view vertexShader, std::string_view fragmentShader, VkDevice device, ShaderCache& shaderCache) {
     ShaderEffect::ReflectionOverrides overrides[] = {
         {"sceneData", VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC},
         {"cameraData", VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC}
     };
     //textured defaultlit shader
     auto* effect = new ShaderEffect();
-    ShaderModule vertexModule{Shader_Vulkan::CreateShaderModule(Shader_Vulkan::ReadFile(vertexShader.data()), device)};
 
-    effect->add_stage(&vertexModule, VK_SHADER_STAGE_VERTEX_BIT);
+    effect->add_stage(shaderCache.get_shader(vertexShader.data()), VK_SHADER_STAGE_VERTEX_BIT);
 
     if (fragmentShader.size() > 2) {
-        ShaderModule fragModule{Shader_Vulkan::CreateShaderModule(Shader_Vulkan::ReadFile(fragmentShader.data()), device)};
-        effect->add_stage(&fragModule, VK_SHADER_STAGE_FRAGMENT_BIT);
+        effect->add_stage(shaderCache.get_shader(fragmentShader.data()), VK_SHADER_STAGE_FRAGMENT_BIT);
     }
 
-    // TODO Implement (or replace) shader reflection
     effect->reflect_layout(device, overrides, 2);
 
     return effect;
 }
 
 
-MaterialSystem::MaterialSystem(VkDevice device, VkRenderPass renderPass) : device{device}, renderPass{renderPass} {
+MaterialSystem::MaterialSystem(VkDevice device, VkRenderPass renderPass, ShaderCache& shaderCache) : device{device}, renderPass{renderPass}, shaderCache{shaderCache} {
     build_default_templates();
 }
 
@@ -150,7 +193,7 @@ ShaderPass* MaterialSystem::build_shader(PipelineBuilder& builder, ShaderEffect*
 void MaterialSystem::build_default_templates() {
     fill_builders();
 
-    ShaderEffect* defaultLit = build_effect("tri_mesh_ssbo_instanced.vert.spv", "default_lit.frag.spv", device);
+    ShaderEffect* defaultLit = build_effect("../../Sirius/Shaders/tri_mesh_ssbo_instanced.vert.spv", "../../Sirius/Shaders/default_lit.frag.spv", device, shaderCache);
     ShaderPass* defaultLitPass = build_shader(forwardBuilder, defaultLit);
 
 
@@ -208,9 +251,8 @@ void MaterialSystem::fill_builders() {
 
 
     shadowBuilder._depthStencil = stencilInfo;
-
+    forwardBuilder.vertexDescription = Vertex::get_vertex_description();
     forwardBuilder._inputAssembly = inputAssemblyStateInfo;
-
 
     forwardBuilder._rasterizer = rasterizer;
     forwardBuilder._rasterizer.cullMode = VK_CULL_MODE_NONE; //BACK_BIT;

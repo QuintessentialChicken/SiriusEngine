@@ -59,6 +59,8 @@ add_library(Graphics STATIC
         Vulkan/MaterialSystem.h
         Vulkan/Types_Vulkan.h
 )
+target_include_directories(Graphics PRIVATE "${CMAKE_SOURCE_DIR}/Sirius")
+target_include_directories(Graphics PRIVATE "${CMAKE_SOURCE_DIR}/Sirius/External/spirv-reflect")
 
 
 target_link_libraries(Graphics PRIVATE Gdiplus.lib Vulkan::Vulkan)
