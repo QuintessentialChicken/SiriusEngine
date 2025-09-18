@@ -14,6 +14,8 @@
 #include "Shader_Vulkan.h"
 #include "Core/Timer.h"
 
+class DescriptorAllocator;
+class DescriptorLayoutCache;
 class MaterialSystem;
 
 // TODO Split up implementations over the appropriate classes
@@ -180,7 +182,8 @@ public:
     bool framebufferResized = false;
 	MaterialSystem* materialSystem;
 	ShaderCache shaderCache;
-
+    DescriptorAllocator* _descriptorAllocator;
+    DescriptorLayoutCache* _descriptorLayoutCache;
 
     const std::vector<Vertex> vertices = {
         {{-0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}},

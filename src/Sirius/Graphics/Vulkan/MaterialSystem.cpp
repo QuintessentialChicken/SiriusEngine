@@ -18,10 +18,10 @@ VkPipeline PipelineBuilder::build_pipeline(VkDevice device, VkRenderPass pass) {
     _vertexInputInfo.vertexAttributeDescriptionCount = 0;
     //connect the pipeline builder vertex input info to the one we get from Vertex
     _vertexInputInfo.pVertexAttributeDescriptions = vertexDescription.attributes.data();
-    _vertexInputInfo.vertexAttributeDescriptionCount = (uint32_t)vertexDescription.attributes.size();
+    _vertexInputInfo.vertexAttributeDescriptionCount = (uint32_t) vertexDescription.attributes.size();
 
     _vertexInputInfo.pVertexBindingDescriptions = vertexDescription.bindings.data();
-    _vertexInputInfo.vertexBindingDescriptionCount = (uint32_t)vertexDescription.bindings.size();
+    _vertexInputInfo.vertexBindingDescriptionCount = (uint32_t) vertexDescription.bindings.size();
     _vertexInputInfo.flags = 0;
 
 
@@ -126,14 +126,14 @@ VertexInputDescription Vertex::get_vertex_description() {
     VkVertexInputAttributeDescription normalAttribute = {};
     normalAttribute.binding = 0;
     normalAttribute.location = 1;
-    normalAttribute.format = VK_FORMAT_R8G8_UNORM;//VK_FORMAT_R32G32B32_SFLOAT;
+    normalAttribute.format = VK_FORMAT_R8G8_UNORM; //VK_FORMAT_R32G32B32_SFLOAT;
     normalAttribute.offset = offsetof(Vertex, oct_normal);
 
     //Position will be stored at Location 2
     VkVertexInputAttributeDescription colorAttribute = {};
     colorAttribute.binding = 0;
     colorAttribute.location = 2;
-    colorAttribute.format = VK_FORMAT_R8G8B8_UNORM;//VK_FORMAT_R32G32B32_SFLOAT;
+    colorAttribute.format = VK_FORMAT_R8G8B8_UNORM; //VK_FORMAT_R32G32B32_SFLOAT;
     colorAttribute.offset = offsetof(Vertex, color);
 
     //UV will be stored at Location 2
@@ -171,6 +171,23 @@ ShaderEffect* build_effect(std::string_view vertexShader, std::string_view fragm
 }
 
 
+size_t MaterialData::hash() const {
+    using std::size_t;
+    using std::hash;
+
+    size_t result = hash<std::string>()(baseTemplate);
+
+    for (const auto& b : textures) {
+        //pack the binding data into a single int64. Not fully correct but its ok
+        size_t texture_hash = (std::hash<size_t>()((size_t) b.sampler) << 3) && (std::hash<size_t>()((size_t) b.view) >> 7);
+
+        //shuffle the packed binding data and xor it with the main hash
+        result ^= std::hash<size_t>()(texture_hash);
+    }
+
+    return result;
+}
+
 MaterialSystem::MaterialSystem(VkDevice device, VkRenderPass renderPass, ShaderCache& shaderCache) : device{device}, renderPass{renderPass}, shaderCache{shaderCache} {
     build_default_templates();
 }
@@ -188,6 +205,48 @@ ShaderPass* MaterialSystem::build_shader(PipelineBuilder& builder, ShaderEffect*
     pass->pipeline = pipbuilder.build_pipeline(device, renderPass);
 
     return pass;
+}
+
+Material* MaterialSystem::build_material(const std::string& materialName, const MaterialData& info, DescriptorLayoutCache& layoutCache, DescriptorAllocator& allocator) {
+    Material* mat;
+    //search material in the cache first in case its already built
+    auto it = materialCache.find(info);
+    if (it != materialCache.end()) {
+        mat = (*it).second;
+        materials[materialName] = mat;
+    } else {
+        //need to build the material
+        Material* newMat = new Material();
+        newMat->original = &templateCache[info.baseTemplate];
+        newMat->parameters = info.parameters;
+        //not handled yet
+        newMat->passSets[MeshpassType::DirectionalShadow] = VK_NULL_HANDLE;
+        newMat->textures = info.textures;
+
+
+        DescriptorBuilder db = DescriptorBuilder::begin(&layoutCache, &allocator);
+
+        for (int i = 0; i < info.textures.size(); i++) {
+            VkDescriptorImageInfo imageBufferInfo;
+            imageBufferInfo.sampler = info.textures[i].sampler;
+            imageBufferInfo.imageView = info.textures[i].view;
+            imageBufferInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+            db.bind_image(i, &imageBufferInfo, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, VK_SHADER_STAGE_FRAGMENT_BIT);
+        }
+
+
+        db.build(newMat->passSets[MeshpassType::Forward]);
+        db.build(newMat->passSets[MeshpassType::Transparency]);
+        //add material to cache
+        materialCache[info] = (newMat);
+        mat = newMat;
+        materials[materialName] = mat;
+    }
+
+    return mat;
+}
+
+Material* MaterialSystem::get_material(const std::string& materialName) {
 }
 
 void MaterialSystem::build_default_templates() {
